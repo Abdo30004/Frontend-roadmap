@@ -1,0 +1,57 @@
+name: New question
+description: Suggest an interview question that the guide does not cover yet.
+title: "[Question] "
+labels: ["new question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you suggest a question, please check the [index of questions](https://github.com/ahmedgourmat/Frontend-roadmap/blob/main/content/README.md). If it is a new phrasing of an existing question, say which one and we will add it to its "Merged from" list.
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: As the interviewer asked it. Add other phrasings you have heard.
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: Level
+      options:
+        - Junior
+        - Mid-level
+        - Senior
+        - Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - JavaScript
+        - React
+        - CSS & UI
+        - Performance
+        - Next.js & Rendering
+        - Data & APIs
+        - Security & Auth
+        - Architecture
+        - Tooling & Delivery
+        - Team & Process
+    validations:
+      required: true
+  - type: textarea
+    id: bug
+    attributes:
+      label: A real bug that shows the concept
+      description: Every question is built around a production bug. What could go wrong in a real app? A rough idea is fine.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Can you help?
+      options:
+        - label: I can write the answer
+        - label: I can build the live demo
+        - label: I can translate it to French

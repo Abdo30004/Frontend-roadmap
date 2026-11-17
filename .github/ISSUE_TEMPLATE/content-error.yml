@@ -1,0 +1,53 @@
+name: Content error
+description: An answer is wrong, outdated, unclear or has a typo.
+title: "[Content] "
+labels: ["content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for checking the answers. You can write in English or French.
+        If the fix is small, you can also edit the file directly: the **View on GitHub** link on each question opens it.
+  - type: input
+    id: question
+    attributes:
+      label: Question
+      description: The link to the question on the site, or its file in `content/`.
+      placeholder: https://frontend-roadmap-website.vercel.app/mid#07-array-index-as-key
+    validations:
+      required: true
+  - type: dropdown
+    id: part
+    attributes:
+      label: Which part?
+      options:
+        - The concept (short answer)
+        - "Real-life example: the problem"
+        - How to fix it
+        - How to say it in the interview
+        - The live demo
+        - The title or the merged phrasings
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - English
+        - French
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong
+      description: Quote the sentence or code, and explain the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix
+      description: What it should say instead. Links to documentation help a lot.
