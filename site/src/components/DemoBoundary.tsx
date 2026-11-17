@@ -1,4 +1,6 @@
 import { Component, type ReactNode } from 'react';
+import { Trans } from 'react-i18next';
+import i18n from '../i18n';
 
 interface State { error: Error | null; key: number }
 
@@ -12,12 +14,12 @@ export class DemoBoundary extends Component<{ children: ReactNode }, State> {
     if (this.state.error) {
       return (
         <div className="dk-panel" data-tone="bad" role="alert">
-          <strong>The component tree crashed.</strong>
+          <strong>{i18n.t('demo.crashed')}</strong>
           <p className="dk-note" style={{ margin: '6px 0 10px' }}>
-            Uncaught error: <code>{this.state.error.message}</code>. In a real app without an error boundary, this is a blank white screen.
+            <Trans i18nKey="demo.uncaught" values={{ message: this.state.error.message }} components={{ code: <code /> }} />
           </p>
           <button className="dk-btn" type="button" onClick={() => this.setState((s) => ({ error: null, key: s.key + 1 }))}>
-            Reset demo
+            {i18n.t('demo.reset')}
           </button>
         </div>
       );

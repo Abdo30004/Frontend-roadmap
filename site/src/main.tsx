@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import './styles/global.css';
+import './i18n';
 import { App } from './App';
 
 // No StrictMode on purpose: the live demos should behave exactly like production

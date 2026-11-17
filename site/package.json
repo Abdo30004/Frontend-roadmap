@@ -7,14 +7,19 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "titles": "node scripts/gen-titles.mjs",
+    "predev": "node scripts/gen-titles.mjs",
+    "prebuild": "node scripts/gen-titles.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "^5.1.0",
     "@fontsource-variable/inter": "^5.1.0",
     "@fontsource-variable/jetbrains-mono": "^5.1.0",
+    "i18next": "^23.16.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^15.1.4",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.28.0",
     "rehype-highlight": "^7.0.1",

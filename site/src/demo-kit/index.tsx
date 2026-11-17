@@ -14,6 +14,7 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import './kit.css';
 
 export type Tone = 'neutral' | 'bad' | 'good' | 'warn' | 'info';
@@ -106,11 +107,12 @@ function withComment(line: string, i: number): ReactNode {
 }
 
 /** Code block for a few lines shown inside a demo, in a dark editor frame. `title` is the label in its top bar. */
-export function Code({ children, title = 'Code' }: { children: string; title?: string }) {
+export function Code({ children, title }: { children: string; title?: string }) {
+  const { t } = useTranslation();
   const lines = children.replace(/^\n/, '').replace(/\n\s*$/, '').split('\n');
   return (
     <figure className="dk-codeblock">
-      <figcaption className="dk-code-bar">{title}</figcaption>
+      <figcaption className="dk-code-bar">{title ?? t('demo.code')}</figcaption>
       <pre className="dk-code"><code>{lines.map(withComment)}</code></pre>
     </figure>
   );
@@ -146,6 +148,7 @@ export function useConsole(max = 60) {
 export function Console({ lines, height = 160, title = 'Console', onClear }: {
   lines: ConsoleLine[]; height?: number; title?: string; onClear?: () => void;
 }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -158,7 +161,7 @@ export function Console({ lines, height = 160, title = 'Console', onClear }: {
         {onClear && <button type="button" onClick={onClear}>clear</button>}
       </div>
       <div className="dk-console-body" ref={ref} style={{ height }} aria-live="polite">
-        {lines.length === 0 && <div className="dk-console-empty">Nothing logged yet. Use the demo above.</div>}
+        {lines.length === 0 && <div className="dk-console-empty">{t('demo.consoleEmpty')}</div>}
         {lines.map((l) => (
           <div key={l.id} className="dk-console-line" data-tone={l.tone}>{l.text}</div>
         ))}

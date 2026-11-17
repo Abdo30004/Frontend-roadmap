@@ -1,5 +1,6 @@
 // Shared pieces of the long-form article pages (/skills, /mcp).
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface TocItem {
   id: string;
@@ -17,6 +18,7 @@ export function rich(text: string): ReactNode {
 }
 
 export function Install({ command }: { command: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const timer = useRef<number>();
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -36,10 +38,10 @@ export function Install({ command }: { command: string }) {
     <div className="install">
       <span className="install-prompt" aria-hidden>$</span>
       <code>{command}</code>
-      <button type="button" onClick={copy} data-copied={copied || undefined} aria-label={`Copy: ${command}`}>
-        {copied ? 'Copied' : 'Copy'}
+      <button type="button" onClick={copy} data-copied={copied || undefined} aria-label={t('common.copyLabel', { command })}>
+        {copied ? t('common.copied') : t('common.copy')}
       </button>
-      <span className="sr-only" aria-live="polite">{copied ? 'Command copied' : ''}</span>
+      <span className="sr-only" aria-live="polite">{copied ? t('common.commandCopied') : ''}</span>
     </div>
   );
 }
@@ -95,18 +97,20 @@ export function TocLinks({ toc, active }: { toc: TocItem[]; active?: string }) {
 
 /** Sticky "On this page" sidebar (desktop). The inline copy for small screens goes in the article header. */
 export function TocAside({ toc, active }: { toc: TocItem[]; active: string }) {
+  const { t } = useTranslation();
   return (
-    <nav className="post-toc" aria-label="On this page">
-      <p>On this page</p>
+    <nav className="post-toc" aria-label={t('common.onThisPage')}>
+      <p>{t('common.onThisPage')}</p>
       <TocLinks toc={toc} active={active} />
     </nav>
   );
 }
 
 export function TocInline({ toc }: { toc: TocItem[] }) {
+  const { t } = useTranslation();
   return (
     <details className="post-toc-inline">
-      <summary>On this page</summary>
+      <summary>{t('common.onThisPage')}</summary>
       <TocLinks toc={toc} />
     </details>
   );

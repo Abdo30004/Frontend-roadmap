@@ -5,6 +5,9 @@ import { META } from './content';
 import { REPO } from './site';
 import { Home } from './pages/Home';
 import { CheckIcon, MenuIcon, MoonIcon, SunIcon } from './components/Icons';
+import { useTranslation } from 'react-i18next';
+import { setLang, useLang } from './i18n';
+import { useLabels } from './content';
 
 const LevelPage = lazy(() => import('./pages/LevelPage'));
 const SkillsPage = lazy(() => import('./pages/SkillsPage'));
@@ -12,6 +15,8 @@ const McpPage = lazy(() => import('./pages/McpPage'));
 
 /** "Interview questions" in the top bar: opens on hover (mouse) or click/tap, lists the three levels. */
 function QuestionsMenu({ onOpen }: { onOpen: () => void }) {
+  const { t } = useTranslation();
+  const label = useLabels();
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const ref = useRef<HTMLDivElement>(null);
@@ -70,8 +75,8 @@ function QuestionsMenu({ onOpen }: { onOpen: () => void }) {
         aria-controls="questions-menu"
         onClick={click}
       >
-        <span className="label-long">Interview questions</span>
-        <span className="label-short">Questions</span>
+        <span className="label-long">{t('nav.questions')}</span>
+        <span className="label-short">{t('nav.questionsShort')}</span>
         <svg className="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
           <path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -80,8 +85,8 @@ function QuestionsMenu({ onOpen }: { onOpen: () => void }) {
         {LEVELS.map((l) => (
           <NavLink key={l.id} to={`/${l.id}`} className="nav-level" style={{ ['--c' as string]: `var(--${l.id})` }} onClick={() => setOpen(false)}>
             <span>
-              <strong>{l.label}</strong>
-              <small>{META[l.id].length} questions. {l.blurb}</small>
+              <strong>{label.level(l.id)}</strong>
+              <small>{t('common.countQuestions', { count: META[l.id].length })} {label.blurb(l.id)}</small>
             </span>
           </NavLink>
         ))}
@@ -111,7 +116,19 @@ function useTheme() {
   return [theme, () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))] as const;
 }
 
+/** EN / FR switch: shows the language you would switch to. */
+function LangSwitch() {
+  const { t } = useTranslation();
+  const lang = useLang();
+  return (
+    <button className="icon-btn lang-btn" type="button" onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')} aria-label={t('lang.switchLabel')} title={t('lang.switchLabel')}>
+      {t('lang.switchTo')}
+    </button>
+  );
+}
+
 export function App() {
+  const { t } = useTranslation();
   const [theme, toggleTheme] = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
@@ -123,7 +140,7 @@ export function App() {
     <>
       <header className="topbar">
         {isDocs && (
-          <button className="icon-btn menu-btn" aria-label="Open question list" aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}>
+          <button className="icon-btn menu-btn" aria-label={t('nav.openList')} aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}>
             <MenuIcon size={18} />
           </button>
         )}
@@ -131,21 +148,22 @@ export function App() {
           <span className="brand-mark" aria-hidden><CheckIcon size={14} /></span>
           <span className="brand-name">Frontend Field Guide</span>
         </Link>
-        <nav className="topnav" aria-label="Main">
-          <NavLink to="/" end>Map</NavLink>
+        <nav className="topnav" aria-label={t('nav.main')}>
+          <NavLink to="/" end>{t('nav.map')}</NavLink>
           <QuestionsMenu onOpen={() => setMenuOpen(false)} />
-          <NavLink to="/skills">Skills</NavLink>
-          <NavLink to="/mcp">MCP</NavLink>
+          <NavLink to="/skills">{t('nav.skills')}</NavLink>
+          <NavLink to="/mcp">{t('nav.mcp')}</NavLink>
         </nav>
-        <a className="icon-btn" href={REPO.url} target="_blank" rel="noreferrer" aria-label="Questions on GitHub" title="Questions on GitHub">
+        <a className="icon-btn" href={REPO.url} target="_blank" rel="noreferrer" aria-label={t('nav.github')} title={t('nav.github')}>
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         </a>
-        <button className="icon-btn" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+        <LangSwitch />
+        <button className="icon-btn" onClick={toggleTheme} aria-label={theme === 'dark' ? t('nav.toLight') : t('nav.toDark')}>
           {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>
       </header>
 
-      <Suspense fallback={<p className="stage-missing" style={{ padding: 40 }}>Loading…</p>}>
+      <Suspense fallback={<p className="stage-missing" style={{ padding: 40 }}>{t('common.loading')}</p>}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/skills" element={<SkillsPage />} />
