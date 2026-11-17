@@ -4,6 +4,7 @@
  * Colors: only use CSS variables (var(--ink), var(--bad), ...) so dark mode works.
  */
 import {
+  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -93,9 +94,27 @@ export function Note({ children }: { children: ReactNode }) {
   return <p className="dk-note">{children}</p>;
 }
 
-/** Plain code block (no highlighting) for a few lines shown inside a demo. */
-export function Code({ children }: { children: string }) {
-  return <pre className="dk-code"><code>{children.replace(/^\n/, '')}</code></pre>;
+/** Splits a line into code and a trailing `// comment` (ignores the `//` in URLs like `https://`). */
+function withComment(line: string, i: number): ReactNode {
+  const m = /(^|\s)(\/\/.*)$/.exec(line);
+  if (!m) return <Fragment key={i}>{line}{'\n'}</Fragment>;
+  const at = m.index + m[1].length;
+  return (
+    <Fragment key={i}>
+      {line.slice(0, at)}<span className="dk-code-comment">{m[2]}</span>{'\n'}
+    </Fragment>
+  );
+}
+
+/** Code block for a few lines shown inside a demo, in a dark editor frame. `title` is the label in its top bar. */
+export function Code({ children, title = 'Code' }: { children: string; title?: string }) {
+  const lines = children.replace(/^\n/, '').replace(/\n\s*$/, '').split('\n');
+  return (
+    <figure className="dk-codeblock">
+      <figcaption className="dk-code-bar">{title}</figcaption>
+      <pre className="dk-code"><code>{lines.map(withComment)}</code></pre>
+    </figure>
+  );
 }
 
 /** Horizontal meter. value/max in [0..max]. Animated with transform only. */
@@ -140,7 +159,7 @@ export function Console({ lines, height = 160, title = 'Console', onClear }: {
         {onClear && <button type="button" onClick={onClear}>clear</button>}
       </div>
       <div className="dk-console-body" ref={ref} style={{ height }} aria-live="polite">
-        {lines.length === 0 && <div className="dk-console-empty">nothing logged yet</div>}
+        {lines.length === 0 && <div className="dk-console-empty">Nothing logged yet. Use the demo above.</div>}
         {lines.map((l) => (
           <div key={l.id} className="dk-console-line" data-tone={l.tone}>{l.text}</div>
         ))}

@@ -4,6 +4,7 @@ import { useProgress } from '../progress';
 import { questionSourceUrl } from '../site';
 import { DemoBoundary } from './DemoBoundary';
 import { demoLoader, type DemoModule } from './demos';
+import { CheckIcon } from './Icons';
 
 // The markdown renderer + syntax highlighter only load once someone reveals an answer.
 const Markdown = lazy(() => import('./Markdown'));
@@ -51,12 +52,13 @@ function Stage({ kind, children, head, task }: { kind: 'problem' | 'solution'; c
   return (
     <div className="stage" data-kind={kind}>
       <div className="stage-head">
-        <span className="stage-tag">{kind === 'problem' ? 'The bug · live' : 'The fix · live'}</span>
-        {head && <span className="scenario">{head}</span>}
+        <span className="stage-tag">{kind === 'problem' ? 'The bug' : 'The fix'}</span>
+        {head && <p className="scenario">{head}</p>}
       </div>
       {task && (
         <div className="stage-task">
-          <strong>Try it:</strong> {task}
+          <span className="stage-task-label">Try it</span>
+          <p>{task}</p>
         </div>
       )}
       <div className="stage-body">{children}</div>
@@ -80,7 +82,7 @@ export function QuestionSection({ q }: { q: Question }) {
       <div className="q-meta">
         <span className="q-num">#{String(q.num).padStart(2, '0')}</span>
         <span className="q-cat">{categoryLabel(q.category)}</span>
-        {done && <span className="q-done">✓ understood</span>}
+        {done && <span className="q-done"><CheckIcon size={13} /> Understood</span>}
         <a className="q-src" href={questionSourceUrl(q.level, q.slug)} target="_blank" rel="noreferrer">
           View on GitHub
         </a>
@@ -128,23 +130,23 @@ export function QuestionSection({ q }: { q: Question }) {
           )}
 
           <Suspense fallback={<p className="stage-missing">Loading the explanation…</p>}>
-          <h3><span className="h-ico" aria-hidden>?</span>The concept</h3>
+          <h3>The concept</h3>
           <Markdown>{q.concept}</Markdown>
 
-          <h3><span className="h-ico" aria-hidden>!</span>The real-life case</h3>
+          <h3>The real-life case</h3>
           <Markdown>{q.problem}</Markdown>
 
-          <h3><span className="h-ico" aria-hidden>✓</span>How to fix it</h3>
+          <h3>How to fix it</h3>
           <Markdown>{q.fix}</Markdown>
 
-          <h3><span className="h-ico" aria-hidden>“</span>Say it in the interview</h3>
+          <h3>Say it in the interview</h3>
           <Markdown>{q.interview}</Markdown>
           </Suspense>
 
           <div className="understood">
             <span>Could you explain this to an interviewer without looking?</span>
             <button aria-pressed={done} onClick={() => toggle(id)}>
-              {done ? '✓ Understood' : 'Mark as understood'}
+              {done ? <><CheckIcon size={15} /> Understood</> : 'Mark as understood'}
             </button>
           </div>
         </div>

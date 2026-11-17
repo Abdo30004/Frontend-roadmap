@@ -1,49 +1,15 @@
-import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment } from 'react';
+import { REPO } from '../site';
 import { INSTALLS_AS_OF, NEXTJS_NOTE, PIPELINE, SECTIONS, STACKS, type Skill } from '../skills';
+import { Install, SectionHead, TocAside, TocInline, rich, useActiveSection, useScrollToHash, type TocItem } from '../components/Article';
 
 const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 
-const TOC = [
+const TOC: TocItem[] = [
   { id: 'start', title: 'Start here' },
   ...SECTIONS.map((s) => ({ id: s.id, title: s.title })),
   { id: 'stacks', title: 'Recommended stacks' },
 ];
-const num = (id: string) => String(TOC.findIndex((t) => t.id === id) + 1).padStart(2, '0');
-
-/** Turns `backticks` into <code>. */
-function rich(text: string): ReactNode {
-  return text.split(/(`[^`]+`)/).map((part, i) =>
-    part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> : <Fragment key={i}>{part}</Fragment>,
-  );
-}
-
-function Install({ command }: { command: string }) {
-  const [copied, setCopied] = useState(false);
-  const timer = useRef<number>();
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(command);
-    } catch {
-      return; // clipboard blocked: the command is still selectable by hand
-    }
-    setCopied(true);
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setCopied(false), 1600);
-  };
-
-  return (
-    <div className="install">
-      <span className="install-prompt" aria-hidden>$</span>
-      <code>{command}</code>
-      <button type="button" onClick={copy} data-copied={copied || undefined} aria-label={`Copy: ${command}`}>
-        {copied ? 'Copied' : 'Copy'}
-      </button>
-      <span className="sr-only" aria-live="polite">{copied ? 'Command copied' : ''}</span>
-    </div>
-  );
-}
 
 function SkillEntry({ s }: { s: Skill }) {
   const onRegistry = s.url.startsWith('https://skills.sh/');
@@ -55,7 +21,9 @@ function SkillEntry({ s }: { s: Skill }) {
         <span>by <strong>{s.author}</strong></span>
         <span>{s.installs === null ? 'A set of skills' : `${compact.format(s.installs)} installs`}</span>
         {s.platforms && <span>{s.platforms}</span>}
-        <a href={s.url} target="_blank" rel="noreferrer">{onRegistry ? 'skills.sh' : 'GitHub'} <span aria-hidden>↗</span></a>
+        <span>
+          <a href={s.url} target="_blank" rel="noreferrer">{onRegistry ? 'skills.sh' : 'GitHub'} <span aria-hidden>↗</span></a>
+        </span>
       </p>
       {s.lead.map((p) => <p key={p}>{rich(p)}</p>)}
       {s.list && (
@@ -76,68 +44,16 @@ function SkillEntry({ s }: { s: Skill }) {
   );
 }
 
-function SectionHead({ id, title }: { id: string; title: string }) {
-  return (
-    <>
-      <p className="post-num" aria-hidden>{num(id)}</p>
-      <h2 id={`${id}-t`}>{title}</h2>
-    </>
-  );
-}
-
-function useActiveSection() {
-  const [active, setActive] = useState(TOC[0].id);
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: '-80px 0px -60% 0px' },
-    );
-    TOC.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
-  }, []);
-  return active;
-}
-
-function TocLinks({ active }: { active?: string }) {
-  return (
-    <ol>
-      {TOC.map((t) => (
-        <li key={t.id}>
-          <a href={`#${t.id}`} className={active === t.id ? 'current' : undefined}>
-            <span className="n">{num(t.id)}</span>
-            <span>{t.title}</span>
-          </a>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 export default function SkillsPage() {
-  const active = useActiveSection();
-
-  useEffect(() => {
-    const target = window.location.hash && document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
-    if (target) target.scrollIntoView();
-    else window.scrollTo(0, 0);
-  }, []);
+  const active = useActiveSection(TOC);
+  useScrollToHash();
 
   return (
     <div className="post">
-      <nav className="post-toc" aria-label="On this page">
-        <p>On this page</p>
-        <TocLinks active={active} />
-      </nav>
+      <TocAside toc={TOC} active={active} />
 
       <main className="post-body">
         <header className="post-head">
-          <p className="eyebrow">Claude skills</p>
           <h1>The Claude skills every frontend developer should know</h1>
           <p className="post-dek">
             A skill is a package of instructions that teaches Claude Code, and other AI agents, how to do one kind of job
@@ -145,14 +61,11 @@ export default function SkillsPage() {
             and how they fit together.
           </p>
           <p className="post-byline">Updated {INSTALLS_AS_OF} · Install counts from skills.sh</p>
-          <details className="post-toc-inline">
-            <summary>On this page</summary>
-            <TocLinks />
-          </details>
+          <TocInline toc={TOC} />
         </header>
 
         <section className="post-section" id="start" aria-labelledby="start-t">
-          <SectionHead id="start" title="Start here" />
+          <SectionHead toc={TOC} id="start" title="Start here" />
           <p className="post-intro">
             Once a skill is installed, Claude loads it on its own whenever a task fits. You do not call it by name; you just
             describe the work.
@@ -180,7 +93,7 @@ export default function SkillsPage() {
 
         {SECTIONS.map((sec) => (
           <section className="post-section" id={sec.id} key={sec.id} aria-labelledby={`${sec.id}-t`}>
-            <SectionHead id={sec.id} title={sec.title} />
+            <SectionHead toc={TOC} id={sec.id} title={sec.title} />
             {sec.intro.map((p) => <p className="post-intro" key={p}>{rich(p)}</p>)}
 
             {sec.id === 'nextjs' && (
@@ -218,7 +131,7 @@ export default function SkillsPage() {
         ))}
 
         <section className="post-section" id="stacks" aria-labelledby="stacks-t">
-          <SectionHead id="stacks" title="Recommended stacks" />
+          <SectionHead toc={TOC} id="stacks" title="Recommended stacks" />
           <p className="post-intro">How the skills fit together for different kinds of project.</p>
           {STACKS.map((stack) => (
             <div className="post-stack" key={stack.title}>
@@ -243,4 +156,8 @@ export default function SkillsPage() {
         <footer className="home-foot">
           Install counts are from the skills.sh registry, {INSTALLS_AS_OF}. Want a skill added to this guide?{' '}
           <a href={REPO.url} target="_blank" rel="noreferrer">Suggest it on GitHub</a>.
-        </
+        </footer>
+      </main>
+    </div>
+  );
+}

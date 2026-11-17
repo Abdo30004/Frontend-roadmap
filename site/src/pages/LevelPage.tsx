@@ -4,6 +4,7 @@ import { LEVELS, type Level } from '../catalog';
 import { QuestionSection } from '../components/QuestionSection';
 import { META, questionId, useLevel } from '../content';
 import { useProgress } from '../progress';
+import { CheckIcon } from '../components/Icons';
 
 function useActiveSection(ids: string[], ready: boolean) {
   const [active, setActive] = useState(ids[0]);
@@ -58,7 +59,7 @@ export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level
                 <a href={`#${q.slug}`} className={active === q.slug ? 'current' : undefined} onClick={closeMenu}>
                   <span className="side-num">{String(q.num).padStart(2, '0')}</span>
                   <span>{q.short}</span>
-                  {isDone(questionId(q)) && <span className="side-check" aria-label="understood">✓</span>}
+                  {isDone(questionId(q)) && <span className="side-check"><CheckIcon size={13} label="understood" /></span>}
                 </a>
               </li>
             ))}
@@ -68,7 +69,6 @@ export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level
 
       <main className="docs-main">
         <header className="docs-intro">
-          <p className="eyebrow">Level</p>
           <h1><i className="lvl-dot" style={{ width: 14, height: 14 }} />{meta.label} questions</h1>
           <p>{meta.blurb} {questions.length} questions. Each one has a live bug, a hidden answer and a live fix.</p>
         </header>

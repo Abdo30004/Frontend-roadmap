@@ -3,6 +3,7 @@ import { CATEGORIES, LEVELS } from '../catalog';
 import { ALL_META, META, questionId } from '../content';
 import { useProgress } from '../progress';
 import { REPO } from '../site';
+import { CheckIcon } from '../components/Icons';
 
 export function Home() {
   const { isDone, done } = useProgress();
@@ -12,24 +13,18 @@ export function Home() {
   return (
     <main className="home">
       <div className="hero">
-        <p className="eyebrow">Frontend interview field guide</p>
         <h1>Learn the bug before you learn the answer.</h1>
         <p>
           {total} interview questions, from junior to senior. Each one starts with a real problem running live in your
           browser. Break it, think about it, then reveal the fix.
         </p>
-        <p className="hero-links">
-          <a href={REPO.url} target="_blank" rel="noreferrer">All questions are open source on GitHub →</a>
-        </p>
+        <div className="hero-cta">
+          <Link to={`/${LEVELS[0].id}`} className="btn btn-primary">Start with junior questions</Link>
+          <a href="#map" className="btn btn-secondary">Explore the map</a>
+        </div>
       </div>
 
-      <ol className="how">
-        <li><strong>See it break.</strong> Every question opens with a live bug you can poke at.</li>
-        <li><strong>Think first.</strong> The answer stays hidden until you have a guess.</li>
-        <li><strong>Compare the fix.</strong> The fixed version runs right next to the explanation.</li>
-      </ol>
-
-      <div className="progress-line">
+      <div className="progress-line" id="map">
         <h2>The map</h2>
         <div className="progress-pill">
           <div className="progress-track" aria-hidden>
@@ -65,6 +60,7 @@ export function Home() {
                       to={`/${l.id}#${q.slug}`}
                       data-done={isDone(questionId(q)) || undefined}
                     >
+                      {isDone(questionId(q)) && <CheckIcon size={13} label="understood" />}
                       {q.short}
                     </Link>
                   ))}
@@ -74,8 +70,7 @@ export function Home() {
         ))}
       </div>
       <div className="legend">
-        <span><i /> not yet</span>
-        <span><i className="f" /> understood</span>
+        <span><CheckIcon size={13} /> understood</span>
         <span>Progress is saved in this browser only.</span>
       </div>
 
