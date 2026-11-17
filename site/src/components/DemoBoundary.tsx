@@ -2,7 +2,10 @@ import { Component, type ReactNode } from 'react';
 import { Trans } from 'react-i18next';
 import i18n from '../i18n';
 
-interface State { error: Error | null; key: number }
+interface State {
+  error: Error | null;
+  key: number;
+}
 
 /** Keeps one crashing demo from taking down the whole page. */
 export class DemoBoundary extends Component<{ children: ReactNode }, State> {

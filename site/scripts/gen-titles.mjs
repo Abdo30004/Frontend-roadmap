@@ -15,8 +15,12 @@ function titles(dir) {
   for (const level of LEVELS) {
     const folder = join(dir, level);
     if (!existsSync(folder)) continue;
-    for (const file of readdirSync(folder).filter((f) => f.endsWith('.md')).sort()) {
-      const first = readFileSync(join(folder, file), 'utf8').split(/\r?\n/).find((l) => l.startsWith('# '));
+    for (const file of readdirSync(folder)
+      .filter((f) => f.endsWith('.md'))
+      .sort()) {
+      const first = readFileSync(join(folder, file), 'utf8')
+        .split(/\r?\n/)
+        .find((l) => l.startsWith('# '));
       if (first) map[`${level}/${file.slice(0, -3)}`] = first.slice(2).trim();
     }
   }

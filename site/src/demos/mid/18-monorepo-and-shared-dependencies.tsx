@@ -1,11 +1,33 @@
 import { useEffect, useState } from 'react';
-import { Badge, Browser, Button, Code, Console, Note, Panel, Row, Stack, Stat, Steps, useConsole, usePlayer, type Tone } from '../../demo-kit';
+import {
+  Badge,
+  Browser,
+  Button,
+  Code,
+  Console,
+  Note,
+  Panel,
+  Row,
+  Stack,
+  Stat,
+  Steps,
+  useConsole,
+  usePlayer,
+  type Tone,
+} from '../../demo-kit';
 
-export const scenario = 'A monorepo has apps/web (React 19) and packages/ui, the shared design system that exports <Dropdown>. A developer just updated the ui package.';
+export const scenario =
+  'A monorepo has apps/web (React 19) and packages/ui, the shared design system that exports <Dropdown>. A developer just updated the ui package.';
 export const task = 'Run "pnpm install", look at the dependency tree, then start the app and open the page that uses <Dropdown>.';
 export const solutionNote = 'React is a peerDependency of @acme/ui and the app links it with workspace:*, so there is exactly one React.';
 
-interface Node { path: string; pkg: string; tone?: Tone; note?: string; depth: number }
+interface Node {
+  path: string;
+  pkg: string;
+  tone?: Tone;
+  note?: string;
+  depth: number;
+}
 
 const UI_PKG = {
   bug: `// packages/ui/package.json
@@ -42,7 +64,11 @@ function Monorepo({ fixed }: { fixed: boolean }) {
 
   const steps: { label: string; detail: string; tone?: Tone }[] = [
     { label: 'Bundler resolves "react" for apps/web', detail: 'node_modules/react (19.0.0)' },
-    { label: 'Bundler resolves "react" for @acme/ui', detail: fixed ? 'peer → same node_modules/react' : 'packages/ui/node_modules/react (18.3.1)', tone: fixed ? 'good' : 'warn' },
+    {
+      label: 'Bundler resolves "react" for @acme/ui',
+      detail: fixed ? 'peer → same node_modules/react' : 'packages/ui/node_modules/react (18.3.1)',
+      tone: fixed ? 'good' : 'warn',
+    },
     { label: 'react-dom (copy A) renders <Dropdown>', detail: 'sets the hooks dispatcher on copy A' },
     fixed
       ? { label: 'Dropdown calls useState', detail: 'copy A dispatcher → works', tone: 'good' }
@@ -50,20 +76,33 @@ function Monorepo({ fixed }: { fixed: boolean }) {
   ];
 
   const install = () => {
-    setInstalled(true); setBooted(false); player.reset(); c.clear();
+    setInstalled(true);
+    setBooted(false);
+    player.reset();
+    c.clear();
     c.log('$ pnpm install', 'info');
-    c.log(fixed ? 'Packages: +412 · react resolved once (catalog: ^19.0.0)' : 'Packages: +431 · WARN packages/ui depends on react@^18.2.0', fixed ? 'good' : 'warn');
+    c.log(
+      fixed ? 'Packages: +412 · react resolved once (catalog: ^19.0.0)' : 'Packages: +431 · WARN packages/ui depends on react@^18.2.0',
+      fixed ? 'good' : 'warn',
+    );
     c.log('$ pnpm why react', 'info');
     c.log(fixed ? 'react 19.0.0 ← web, @acme/ui (peer)' : 'react 19.0.0 ← web\nreact 18.3.1 ← @acme/ui', fixed ? 'good' : 'bad');
   };
 
-  const boot = () => { setBooted(true); player.play(); };
+  const boot = () => {
+    setBooted(true);
+    player.play();
+  };
 
   const done = booted && player.done;
   useEffect(() => {
     if (!done) return;
     if (fixed) c.log('✓ /settings rendered, <Dropdown> works', 'good');
-    else c.log('Error: Invalid hook call. Hooks can only be called inside of the body of a function component.\n  3. You might have more than one copy of React in the same app\n    at Dropdown (packages/ui/src/Dropdown.tsx:12)', 'bad');
+    else
+      c.log(
+        'Error: Invalid hook call. Hooks can only be called inside of the body of a function component.\n  3. You might have more than one copy of React in the same app\n    at Dropdown (packages/ui/src/Dropdown.tsx:12)',
+        'bad',
+      );
   }, [done, fixed, c.log]);
 
   const copies = installed ? (fixed ? 1 : 2) : 0;
@@ -75,11 +114,17 @@ function Monorepo({ fixed }: { fixed: boolean }) {
           <Code>{fixed ? UI_PKG.fix : UI_PKG.bug}</Code>
         </Panel>
         <Panel title="Dependency tree" style={{ flex: '1 1 220px', minWidth: 0 }}>
-          {!installed ? <Note>Run pnpm install to see it.</Note> : (
+          {!installed ? (
+            <Note>Run pnpm install to see it.</Note>
+          ) : (
             <Stack gap={6}>
               {tree.map((n) => (
-                <div key={n.path} style={{ paddingLeft: n.depth * 14, fontSize: 12.5, fontFamily: 'var(--font-mono)', overflowWrap: 'anywhere' }}>
-                  {n.depth ? '└ ' : ''}{n.path} {n.tone && <Badge tone={n.tone}>{n.note ?? n.pkg}</Badge>}
+                <div
+                  key={n.path}
+                  style={{ paddingLeft: n.depth * 14, fontSize: 12.5, fontFamily: 'var(--font-mono)', overflowWrap: 'anywhere' }}
+                >
+                  {n.depth ? '└ ' : ''}
+                  {n.path} {n.tone && <Badge tone={n.tone}>{n.note ?? n.pkg}</Badge>}
                   {!n.tone && <div style={{ color: 'var(--ink-3)' }}>{n.pkg}</div>}
                 </div>
               ))}
@@ -89,14 +134,24 @@ function Monorepo({ fixed }: { fixed: boolean }) {
       </Row>
       <Row>
         <Button onClick={install}>$ pnpm install</Button>
-        <Button tone="primary" onClick={boot} disabled={!installed || player.playing}>$ pnpm dev → open /settings</Button>
+        <Button tone="primary" onClick={boot} disabled={!installed || player.playing}>
+          $ pnpm dev → open /settings
+        </Button>
       </Row>
       {booted && <Steps steps={steps} active={player.step} />}
       <Browser url="localhost:3000/settings">
-        {!done ? <Note>{booted ? 'Compiling…' : 'Dev server not started.'}</Note> : fixed ? (
+        {!done ? (
+          <Note>{booted ? 'Compiling…' : 'Dev server not started.'}</Note>
+        ) : fixed ? (
           <Stack gap={8}>
             <strong>Account settings</strong>
-            <Row><span style={{ fontSize: 13 }}>Language</span><select aria-label="Language" className="dk-input" defaultValue="en"><option value="en">English</option><option value="fr">Français</option></select></Row>
+            <Row>
+              <span style={{ fontSize: 13 }}>Language</span>
+              <select aria-label="Language" className="dk-input" defaultValue="en">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+            </Row>
           </Stack>
         ) : (
           <Panel tone="bad" title="Unhandled Runtime Error">
@@ -106,7 +161,11 @@ function Monorepo({ fixed }: { fixed: boolean }) {
       </Browser>
       <Row gap={8}>
         <Stat label="copies of React installed" value={copies || '–'} tone={copies > 1 ? 'bad' : copies ? 'good' : 'neutral'} />
-        <Stat label="React in the bundle" value={installed ? (fixed ? '~60 KB' : '~120 KB') : '–'} tone={installed && !fixed ? 'warn' : 'neutral'} />
+        <Stat
+          label="React in the bundle"
+          value={installed ? (fixed ? '~60 KB' : '~120 KB') : '–'}
+          tone={installed && !fixed ? 'warn' : 'neutral'}
+        />
       </Row>
       <Console lines={c.lines} height={130} onClear={c.clear} />
     </Stack>

@@ -62,7 +62,9 @@ function TopicSummary({ tp }: { tp: Topic }) {
   const done = s.filter((x) => x === 'completed').length;
   return (
     <>
-      <span className="rm-topic-icon"><TopicIcon id={tp.id} /></span>
+      <span className="rm-topic-icon">
+        <TopicIcon id={tp.id} />
+      </span>
       <span className="rm-topic-text">
         <strong>{label.category(tp.id)}</strong>
         <span className="rm-topic-meta rm-topic-meta-3">
@@ -187,7 +189,14 @@ function LevelMap({ level }: { level: Level }) {
     const box = m.getBoundingClientRect();
     const R = (el: Element) => {
       const r = el.getBoundingClientRect();
-      return { l: r.left - box.left, r: r.right - box.left, t: r.top - box.top, b: r.bottom - box.top, cx: (r.left + r.right) / 2 - box.left, cy: (r.top + r.bottom) / 2 - box.top };
+      return {
+        l: r.left - box.left,
+        r: r.right - box.left,
+        t: r.top - box.top,
+        b: r.bottom - box.top,
+        cx: (r.left + r.right) / 2 - box.left,
+        cy: (r.top + r.bottom) / 2 - box.top,
+      };
     };
     const H = (x1: number, y1: number, x2: number, y2: number) => {
       const c = (x2 - x1) / 2;
@@ -241,7 +250,9 @@ function LevelMap({ level }: { level: Level }) {
     const isOpen = open.includes(tp.id);
     const chips = isOpen && (
       <div className="mm-chips" id={`mm-${level}-${tp.id}`}>
-        {tp.concepts.map((q, i) => <Chip key={q.slug} q={q} index={i} onHot={setHot} />)}
+        {tp.concepts.map((q, i) => (
+          <Chip key={q.slug} q={q} index={i} onHot={setHot} />
+        ))}
       </div>
     );
     return (
@@ -326,7 +337,9 @@ function LevelMap({ level }: { level: Level }) {
             </button>
             {tp.id === mobileTopic && (
               <ul className="rm-concepts rm-concepts-m" id={`rm-m-${level}-${tp.id}`}>
-                {tp.concepts.map((q, i) => <QuestionCard key={q.slug} q={q} index={i} />)}
+                {tp.concepts.map((q, i) => (
+                  <QuestionCard key={q.slug} q={q} index={i} />
+                ))}
               </ul>
             )}
           </div>
@@ -344,7 +357,9 @@ export function Roadmap() {
   return (
     <div className="rm">
       <p className="rm-hint">{t('roadmap.hint')}</p>
-      {LEVELS.map((l) => <LevelMap key={l.id} level={l.id} />)}
+      {LEVELS.map((l) => (
+        <LevelMap key={l.id} level={l.id} />
+      ))}
     </div>
   );
 }

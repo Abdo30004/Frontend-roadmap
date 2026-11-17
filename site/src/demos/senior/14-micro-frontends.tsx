@@ -1,12 +1,19 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Badge, Browser, Button, Code, Console, Note, Panel, Row, Stack, Stat, useConsole } from '../../demo-kit';
 
-export const scenario = 'A retail site is a shell plus two remote apps: Catalog (team A) and Checkout (team B). Each team deploys on its own schedule.';
-export const task = 'Add an item to the cart. Then press "Team B deploys Checkout 1.42.0" and try again. Watch the cart badge, the buttons and the JS downloaded.';
-export const solutionNote = 'Shared React singleton, an event contract instead of store internals, scoped CSS, and a versioned remote manifest.';
+export const scenario =
+  'A retail site is a shell plus two remote apps: Catalog (team A) and Checkout (team B). Each team deploys on its own schedule.';
+export const task =
+  'Add an item to the cart. Then press "Team B deploys Checkout 1.42.0" and try again. Watch the cart badge, the buttons and the JS downloaded.';
+export const solutionNote =
+  'Shared React singleton, an event contract instead of store internals, scoped CSS, and a versioned remote manifest.';
 
 type Ver = '1.41.0' | '1.42.0';
-interface Bundle { name: string; kb: number; dup?: boolean }
+interface Bundle {
+  name: string;
+  kb: number;
+  dup?: boolean;
+}
 
 function bundles(fixed: boolean, v: Ver): Bundle[] {
   const next = v === '1.42.0';
@@ -61,19 +68,25 @@ function MicroFrontends({ fixed }: { fixed: boolean }) {
 
   const deploy = (v: Ver) => {
     setCheckout(v);
-    c.log(fixed
-      ? `mf-manifest.json: checkout → https://cdn.example.com/checkout/${v}/remoteEntry.js (shell untouched)`
-      : `team B uploaded checkout/remoteEntry.js (${v}), shell picks up "latest" on next load`, 'info');
+    c.log(
+      fixed
+        ? `mf-manifest.json: checkout → https://cdn.example.com/checkout/${v}/remoteEntry.js (shell untouched)`
+        : `team B uploaded checkout/remoteEntry.js (${v}), shell picks up "latest" on next load`,
+      'info',
+    );
   };
 
   const list = bundles(fixed, checkout);
   const kb = list.reduce((s, b) => s + b.kb, 0);
   const reactCopies = list.filter((b) => b.name.startsWith('react')).length;
 
-  const css = `${scope} .button{font:500 13px var(--font-body);padding:6px 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);cursor:pointer;transition:background-color 200ms ease,color 200ms ease}`
-    + (next ? (fixed
-      ? `${scope} .checkout_pay__x7f2{background:var(--good);color:var(--paper);border-color:var(--good)}`
-      : `${scope} .button{background:var(--good);color:var(--paper);border-color:var(--good)}`) : '');
+  const css =
+    `${scope} .button{font:500 13px var(--font-body);padding:6px 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);cursor:pointer;transition:background-color 200ms ease,color 200ms ease}` +
+    (next
+      ? fixed
+        ? `${scope} .checkout_pay__x7f2{background:var(--good);color:var(--paper);border-color:var(--good)}`
+        : `${scope} .button{background:var(--good);color:var(--paper);border-color:var(--good)}`
+      : '');
 
   return (
     <Stack gap={14}>
@@ -84,8 +97,12 @@ function MicroFrontends({ fixed }: { fixed: boolean }) {
             <Row style={{ justifyContent: 'space-between' }}>
               <strong>RetailCo</strong>
               <Row gap={6}>
-                <button type="button" className="button">Deals</button>
-                <button type="button" className="button">Account</button>
+                <button type="button" className="button">
+                  Deals
+                </button>
+                <button type="button" className="button">
+                  Account
+                </button>
                 <Badge tone={count ? 'info' : 'neutral'}>Cart ({count})</Badge>
               </Row>
             </Row>
@@ -93,16 +110,28 @@ function MicroFrontends({ fixed }: { fixed: boolean }) {
               <Panel title="Catalog · team A" style={{ flex: '1 1 140px' }}>
                 <Stack gap={8}>
                   <span>Runner 204 sneakers · €89</span>
-                  <Row><button type="button" className="button" onClick={addToCart}>Add to cart</button></Row>
+                  <Row>
+                    <button type="button" className="button" onClick={addToCart}>
+                      Add to cart
+                    </button>
+                  </Row>
                 </Stack>
               </Panel>
               <Panel title={`Checkout · team B · ${checkout}`} tone={crashed ? 'bad' : undefined} style={{ flex: '1 1 140px' }}>
                 {crashed ? (
-                  <code style={{ fontSize: 12, color: 'var(--bad)' }}>Error: Invalid hook call. You might have more than one copy of React in the same app.</code>
+                  <code style={{ fontSize: 12, color: 'var(--bad)' }}>
+                    Error: Invalid hook call. You might have more than one copy of React in the same app.
+                  </code>
                 ) : (
                   <Stack gap={8}>
-                    <span>{count} item{count === 1 ? '' : 's'} · €{count * 89}</span>
-                    <Row><button type="button" className={fixed && next ? 'button checkout_pay__x7f2' : 'button'}>Pay now</button></Row>
+                    <span>
+                      {count} item{count === 1 ? '' : 's'} · €{count * 89}
+                    </span>
+                    <Row>
+                      <button type="button" className={fixed && next ? 'button checkout_pay__x7f2' : 'button'}>
+                        Pay now
+                      </button>
+                    </Row>
                   </Stack>
                 )}
               </Panel>
@@ -112,9 +141,24 @@ function MicroFrontends({ fixed }: { fixed: boolean }) {
       </Browser>
 
       <Row>
-        <Button tone="primary" onClick={() => deploy('1.42.0')} disabled={next}>Team B deploys Checkout 1.42.0</Button>
-        {fixed && <Button onClick={() => deploy('1.41.0')} disabled={!next}>Roll back to 1.41.0</Button>}
-        <Button tone="ghost" onClick={() => { setCheckout('1.41.0'); setCount(0); c.clear(); }}>Reset</Button>
+        <Button tone="primary" onClick={() => deploy('1.42.0')} disabled={next}>
+          Team B deploys Checkout 1.42.0
+        </Button>
+        {fixed && (
+          <Button onClick={() => deploy('1.41.0')} disabled={!next}>
+            Roll back to 1.41.0
+          </Button>
+        )}
+        <Button
+          tone="ghost"
+          onClick={() => {
+            setCheckout('1.41.0');
+            setCount(0);
+            c.clear();
+          }}
+        >
+          Reset
+        </Button>
         <Badge>shell 3.8.0 · not redeployed</Badge>
       </Row>
 
@@ -134,9 +178,11 @@ function MicroFrontends({ fixed }: { fixed: boolean }) {
         </Stack>
       </Panel>
 
-      <Code>{fixed
-        ? `shared: { react: { singleton: true, requiredVersion: '^18.3.0' }, 'react-dom': {...} }\nemitCartItemAdded({ sku, qty: 1 });          // contract 'cart:item-added/v1'\n.pay { background: green }   /* CSS Module → .checkout_pay__x7f2 */`
-        : `new ModuleFederationPlugin({ name: 'checkout', exposes: { './CartStore': ... } }) // no shared\ncartStore.dispatch({ type: 'cart/ADD', payload: product });\n.button { background: green; }   /* checkout/styles.css, global */`}</Code>
+      <Code>
+        {fixed
+          ? `shared: { react: { singleton: true, requiredVersion: '^18.3.0' }, 'react-dom': {...} }\nemitCartItemAdded({ sku, qty: 1 });          // contract 'cart:item-added/v1'\n.pay { background: green }   /* CSS Module → .checkout_pay__x7f2 */`
+          : `new ModuleFederationPlugin({ name: 'checkout', exposes: { './CartStore': ... } }) // no shared\ncartStore.dispatch({ type: 'cart/ADD', payload: product });\n.button { background: green; }   /* checkout/styles.css, global */`}
+      </Code>
       <Console lines={c.lines} height={110} onClear={c.clear} />
       <Note>The shell never changes: only team B's remote is deployed.</Note>
     </Stack>

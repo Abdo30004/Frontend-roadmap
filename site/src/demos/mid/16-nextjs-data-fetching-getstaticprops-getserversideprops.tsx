@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { Badge, Browser, Button, Code, Console, Input, Label, Note, Panel, Row, Stack, Stat, useConsole, type Tone } from '../../demo-kit';
 
-export const scenario = 'An electronics store renders its product pages with Next.js. Staff change prices in the admin, customers reload the product page.';
+export const scenario =
+  'An electronics store renders its product pages with Next.js. Staff change prices in the admin, customers reload the product page.';
 export const task = 'Set a new price in the admin and save. Then click "Customer reloads" a few times (try "Wait 5 min" too).';
 export const solutionNote = 'Same page, now with revalidate: 300 (ISR), or getServerSideProps for always-fresh data.';
 
 type Strategy = 'ssg' | 'isr' | 'ssr';
-interface Cached { price: number; builtAt: number }
+interface Cached {
+  price: number;
+  builtAt: number;
+}
 
 const REVALIDATE_MIN = 5;
 
@@ -37,7 +41,10 @@ function Store({ fixed }: { fixed: boolean }) {
     const age = now - cache.builtAt;
     if (strategy === 'ssg' || age < REVALIDATE_MIN) {
       setShown({ price: cache.price, status: 'HIT', tone: 'good' });
-      c.log(`GET /products/wh-1000xm5 → x-nextjs-cache: HIT (built ${age} min ago) → $${cache.price}`, cache.price === dbPrice ? 'good' : 'bad');
+      c.log(
+        `GET /products/wh-1000xm5 → x-nextjs-cache: HIT (built ${age} min ago) → $${cache.price}`,
+        cache.price === dbPrice ? 'good' : 'bad',
+      );
       return;
     }
     // ISR: serve the stale page now, regenerate in the background for the next visitor.
@@ -78,8 +85,12 @@ function Store({ fixed }: { fixed: boolean }) {
     <Stack gap={14}>
       {fixed && (
         <Row gap={6}>
-          <Button tone={strategy === 'isr' ? 'primary' : 'default'} onClick={() => setStrategy('isr')}>ISR (revalidate: 300)</Button>
-          <Button tone={strategy === 'ssr' ? 'primary' : 'default'} onClick={() => setStrategy('ssr')}>SSR</Button>
+          <Button tone={strategy === 'isr' ? 'primary' : 'default'} onClick={() => setStrategy('isr')}>
+            ISR (revalidate: 300)
+          </Button>
+          <Button tone={strategy === 'ssr' ? 'primary' : 'default'} onClick={() => setStrategy('ssr')}>
+            SSR
+          </Button>
         </Row>
       )}
       <Row gap={10} align="stretch">
@@ -88,13 +99,23 @@ function Store({ fixed }: { fixed: boolean }) {
             <Label text="Price for WH-1000XM5 ($)">
               <Input type="number" min={1} value={draft} onChange={(e) => setDraft(e.target.value)} />
             </Label>
-            <Row><Button onClick={save}>Save price</Button><Badge tone="info">DB: ${dbPrice}</Badge></Row>
+            <Row>
+              <Button onClick={save}>Save price</Button>
+              <Badge tone="info">DB: ${dbPrice}</Badge>
+            </Row>
           </Stack>
         </Panel>
         <Panel title="Time & deploys" style={{ flex: '1 1 160px' }}>
           <Stack gap={8}>
-            <Note>{now} min since deploy · page built at min {cache.builtAt}</Note>
-            <Row><Button onClick={wait}>Wait 5 min</Button><Button tone="ghost" onClick={redeploy}>Redeploy</Button></Row>
+            <Note>
+              {now} min since deploy · page built at min {cache.builtAt}
+            </Note>
+            <Row>
+              <Button onClick={wait}>Wait 5 min</Button>
+              <Button tone="ghost" onClick={redeploy}>
+                Redeploy
+              </Button>
+            </Row>
           </Stack>
         </Panel>
       </Row>
@@ -103,11 +124,21 @@ function Store({ fixed }: { fixed: boolean }) {
           <strong>Sony WH-1000XM5 · Noise-cancelling headphones</strong>
           {shown ? (
             <Row>
-              <span style={{ font: '600 24px var(--font-mono)', color: stale ? 'var(--bad)' : 'var(--ink)', transition: 'color 200ms ease' }}>${shown.price}</span>
+              <span
+                style={{ font: '600 24px var(--font-mono)', color: stale ? 'var(--bad)' : 'var(--ink)', transition: 'color 200ms ease' }}
+              >
+                ${shown.price}
+              </span>
               <Badge tone={shown.tone}>{shown.status}</Badge>
             </Row>
-          ) : <Note>The customer has not opened the page yet.</Note>}
-          <Row><Button tone="primary" onClick={reload}>⟳ Customer reloads</Button></Row>
+          ) : (
+            <Note>The customer has not opened the page yet.</Note>
+          )}
+          <Row>
+            <Button tone="primary" onClick={reload}>
+              ⟳ Customer reloads
+            </Button>
+          </Row>
         </Stack>
       </Browser>
       <Row gap={8}>

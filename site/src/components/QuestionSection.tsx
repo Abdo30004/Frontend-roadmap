@@ -31,7 +31,10 @@ function useDemo(level: string, slug: string, ref: React.RefObject<HTMLElement>)
     }
     let cancelled = false;
     if (REVEAL_ALL) {
-      loader().then((m) => !cancelled && setMod(m), () => !cancelled && setMod(null));
+      loader().then(
+        (m) => !cancelled && setMod(m),
+        () => !cancelled && setMod(null),
+      );
       return () => {
         cancelled = true;
       };
@@ -42,7 +45,10 @@ function useDemo(level: string, slug: string, ref: React.RefObject<HTMLElement>)
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
           io.disconnect();
-          loader().then((m) => !cancelled && setMod(m), () => !cancelled && setMod(null));
+          loader().then(
+            (m) => !cancelled && setMod(m),
+            () => !cancelled && setMod(null),
+          );
         }
       },
       { rootMargin: '600px 0px' },
@@ -95,7 +101,11 @@ export function QuestionSection({ q }: { q: Question }) {
       <div className="q-meta">
         <span className="q-num">#{String(q.num).padStart(2, '0')}</span>
         <span className="q-cat">{label.category(q.category)}</span>
-        {done && <span className="q-done"><CheckIcon size={13} /> {t('common.understood')}</span>}
+        {done && (
+          <span className="q-done">
+            <CheckIcon size={13} /> {t('common.understood')}
+          </span>
+        )}
         <a className="q-src" href={questionSourceUrl(q.level, q.slug)} target="_blank" rel="noreferrer">
           {t('question.viewOnGithub')}
         </a>
@@ -115,7 +125,11 @@ export function QuestionSection({ q }: { q: Question }) {
       )}
 
       <Stage kind="problem" head={text?.scenario} task={text?.task}>
-        {mod === undefined ? loading : mod === null ? missing : (
+        {mod === undefined ? (
+          loading
+        ) : mod === null ? (
+          missing
+        ) : (
           <DemoBoundary>
             <mod.Problem />
           </DemoBoundary>
@@ -143,24 +157,30 @@ export function QuestionSection({ q }: { q: Question }) {
           )}
 
           <Suspense fallback={<p className="stage-missing">{t('question.loadingExplanation')}</p>}>
-          {!q.translated && <p className="untranslated">{t('question.notTranslated')}</p>}
-          <h3>{t('question.concept')}</h3>
-          <Markdown>{q.concept}</Markdown>
+            {!q.translated && <p className="untranslated">{t('question.notTranslated')}</p>}
+            <h3>{t('question.concept')}</h3>
+            <Markdown>{q.concept}</Markdown>
 
-          <h3>{t('question.realCase')}</h3>
-          <Markdown>{q.problem}</Markdown>
+            <h3>{t('question.realCase')}</h3>
+            <Markdown>{q.problem}</Markdown>
 
-          <h3>{t('question.howToFix')}</h3>
-          <Markdown>{q.fix}</Markdown>
+            <h3>{t('question.howToFix')}</h3>
+            <Markdown>{q.fix}</Markdown>
 
-          <h3>{t('question.sayIt')}</h3>
-          <Markdown>{q.interview}</Markdown>
+            <h3>{t('question.sayIt')}</h3>
+            <Markdown>{q.interview}</Markdown>
           </Suspense>
 
           <div className="understood">
             <span>{t('question.couldYou')}</span>
             <button aria-pressed={done} onClick={() => toggle(id)}>
-              {done ? <><CheckIcon size={15} /> {t('common.understood')}</> : t('question.markUnderstood')}
+              {done ? (
+                <>
+                  <CheckIcon size={15} /> {t('common.understood')}
+                </>
+              ) : (
+                t('question.markUnderstood')
+              )}
             </button>
           </div>
         </div>

@@ -2,10 +2,15 @@ import { useState } from 'react';
 import { Badge, Browser, Button, Code, Console, Note, Panel, Row, Stack, Stat, useConsole } from '../../demo-kit';
 
 export const scenario = 'A B2B invoicing app. Lena logs in with the "viewer" role; the page also loads a third-party chat widget.';
-export const task = 'Log in, then run the chat widget script. Next, use "Replay request" (as from DevTools) to delete an invoice as a viewer.';
+export const task =
+  'Log in, then run the chat widget script. Next, use "Replay request" (as from DevTools) to delete an invoice as a viewer.';
 export const solutionNote = 'Same app: the session is an httpOnly cookie, and the API checks the role on every request (403).';
 
-interface Invoice { id: number; client: string; amount: number }
+interface Invoice {
+  id: number;
+  client: string;
+  amount: number;
+}
 const INITIAL: Invoice[] = [
   { id: 42, client: 'Globex GmbH', amount: 12_400 },
   { id: 43, client: 'Initech Ltd', amount: 3_150 },
@@ -36,7 +41,10 @@ function InvoicingApp({ fixed }: { fixed: boolean }) {
 
   // What any script on the page (e.g. the chat widget, or an XSS payload) can read
   const runWidget = () => {
-    const readableCookies = cookies.filter((k) => !k.httpOnly).map((k) => `${k.name}=${k.value}`).join('; ');
+    const readableCookies = cookies
+      .filter((k) => !k.httpOnly)
+      .map((k) => `${k.name}=${k.value}`)
+      .join('; ');
     const token = localStore.token;
     c.log(`widget.js: localStorage.getItem("token") → ${token ? `"${token.slice(0, 24)}…"` : 'null'}`, token ? 'bad' : 'good');
     c.log(`widget.js: document.cookie → "${readableCookies}"`, readableCookies ? 'bad' : 'good');
@@ -45,7 +53,10 @@ function InvoicingApp({ fixed }: { fixed: boolean }) {
 
   // Fake API: DELETE /invoices/:id
   const apiDelete = (id: number, viaUi: boolean) => {
-    if (!loggedIn) { c.log(`DELETE /invoices/${id} → 401 Unauthorized`, 'warn'); return; }
+    if (!loggedIn) {
+      c.log(`DELETE /invoices/${id} → 401 Unauthorized`, 'warn');
+      return;
+    }
     if (fixed && USER.role !== 'admin') {
       c.log(`DELETE /invoices/${id} → 403 Forbidden (role "viewer" lacks invoice:delete)`, 'good');
       return;
@@ -60,17 +71,31 @@ function InvoicingApp({ fixed }: { fixed: boolean }) {
     <Stack gap={14}>
       <Browser url="app.billwise.example/invoices">
         {!loggedIn ? (
-          <Row><Note>Signed out.</Note><Button tone="primary" onClick={login}>Log in as Lena (viewer)</Button></Row>
+          <Row>
+            <Note>Signed out.</Note>
+            <Button tone="primary" onClick={login}>
+              Log in as Lena (viewer)
+            </Button>
+          </Row>
         ) : (
           <Stack gap={8}>
-            <Row><strong style={{ flex: '1 1 auto' }}>Invoices</strong><Badge tone="info">{USER.name} · {USER.role}</Badge></Row>
+            <Row>
+              <strong style={{ flex: '1 1 auto' }}>Invoices</strong>
+              <Badge tone="info">
+                {USER.name} · {USER.role}
+              </Badge>
+            </Row>
             {invoices.map((inv) => (
               <Row key={inv.id} style={{ borderBottom: '1px solid var(--line)', paddingBottom: 6 }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>#{inv.id}</span>
                 <span style={{ flex: '1 1 auto' }}>{inv.client}</span>
                 <strong>€{inv.amount.toLocaleString('en-US')}</strong>
                 {/* the Delete button is only rendered for admins */}
-                {USER.role === 'admin' && <Button tone="danger" onClick={() => apiDelete(inv.id, true)}>Delete</Button>}
+                {USER.role === 'admin' && (
+                  <Button tone="danger" onClick={() => apiDelete(inv.id, true)}>
+                    Delete
+                  </Button>
+                )}
               </Row>
             ))}
             {invoices.length === 0 && <Note>No invoices left.</Note>}
@@ -88,24 +113,36 @@ function InvoicingApp({ fixed }: { fixed: boolean }) {
         <Panel title="Attacker" tone={stolen ? 'bad' : undefined} style={{ flex: '1 1 200px', minWidth: 0 }}>
           <Stack gap={6}>
             <Row>
-              <Button onClick={runWidget} disabled={!loggedIn}>Run widget script</Button>
-              <Button onClick={() => target && apiDelete(target.id, false)} disabled={!loggedIn || !target}>Replay DELETE /invoices/{target?.id ?? '…'}</Button>
+              <Button onClick={runWidget} disabled={!loggedIn}>
+                Run widget script
+              </Button>
+              <Button onClick={() => target && apiDelete(target.id, false)} disabled={!loggedIn || !target}>
+                Replay DELETE /invoices/{target?.id ?? '…'}
+              </Button>
             </Row>
-            <div style={{ fontSize: 12.5, overflowWrap: 'anywhere' }}>{stolen ? `Got a token valid for 30 days: ${stolen.slice(0, 22)}…` : 'Nothing stolen.'}</div>
+            <div style={{ fontSize: 12.5, overflowWrap: 'anywhere' }}>
+              {stolen ? `Got a token valid for 30 days: ${stolen.slice(0, 22)}…` : 'Nothing stolen.'}
+            </div>
           </Stack>
         </Panel>
       </Row>
       <Row gap={8}>
-        <Stat label="token readable by any script" value={!loggedIn ? '–' : fixed ? 'no' : 'yes'} tone={!loggedIn ? 'neutral' : fixed ? 'good' : 'bad'} />
+        <Stat
+          label="token readable by any script"
+          value={!loggedIn ? '–' : fixed ? 'no' : 'yes'}
+          tone={!loggedIn ? 'neutral' : fixed ? 'good' : 'bad'}
+        />
         <Stat label="invoices deleted by a viewer" value={deletedByViewer} tone={deletedByViewer ? 'bad' : 'neutral'} />
       </Row>
-      <Code>{fixed
-        ? `res.cookie('sid', id, { httpOnly: true, secure: true, sameSite: 'lax' });
+      <Code>
+        {fixed
+          ? `res.cookie('sid', id, { httpOnly: true, secure: true, sameSite: 'lax' });
 app.delete('/invoices/:id', requireSession, (req, res) => {
   if (!req.user.permissions.includes('invoice:delete')) return res.sendStatus(403); …`
-        : `localStorage.setItem('token', token);          // any script can read it
+          : `localStorage.setItem('token', token);          // any script can read it
 {user.role === 'admin' && <DeleteButton />}       // hidden in the UI only…
-app.delete('/invoices/:id', requireLogin, del);  // …the API never checks the role`}</Code>
+app.delete('/invoices/:id', requireLogin, del);  // …the API never checks the role`}
+      </Code>
       <Console lines={c.lines} height={130} onClear={c.clear} />
     </Stack>
   );

@@ -1,36 +1,51 @@
 import { useEffect, useRef, useState } from 'react';
 import { Browser, Button, Code, Note, Row, Stack, Stat, Steps, usePlayer, type Tone } from '../../demo-kit';
 
-export const scenario =
-  'A Kanban board with 300 cards keeps card heights equal while a side drawer slides in when the board opens.';
+export const scenario = 'A Kanban board with 300 cards keeps card heights equal while a side drawer slides in when the board opens.';
 export const task = 'Press "Open board" and watch the frame-time stats and the drawer while it runs for 2 seconds.';
 export const solutionNote = 'Same board: all reads, then all writes (one layout per frame), and the drawer slides with transform.';
 
 const CARD_COUNT = 300;
 const RUN_MS = 2000;
-const TITLES = ['Fix login', 'Refactor billing API and add retry logic', 'QA', 'Update docs for the v2 release notes', 'Design review', 'Ship it'];
+const TITLES = [
+  'Fix login',
+  'Refactor billing API and add retry logic',
+  'QA',
+  'Update docs for the v2 release notes',
+  'Design review',
+  'Ship it',
+];
 
 /** The real code under test: equalize card heights, once per frame. Returns forced layouts. */
 function equalize(cards: HTMLElement[], fixed: boolean, budgetEnd: number): number {
   if (fixed) {
-    cards.forEach((n) => { n.style.height = 'auto'; });            // all writes
-    const max = Math.max(...cards.map((n) => n.offsetHeight));     // one forced layout, then cached reads
-    cards.forEach((n) => { n.style.height = `${max}px`; });        // all writes
+    cards.forEach((n) => {
+      n.style.height = 'auto';
+    }); // all writes
+    const max = Math.max(...cards.map((n) => n.offsetHeight)); // one forced layout, then cached reads
+    cards.forEach((n) => {
+      n.style.height = `${max}px`;
+    }); // all writes
     return 1;
   }
   let max = 0;
   let forced = 0;
   for (const n of cards) {
-    n.style.height = 'auto';                    // WRITE (invalidates layout)
-    max = Math.max(max, n.offsetHeight);        // READ  (forces layout now)
-    n.style.height = `${max}px`;                // WRITE (invalidates again)
+    n.style.height = 'auto'; // WRITE (invalidates layout)
+    max = Math.max(max, n.offsetHeight); // READ  (forces layout now)
+    n.style.height = `${max}px`; // WRITE (invalidates again)
     forced++;
-    if (performance.now() > budgetEnd) break;   // safety cap: never block > ~200ms
+    if (performance.now() > budgetEnd) break; // safety cap: never block > ~200ms
   }
   return forced;
 }
 
-interface Result { avg: number; worst: number; fps: number; forced: number }
+interface Result {
+  avg: number;
+  worst: number;
+  fps: number;
+  forced: number;
+}
 
 function Board({ fixed }: { fixed: boolean }) {
   const boardRef = useRef<HTMLDivElement>(null);
@@ -101,7 +116,17 @@ function Board({ fixed }: { fixed: boolean }) {
               <div
                 key={i}
                 data-card
-                style={{ width: 58, padding: 4, fontSize: 10, lineHeight: 1.2, borderRadius: 6, border: '1px solid var(--line)', background: 'var(--paper)', color: 'var(--ink-2)', overflow: 'hidden' }}
+                style={{
+                  width: 58,
+                  padding: 4,
+                  fontSize: 10,
+                  lineHeight: 1.2,
+                  borderRadius: 6,
+                  border: '1px solid var(--line)',
+                  background: 'var(--paper)',
+                  color: 'var(--ink-2)',
+                  overflow: 'hidden',
+                }}
               >
                 {TITLES[i % TITLES.length]}
               </div>
@@ -110,10 +135,21 @@ function Board({ fixed }: { fixed: boolean }) {
           <div
             aria-hidden={!open}
             style={{
-              position: 'absolute', top: 0, bottom: 0, width: 150, padding: 10, fontSize: 12,
-              background: 'var(--surface)', borderRight: '1px solid var(--line)', boxShadow: '4px 0 12px var(--line)',
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              width: 150,
+              padding: 10,
+              fontSize: 12,
+              background: 'var(--surface)',
+              borderRight: '1px solid var(--line)',
+              boxShadow: '4px 0 12px var(--line)',
               ...(fixed
-                ? { left: 0, transform: open ? 'translateX(0)' : 'translateX(-110%)', transition: open ? `transform ${RUN_MS * 0.8}ms ease-out` : 'none' }
+                ? {
+                    left: 0,
+                    transform: open ? 'translateX(0)' : 'translateX(-110%)',
+                    transition: open ? `transform ${RUN_MS * 0.8}ms ease-out` : 'none',
+                  }
                 : { left: open ? 0 : -165, transition: open ? `left ${RUN_MS * 0.8}ms ease-out` : 'none' }),
             }}
           >
@@ -124,7 +160,9 @@ function Board({ fixed }: { fixed: boolean }) {
       </Browser>
 
       <Row>
-        <Button tone="primary" onClick={run} disabled={running}>{running ? 'Running 2s…' : 'Open board'}</Button>
+        <Button tone="primary" onClick={run} disabled={running}>
+          {running ? 'Running 2s…' : 'Open board'}
+        </Button>
       </Row>
 
       <Row gap={8}>
@@ -136,9 +174,11 @@ function Board({ fixed }: { fixed: boolean }) {
 
       <Steps steps={steps} active={player.step} />
 
-      <Code>{fixed
-        ? `cards.forEach(n => n.style.height = 'auto');      // writes\nconst max = Math.max(...cards.map(n => n.offsetHeight)); // 1 layout\ncards.forEach(n => n.style.height = max + 'px');  // writes\n.drawer { transform: translateX(-100%); transition: transform }`
-        : `cards.forEach(n => {\n  n.style.height = 'auto';                 // write\n  max = Math.max(max, n.offsetHeight);     // read → forced layout\n  n.style.height = max + 'px';             // write\n});\n.drawer { left: -165px; transition: left }`}</Code>
+      <Code>
+        {fixed
+          ? `cards.forEach(n => n.style.height = 'auto');      // writes\nconst max = Math.max(...cards.map(n => n.offsetHeight)); // 1 layout\ncards.forEach(n => n.style.height = max + 'px');  // writes\n.drawer { transform: translateX(-100%); transition: transform }`
+          : `cards.forEach(n => {\n  n.style.height = 'auto';                 // write\n  max = Math.max(max, n.offsetHeight);     // read → forced layout\n  n.style.height = max + 'px';             // write\n});\n.drawer { left: -165px; transition: left }`}
+      </Code>
     </Stack>
   );
 }

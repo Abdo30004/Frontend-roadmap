@@ -1,8 +1,10 @@
 import { useEffect, useId, useRef, useState, type FocusEvent, type FormEvent } from 'react';
 import { Browser, Code, Console, Note, Row, Stack, Stat, useConsole } from '../../demo-kit';
 
-export const scenario = 'A bank\'s "Transfer money" form. A customer who cannot use a mouse navigates it with the keyboard and a screen reader.';
-export const task = 'Click into "Amount", then use only Tab, Shift+Tab and Enter: send an empty transfer, then send 50. Read the screen-reader log.';
+export const scenario =
+  'A bank\'s "Transfer money" form. A customer who cannot use a mouse navigates it with the keyboard and a screen reader.';
+export const task =
+  'Click into "Amount", then use only Tab, Shift+Tab and Enter: send an empty transfer, then send 50. Read the screen-reader log.';
 export const solutionNote = 'Same form, but a real <form>, <label>s, a <button> with text, an announced error and a visible focus ring.';
 
 const CSS = `
@@ -19,8 +21,9 @@ const CSS = `
 /** Visible text, skipping aria-hidden parts (like a screen reader does). */
 function nameOf(el: Element): string {
   return Array.from(el.childNodes)
-    .map((n) => (n instanceof Element ? (n.getAttribute('aria-hidden') === 'true' ? '' : nameOf(n)) : n.textContent ?? ''))
-    .join('').trim();
+    .map((n) => (n instanceof Element ? (n.getAttribute('aria-hidden') === 'true' ? '' : nameOf(n)) : (n.textContent ?? '')))
+    .join('')
+    .trim();
 }
 
 /** A tiny screen-reader model: reads the role + accessible name of the focused element. */
@@ -92,12 +95,25 @@ function TransferForm({ fixed }: { fixed: boolean }) {
             <form onSubmit={onFormSubmit} noValidate>
               <h3 style={{ margin: '0 0 4px' }}>Transfer money</h3>
               <label htmlFor={amountId}>Amount (EUR)</label>
-              <input id={amountId} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)}
-                aria-invalid={Boolean(error)} aria-describedby={error ? errorId : undefined} data-error={Boolean(error)} />
-              <p id={errorId} role="alert" className="err">{error && `⚠ ${error}`}</p>
+              <input
+                id={amountId}
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? errorId : undefined}
+                data-error={Boolean(error)}
+              />
+              <p id={errorId} role="alert" className="err">
+                {error && `⚠ ${error}`}
+              </p>
               <label htmlFor={ibanId}>Recipient IBAN</label>
               <input id={ibanId} autoComplete="off" defaultValue="" />
-              <div><button type="submit" className="send"><span aria-hidden>➤</span> Send transfer</button></div>
+              <div>
+                <button type="submit" className="send">
+                  <span aria-hidden>➤</span> Send transfer
+                </button>
+              </div>
             </form>
           ) : (
             <div>
@@ -106,7 +122,11 @@ function TransferForm({ fixed }: { fixed: boolean }) {
               <div style={{ height: 8 }} />
               <input placeholder="IBAN" />
               {/* error only shown as a red border */}
-              <div><div className="send" onClick={submit}><span>➤</span></div></div>
+              <div>
+                <div className="send" onClick={submit}>
+                  <span>➤</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -114,13 +134,19 @@ function TransferForm({ fixed }: { fixed: boolean }) {
 
       <Row gap={8}>
         <Stat label="transfers sent" value={sent} tone={sent > 0 ? 'good' : 'neutral'} />
-        <Stat label="error visible" value={error ? (fixed ? 'text + icon' : 'red border') : '-'} tone={error ? (fixed ? 'good' : 'bad') : 'neutral'} />
+        <Stat
+          label="error visible"
+          value={error ? (fixed ? 'text + icon' : 'red border') : '-'}
+          tone={error ? (fixed ? 'good' : 'bad') : 'neutral'}
+        />
       </Row>
       <Console title="Screen reader (simulated from the real DOM)" lines={sr.lines} height={150} onClear={sr.clear} />
       {!fixed && <Note>Mouse users can click the arrow and it works. Try it with the keyboard only.</Note>}
-      <Code>{fixed
-        ? `<form onSubmit={handleSubmit}>\n  <label htmlFor={amountId}>Amount (EUR)</label>\n  <input id={amountId} aria-invalid={!!error} aria-describedby={errorId} />\n  <p id={errorId} role="alert">{error}</p>\n  <button type="submit">Send transfer</button>\n</form>`
-        : `<input placeholder="Amount" />\n<input placeholder="IBAN" />\n<div className="btn" onClick={submit}><img src="send.svg" /></div>\n/* css */ *:focus { outline: none; }`}</Code>
+      <Code>
+        {fixed
+          ? `<form onSubmit={handleSubmit}>\n  <label htmlFor={amountId}>Amount (EUR)</label>\n  <input id={amountId} aria-invalid={!!error} aria-describedby={errorId} />\n  <p id={errorId} role="alert">{error}</p>\n  <button type="submit">Send transfer</button>\n</form>`
+          : `<input placeholder="Amount" />\n<input placeholder="IBAN" />\n<div className="btn" onClick={submit}><img src="send.svg" /></div>\n/* css */ *:focus { outline: none; }`}
+      </Code>
     </Stack>
   );
 }

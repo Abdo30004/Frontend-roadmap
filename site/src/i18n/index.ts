@@ -14,7 +14,9 @@ function detect(): Lang {
     if (q === 'en' || q === 'fr') return q;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'en' || saved === 'fr') return saved;
-  } catch { /* storage blocked: fall through */ }
+  } catch {
+    /* storage blocked: fall through */
+  }
   return navigator.language?.toLowerCase().startsWith('fr') ? 'fr' : 'en';
 }
 
@@ -28,7 +30,11 @@ i18n.use(initReactI18next).init({
 
 function sync(lng: string) {
   document.documentElement.lang = lng;
-  try { localStorage.setItem(STORAGE_KEY, lng); } catch { /* ignore */ }
+  try {
+    localStorage.setItem(STORAGE_KEY, lng);
+  } catch {
+    /* ignore */
+  }
 }
 sync(i18n.language);
 i18n.on('languageChanged', sync);
@@ -38,7 +44,7 @@ export default i18n;
 /** Current language, re-rendering when it changes. */
 export function useLang(): Lang {
   const { i18n: inst } = useTranslation();
-  return (inst.resolvedLanguage === 'fr' ? 'fr' : 'en');
+  return inst.resolvedLanguage === 'fr' ? 'fr' : 'en';
 }
 
 export function setLang(lang: Lang) {

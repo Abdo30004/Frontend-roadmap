@@ -12,9 +12,11 @@ export const tocNum = (toc: TocItem[], id: string) => String(toc.findIndex((t) =
 
 /** Turns `backticks` into <code>. */
 export function rich(text: string): ReactNode {
-  return text.split(/(`[^`]+`)/).map((part, i) =>
-    part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> : <Fragment key={i}>{part}</Fragment>,
-  );
+  return text
+    .split(/(`[^`]+`)/)
+    .map((part, i) =>
+      part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> : <Fragment key={i}>{part}</Fragment>,
+    );
 }
 
 export function Install({ command }: { command: string }) {
@@ -36,12 +38,16 @@ export function Install({ command }: { command: string }) {
 
   return (
     <div className="install">
-      <span className="install-prompt" aria-hidden>$</span>
+      <span className="install-prompt" aria-hidden>
+        $
+      </span>
       <code>{command}</code>
       <button type="button" onClick={copy} data-copied={copied || undefined} aria-label={t('common.copyLabel', { command })}>
         {copied ? t('common.copied') : t('common.copy')}
       </button>
-      <span className="sr-only" aria-live="polite">{copied ? t('common.commandCopied') : ''}</span>
+      <span className="sr-only" aria-live="polite">
+        {copied ? t('common.commandCopied') : ''}
+      </span>
     </div>
   );
 }

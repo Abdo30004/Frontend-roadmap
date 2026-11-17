@@ -1,13 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { Browser, Button, Code, Console, Row, Stack, Stat, useConsole } from '../../demo-kit';
 
-export const scenario = 'A webmail inbox (plain DOM code, no React) where every email row has a Delete button. More emails arrive via "Load more" and "Check new mail".';
-export const task = 'Delete one email. Press "Load more" and delete a new one. Then press "Check new mail" and delete one of the older emails.';
+export const scenario =
+  'A webmail inbox (plain DOM code, no React) where every email row has a Delete button. More emails arrive via "Load more" and "Check new mail".';
+export const task =
+  'Delete one email. Press "Load more" and delete a new one. Then press "Check new mail" and delete one of the older emails.';
 export const solutionNote = 'Same inbox, but one click listener on the list handles every Delete button, old or new.';
 
 const SUBJECTS = [
-  'Your invoice #2291', 'Team lunch on Friday?', 'Flight check-in is open', 'Weekly report', 'Password changed',
-  'New comment on your PR', 'Order shipped', 'Webinar reminder', 'Rent receipt', 'Holiday photos',
+  'Your invoice #2291',
+  'Team lunch on Friday?',
+  'Flight check-in is open',
+  'Weekly report',
+  'Password changed',
+  'New comment on your PR',
+  'Order shipped',
+  'Webinar reminder',
+  'Rent receipt',
+  'Holiday photos',
 ];
 const MAX_ROWS = 24;
 
@@ -68,21 +78,26 @@ function Inbox({ fixed }: { fixed: boolean }) {
     };
 
     // Instrumentation only: notices clicks on Delete that reached no handler.
-    list.addEventListener('click', (e) => {
-      if (!(e.target as Element).closest('.delete-btn')) return;
-      callsThisClick = 0;
-      setTimeout(() => {
-        if (signal.aborted || callsThisClick > 0) return;
-        dead++;
-        c.log('click on Delete… nothing happened', 'warn');
-        update();
-      }, 0);
-    }, { capture: true, signal });
+    list.addEventListener(
+      'click',
+      (e) => {
+        if (!(e.target as Element).closest('.delete-btn')) return;
+        callsThisClick = 0;
+        setTimeout(() => {
+          if (signal.aborted || callsThisClick > 0) return;
+          dead++;
+          c.log('click on Delete… nothing happened', 'warn');
+          update();
+        }, 0);
+      },
+      { capture: true, signal },
+    );
 
     const appendEmails = (n: number, atTop = false) => {
       for (let i = 0; i < n && list.children.length < MAX_ROWS; i++) {
         const row = makeRow(nextId++);
-        if (atTop) list.prepend(row); else list.append(row);
+        if (atTop) list.prepend(row);
+        else list.append(row);
       }
     };
 
@@ -96,10 +111,14 @@ function Inbox({ fixed }: { fixed: boolean }) {
 
     // FIXED: one listener on the list, for current and future rows
     if (fixed) {
-      list.addEventListener('click', (event) => {
-        const deleteBtn = (event.target as Element).closest<HTMLElement>('.delete-btn');
-        if (deleteBtn) deleteEmail(deleteBtn.dataset.id ?? '');
-      }, { signal });
+      list.addEventListener(
+        'click',
+        (event) => {
+          const deleteBtn = (event.target as Element).closest<HTMLElement>('.delete-btn');
+          if (deleteBtn) deleteEmail(deleteBtn.dataset.id ?? '');
+        },
+        { signal },
+      );
     }
 
     list.textContent = '';
@@ -127,7 +146,10 @@ function Inbox({ fixed }: { fixed: boolean }) {
     };
   }, [fixed, run, c.log]);
 
-  const reset = () => { c.clear(); setRun((r) => r + 1); };
+  const reset = () => {
+    c.clear();
+    setRun((r) => r + 1);
+  };
   const full = stats.rows >= MAX_ROWS;
 
   return (
@@ -136,21 +158,33 @@ function Inbox({ fixed }: { fixed: boolean }) {
         <Stack gap={10}>
           <ul ref={listRef} style={{ listStyle: 'none', margin: 0, padding: 0, maxHeight: 220, overflowY: 'auto' }} />
           <Row>
-            <Button onClick={() => api.current?.loadMore()} disabled={full}>Load more</Button>
-            <Button onClick={() => api.current?.refresh()} disabled={full}>Check new mail</Button>
-            <Button tone="ghost" onClick={reset}>Reset</Button>
+            <Button onClick={() => api.current?.loadMore()} disabled={full}>
+              Load more
+            </Button>
+            <Button onClick={() => api.current?.refresh()} disabled={full}>
+              Check new mail
+            </Button>
+            <Button tone="ghost" onClick={reset}>
+              Reset
+            </Button>
           </Row>
         </Stack>
       </Browser>
       <Row gap={10}>
         <Stat label="emails in list" value={stats.rows} />
-        <Stat label="click listeners" value={stats.listeners} tone={stats.listeners === 1 ? 'good' : stats.listeners !== stats.rows ? 'bad' : 'neutral'} />
+        <Stat
+          label="click listeners"
+          value={stats.listeners}
+          tone={stats.listeners === 1 ? 'good' : stats.listeners !== stats.rows ? 'bad' : 'neutral'}
+        />
         <Stat label="dead clicks" value={stats.dead} tone={stats.dead > 0 ? 'bad' : 'good'} />
         <Stat label="DELETE requests" value={stats.requests} />
       </Row>
-      <Code>{fixed
-        ? `list.addEventListener('click', (event) => {\n  const btn = event.target.closest('.delete-btn');\n  if (btn) deleteEmail(btn.dataset.id);\n});`
-        : `function attachDeleteHandlers() {\n  list.querySelectorAll('.delete-btn').forEach((btn) => {\n    btn.addEventListener('click', () => deleteEmail(btn.dataset.id));\n  });\n}\n// called on first render and after "Check new mail"`}</Code>
+      <Code>
+        {fixed
+          ? `list.addEventListener('click', (event) => {\n  const btn = event.target.closest('.delete-btn');\n  if (btn) deleteEmail(btn.dataset.id);\n});`
+          : `function attachDeleteHandlers() {\n  list.querySelectorAll('.delete-btn').forEach((btn) => {\n    btn.addEventListener('click', () => deleteEmail(btn.dataset.id));\n  });\n}\n// called on first render and after "Check new mail"`}
+      </Code>
       <Console lines={c.lines} height={130} title="Network" onClear={c.clear} />
     </Stack>
   );

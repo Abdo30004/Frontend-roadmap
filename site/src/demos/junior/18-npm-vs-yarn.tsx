@@ -50,8 +50,16 @@ function InstallSim({ fixed }: { fixed: boolean }) {
     const ok = version !== BROKEN;
     const steps: Stage[] = [
       { label: 'git checkout', detail: fixed ? 'package.json + package-lock.json' : 'package.json only (lockfile ignored)' },
-      { label: fixed ? 'npm ci' : 'npm install', detail: fixed ? `lockfile says chart-lib@${lockfile}` : `^3.1.0 resolves to chart-lib@${version}`, tone: ok ? 'good' : 'warn' },
-      { label: 'npm run build', detail: ok ? 'compiled successfully' : "TypeError: Cannot read properties of undefined (reading 'scales')", tone: ok ? 'good' : 'bad' },
+      {
+        label: fixed ? 'npm ci' : 'npm install',
+        detail: fixed ? `lockfile says chart-lib@${lockfile}` : `^3.1.0 resolves to chart-lib@${version}`,
+        tone: ok ? 'good' : 'warn',
+      },
+      {
+        label: 'npm run build',
+        detail: ok ? 'compiled successfully' : "TypeError: Cannot read properties of undefined (reading 'scales')",
+        tone: ok ? 'good' : 'bad',
+      },
       { label: 'deploy', detail: ok ? 'production updated' : 'skipped: build failed', tone: ok ? 'good' : 'bad' },
     ];
     setBusy(true);
@@ -66,10 +74,19 @@ function InstallSim({ fixed }: { fixed: boolean }) {
       setCi({ version, ok });
       log.log(ok ? `✓ CI green (chart-lib@${version})` : `✗ CI red: chart-lib@${version} broke the build`, ok ? 'good' : 'bad');
       setBusy(false);
-    } catch { /* unmounted */ }
+    } catch {
+      /* unmounted */
+    }
   };
 
-  const reset = () => { setRegistry(['3.0.4', '3.1.0']); setLaptop(null); setCi(null); setStages([]); setActive(-1); log.clear(); };
+  const reset = () => {
+    setRegistry(['3.0.4', '3.1.0']);
+    setLaptop(null);
+    setCi(null);
+    setStages([]);
+    setActive(-1);
+    log.clear();
+  };
   const published = registry.includes(BROKEN);
 
   return (
@@ -86,16 +103,28 @@ function InstallSim({ fixed }: { fixed: boolean }) {
         </Panel>
         <Panel title="npm registry: chart-lib" style={{ flex: '1 1 180px' }}>
           <Row gap={6}>
-            {registry.map((v) => <Badge key={v} tone={v === BROKEN ? 'bad' : 'neutral'}>{v}</Badge>)}
+            {registry.map((v) => (
+              <Badge key={v} tone={v === BROKEN ? 'bad' : 'neutral'}>
+                {v}
+              </Badge>
+            ))}
           </Row>
         </Panel>
       </Row>
 
       <Row>
-        <Button onClick={buildLaptop} disabled={busy}>Build on my laptop</Button>
-        <Button onClick={publish} disabled={published || busy}>chart-lib publishes 3.2.0</Button>
-        <Button tone="primary" onClick={runCi} disabled={busy}>Push → CI build</Button>
-        <Button tone="ghost" onClick={reset} disabled={busy}>Reset</Button>
+        <Button onClick={buildLaptop} disabled={busy}>
+          Build on my laptop
+        </Button>
+        <Button onClick={publish} disabled={published || busy}>
+          chart-lib publishes 3.2.0
+        </Button>
+        <Button tone="primary" onClick={runCi} disabled={busy}>
+          Push → CI build
+        </Button>
+        <Button tone="ghost" onClick={reset} disabled={busy}>
+          Reset
+        </Button>
       </Row>
 
       {stages.length > 0 && <Steps steps={stages} active={active} />}
@@ -105,12 +134,18 @@ function InstallSim({ fixed }: { fixed: boolean }) {
         <Stat label="CI installed" value={ci?.version ?? '-'} tone={!ci ? 'neutral' : ci.ok ? 'good' : 'bad'} />
         <Stat label="CI build" value={!ci ? '-' : ci.ok ? 'passed' : 'FAILED'} tone={!ci ? 'neutral' : ci.ok ? 'good' : 'bad'} />
       </Row>
-      {ci && !ci.ok && laptop && <Badge tone="bad">"But it works on my machine!" (laptop: {laptop}, CI: {ci.version})</Badge>}
+      {ci && !ci.ok && laptop && (
+        <Badge tone="bad">
+          "But it works on my machine!" (laptop: {laptop}, CI: {ci.version})
+        </Badge>
+      )}
 
       <Console title="Output" lines={log.lines} height={120} onClear={log.clear} />
-      <Code>{fixed
-        ? `# .gitignore\nnode_modules/          # lockfile is committed\n# CI\n- run: npm ci           # exact versions from package-lock.json`
-        : `# .gitignore\nnode_modules/\npackage-lock.json      # "causes merge conflicts"\n# CI\n- run: npm install      # resolves ^ranges fresh every time`}</Code>
+      <Code>
+        {fixed
+          ? `# .gitignore\nnode_modules/          # lockfile is committed\n# CI\n- run: npm ci           # exact versions from package-lock.json`
+          : `# .gitignore\nnode_modules/\npackage-lock.json      # "causes merge conflicts"\n# CI\n- run: npm install      # resolves ^ranges fresh every time`}
+      </Code>
     </Stack>
   );
 }

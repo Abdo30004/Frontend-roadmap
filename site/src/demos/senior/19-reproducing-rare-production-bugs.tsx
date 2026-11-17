@@ -1,11 +1,18 @@
 import { useState } from 'react';
 import { Badge, Browser, Button, Code, Console, Note, Panel, Row, Stack, Stat, useConsole } from '../../demo-kit';
 
-export const scenario = 'A clinic booking app lists the free slots for a day. About 1% of users say the calendar is empty or shows the wrong day; on our laptops it looks fine.';
+export const scenario =
+  'A clinic booking app lists the free slots for a day. About 1% of users say the calendar is empty or shows the wrong day; on our laptops it looks fine.';
 export const task = 'Open the booking page on each device in the lab. Which ones show the wrong day or an empty calendar?';
 export const solutionNote = 'Same API data, but dates are parsed explicitly into parts and formatted with Intl and an explicit timeZone.';
 
-interface Device { id: string; label: string; engine: 'lenient' | 'webkit15'; tz: string; locale: string }
+interface Device {
+  id: string;
+  label: string;
+  engine: 'lenient' | 'webkit15';
+  tz: string;
+  locale: string;
+}
 const DEVICES: Device[] = [
   { id: 'mac', label: 'Chrome · macOS · London', engine: 'lenient', tz: 'Europe/London', locale: 'en-GB' },
   { id: 'iphone', label: 'Safari 15 · iPhone · London', engine: 'webkit15', tz: 'Europe/London', locale: 'en-GB' },
@@ -91,8 +98,17 @@ function DeviceLab({ fixed }: { fixed: boolean }) {
       <Panel title="Device lab">
         <Row gap={6}>
           {DEVICES.map((d) => (
-            <Button key={d.id} tone={device?.id === d.id ? 'primary' : 'default'} aria-pressed={device?.id === d.id} onClick={() => open(d)}>
-              {d.id in results && <span aria-hidden style={{ color: results[d.id] ? 'var(--good)' : 'var(--bad)', marginRight: 4 }}>{results[d.id] ? '✓' : '✗'}</span>}
+            <Button
+              key={d.id}
+              tone={device?.id === d.id ? 'primary' : 'default'}
+              aria-pressed={device?.id === d.id}
+              onClick={() => open(d)}
+            >
+              {d.id in results && (
+                <span aria-hidden style={{ color: results[d.id] ? 'var(--good)' : 'var(--bad)', marginRight: 4 }}>
+                  {results[d.id] ? '✓' : '✗'}
+                </span>
+              )}
               {d.label}
             </Button>
           ))}
@@ -113,7 +129,11 @@ function DeviceLab({ fixed }: { fixed: boolean }) {
               <strong>{view.day}</strong>
               {!/29/.test(view.day) && <Badge tone="bad">wrong day</Badge>}
             </Row>
-            {view.rows.map((r) => <div key={r} style={{ fontSize: 14 }}>{r}</div>)}
+            {view.rows.map((r) => (
+              <div key={r} style={{ fontSize: 14 }}>
+                {r}
+              </div>
+            ))}
           </Stack>
         )}
       </Browser>
@@ -124,9 +144,11 @@ function DeviceLab({ fixed }: { fixed: boolean }) {
         <Stat label="expected day" value="Sun 29 Mar" />
       </Row>
 
-      <Code>{fixed
-        ? `const [y, m, d, hh, mm] = raw.match(/(\\d+)-(\\d+)-(\\d+)[ T](\\d+):(\\d+)/)...\nconst date = new Date(Date.UTC(y, m - 1, d, hh, mm)); // wall-clock parts\nnew Intl.DateTimeFormat(locale, { ..., timeZone: 'UTC' }).format(date)`
-        : `new Date("2026-03-29")            // date-only = UTC midnight\nnew Date("2026-03-29 14:00:00")   // not ISO: engine-specific\nformat(date, 'EEE d MMM, HH:mm')  // throws on Invalid Date`}</Code>
+      <Code>
+        {fixed
+          ? `const [y, m, d, hh, mm] = raw.match(/(\\d+)-(\\d+)-(\\d+)[ T](\\d+):(\\d+)/)...\nconst date = new Date(Date.UTC(y, m - 1, d, hh, mm)); // wall-clock parts\nnew Intl.DateTimeFormat(locale, { ..., timeZone: 'UTC' }).format(date)`
+          : `new Date("2026-03-29")            // date-only = UTC midnight\nnew Date("2026-03-29 14:00:00")   // not ISO: engine-specific\nformat(date, 'EEE d MMM, HH:mm')  // throws on Invalid Date`}
+      </Code>
       <Console lines={c.lines} height={140} onClear={c.clear} />
     </Stack>
   );

@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { Badge, Browser, Button, Code, Console, Note, Row, Stack, Stat, useConsole } from '../../demo-kit';
 
-export const scenario = 'A grocery delivery checkout lets customers add one avocado with "+", or a pack of three with "+3 bundle". Analytics logs every bundle.';
+export const scenario =
+  'A grocery delivery checkout lets customers add one avocado with "+", or a pack of three with "+3 bundle". Analytics logs every bundle.';
 export const task = 'Click "+3 bundle" once or twice. Compare the quantity with what you expected, and read the analytics log.';
 export const solutionNote = 'Same cart: the setter uses an updater (q => q + 1), and the new value is computed once for analytics.';
 
@@ -16,8 +17,9 @@ function CartItem({ fixed }: { fixed: boolean }) {
   const c = useConsole();
 
   const addOne = () => {
-    if (fixed) setQty((q) => Math.min(q + 1, MAX)); // updater: gets the latest queued value
-    else setQty(qty + 1);                           // reads the qty of THIS render
+    if (fixed)
+      setQty((q) => Math.min(q + 1, MAX)); // updater: gets the latest queued value
+    else setQty(qty + 1); // reads the qty of THIS render
   };
 
   const addBundle = () => {
@@ -34,7 +36,11 @@ function CartItem({ fixed }: { fixed: boolean }) {
     }
   };
 
-  const reset = () => { setQty(2); setExpected(2); c.clear(); };
+  const reset = () => {
+    setQty(2);
+    setExpected(2);
+    c.clear();
+  };
   const ok = qty === expected;
 
   return (
@@ -42,17 +48,32 @@ function CartItem({ fixed }: { fixed: boolean }) {
       <Browser url="freshcart.example/checkout">
         <Stack gap={10}>
           <Row gap={10}>
-            <span aria-hidden style={{ fontSize: 28 }}>🥑</span>
+            <span aria-hidden style={{ fontSize: 28 }}>
+              🥑
+            </span>
             <Stack gap={2} style={{ flex: '1 1 140px' }}>
               <strong>Hass avocados</strong>
-              <Note>${PRICE.toFixed(2)} each · max {MAX}</Note>
+              <Note>
+                ${PRICE.toFixed(2)} each · max {MAX}
+              </Note>
             </Stack>
             <Badge tone={ok ? 'neutral' : 'bad'}>Qty {qty}</Badge>
           </Row>
           <Row gap={8}>
-            <Button onClick={() => { setExpected((e) => Math.min(e + 1, MAX)); addOne(); }}>+</Button>
-            <Button tone="primary" onClick={addBundle}>+3 bundle</Button>
-            <Button tone="ghost" onClick={reset}>Reset</Button>
+            <Button
+              onClick={() => {
+                setExpected((e) => Math.min(e + 1, MAX));
+                addOne();
+              }}
+            >
+              +
+            </Button>
+            <Button tone="primary" onClick={addBundle}>
+              +3 bundle
+            </Button>
+            <Button tone="ghost" onClick={reset}>
+              Reset
+            </Button>
           </Row>
           <Row gap={8}>
             <span style={{ color: 'var(--ink-2)', fontSize: 14 }}>Subtotal</span>
@@ -65,9 +86,11 @@ function CartItem({ fixed }: { fixed: boolean }) {
         <Stat label="what the customer expects" value={expected} />
         <Stat label="renders" value={renders.current} />
       </Row>
-      <Code>{fixed
-        ? `setQty((q) => q + 1); // "+" button\n\nconst next = qty + 3;  // "+3 bundle"\nsetQty(next);\ntrack('bundle_added', { qty: next });`
-        : `const addOne = () => setQty(qty + 1);\n\naddOne(); addOne(); addOne(); // qty is 2 in all three\ntrack('bundle_added', { qty });`}</Code>
+      <Code>
+        {fixed
+          ? `setQty((q) => q + 1); // "+" button\n\nconst next = qty + 3;  // "+3 bundle"\nsetQty(next);\ntrack('bundle_added', { qty: next });`
+          : `const addOne = () => setQty(qty + 1);\n\naddOne(); addOne(); addOne(); // qty is 2 in all three\ntrack('bundle_added', { qty });`}
+      </Code>
       <Console title="Analytics" lines={c.lines} height={100} onClear={c.clear} />
     </Stack>
   );

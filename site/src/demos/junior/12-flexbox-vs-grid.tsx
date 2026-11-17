@@ -1,13 +1,18 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Browser, Button, Code, Row, Stack, Stat } from '../../demo-kit';
 
-export const scenario = 'A real-estate site lists homes as cards next to a filters sidebar. Each card has a photo, address, price and a "Contact agent" button.';
+export const scenario =
+  'A real-estate site lists homes as cards next to a filters sidebar. Each card has a photo, address, price and a "Contact agent" button.';
 export const task = 'Look at the last row of cards, the "Contact agent" buttons, and scroll sideways. Try 4, 5 and 7 listings.';
 export const solutionNote = 'Same markup: Grid for the page and the card gallery, a flex column inside each card.';
 
 const LISTINGS = [
   { address: '12 Oak Lane', price: '$450,000', text: '3 bed · garden' },
-  { address: 'Wolfeschlegelsteinhausenbergerdorffstrasse 12', price: '$615,000', text: '4 bed · double garage · solar panels · near schools' },
+  {
+    address: 'Wolfeschlegelsteinhausenbergerdorffstrasse 12',
+    price: '$615,000',
+    text: '4 bed · double garage · solar panels · near schools',
+  },
   { address: '8 Harbour View', price: '$389,000', text: '2 bed' },
   { address: '41 Mill Road, Unit 3', price: '$299,000', text: '1 bed · balcony · lift · gym in the building' },
   { address: '5 Elm Court', price: '$520,000', text: '3 bed · pool' },
@@ -39,7 +44,11 @@ const CSS = `
 .j12-page[data-v="fixed"] .j12-card button { margin-top: auto; }
 `;
 
-interface Check { widths: number; misaligned: number; overflow: boolean }
+interface Check {
+  widths: number;
+  misaligned: number;
+  overflow: boolean;
+}
 
 function measure(scroll: HTMLElement): Check {
   const cards = Array.from(scroll.querySelectorAll<HTMLElement>('.j12-card'));
@@ -52,7 +61,9 @@ function measure(scroll: HTMLElement): Check {
     rows.set(top, [...(rows.get(top) ?? []), btn.getBoundingClientRect().top]);
   }
   let misaligned = 0;
-  rows.forEach((tops) => { if (Math.max(...tops) - Math.min(...tops) > 1) misaligned++; });
+  rows.forEach((tops) => {
+    if (Math.max(...tops) - Math.min(...tops) > 1) misaligned++;
+  });
   return { widths: widths.size, misaligned, overflow: scroll.scrollWidth > scroll.clientWidth + 1 };
 }
 
@@ -79,14 +90,22 @@ function Listings({ fixed }: { fixed: boolean }) {
       <Browser url="homes.example/search?city=springfield">
         <div className="j12-scroll" ref={scrollRef}>
           <div className="j12-page" data-v={fixed ? 'fixed' : 'broken'}>
-            <aside className="j12-filters">Filters<br />Price · Beds · Type</aside>
+            <aside className="j12-filters">
+              Filters
+              <br />
+              Price · Beds · Type
+            </aside>
             <section className="j12-listings">
               {LISTINGS.slice(0, count).map((l) => (
                 <article className="j12-card" key={l.address}>
                   <div className="j12-img" aria-hidden />
                   <h4>{l.address}</h4>
-                  <p>{l.price} · {l.text}</p>
-                  <button type="button" className="dk-btn" data-tone="primary">Contact agent</button>
+                  <p>
+                    {l.price} · {l.text}
+                  </p>
+                  <button type="button" className="dk-btn" data-tone="primary">
+                    Contact agent
+                  </button>
                 </article>
               ))}
             </section>
@@ -95,7 +114,9 @@ function Listings({ fixed }: { fixed: boolean }) {
       </Browser>
       <Row>
         {[4, 5, 7].map((n) => (
-          <Button key={n} tone={n === count ? 'primary' : 'default'} onClick={() => setCount(n)}>{n} listings</Button>
+          <Button key={n} tone={n === count ? 'primary' : 'default'} onClick={() => setCount(n)}>
+            {n} listings
+          </Button>
         ))}
       </Row>
       <Row gap={10}>
@@ -103,9 +124,11 @@ function Listings({ fixed }: { fixed: boolean }) {
         <Stat label="rows with uneven buttons" value={check.misaligned} tone={check.misaligned > 0 ? 'bad' : 'good'} />
         <Stat label="sideways scroll" value={check.overflow ? 'yes' : 'no'} tone={check.overflow ? 'bad' : 'good'} />
       </Row>
-      <Code>{fixed
-        ? `.page     { display: grid; grid-template-columns: 96px minmax(0, 1fr); }\n.listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }\n.card     { display: flex; flex-direction: column; min-width: 0; }\n.card h4  { overflow-wrap: anywhere; }\n.card button { margin-top: auto; }`
-        : `.page     { display: flex; }\n.filters  { width: 96px; }\n.listings { display: flex; flex-wrap: wrap; }\n.card     { flex: 1 1 30%; margin: 6px; }`}</Code>
+      <Code>
+        {fixed
+          ? `.page     { display: grid; grid-template-columns: 96px minmax(0, 1fr); }\n.listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }\n.card     { display: flex; flex-direction: column; min-width: 0; }\n.card h4  { overflow-wrap: anywhere; }\n.card button { margin-top: auto; }`
+          : `.page     { display: flex; }\n.filters  { width: 96px; }\n.listings { display: flex; flex-wrap: wrap; }\n.card     { flex: 1 1 30%; margin: 6px; }`}
+      </Code>
     </Stack>
   );
 }

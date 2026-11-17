@@ -3,10 +3,15 @@ import { Badge, Browser, Button, Code, Note, Panel, Row, Stack } from '../../dem
 
 export const scenario = 'A CRM customers page has a "Quick note" box at the top and a customer table (wrapped in memo) below it.';
 export const task = 'Type a few words in the Quick note. Watch the render counters flash on the table and on every row.';
-export const solutionNote = 'Same page: the note state lives in its own component, filter is useMemo\'d and onSelect is useCallback\'d.';
+export const solutionNote = "Same page: the note state lives in its own component, filter is useMemo'd and onSelect is useCallback'd.";
 
 type Status = 'active' | 'churned';
-interface Customer { id: number; name: string; company: string; status: Status }
+interface Customer {
+  id: number;
+  name: string;
+  company: string;
+  status: Status;
+}
 const CUSTOMERS: Customer[] = [
   { id: 1, name: 'Ana Ruiz', company: 'Northwind', status: 'active' },
   { id: 2, name: 'Ben Okafor', company: 'Globex', status: 'active' },
@@ -21,7 +26,16 @@ const FLASH_CSS = '@keyframes m08-flash { from { background-color: var(--warn-so
 /** Render counter that flashes every time the component renders. */
 function RenderCount({ n }: { n: number }) {
   return (
-    <span key={n} style={{ animation: n > 1 ? 'm08-flash 600ms ease-out' : undefined, borderRadius: 6, padding: '1px 6px', font: '600 11px var(--font-mono)', color: n > 1 ? 'var(--warn)' : 'var(--ink-3)' }}>
+    <span
+      key={n}
+      style={{
+        animation: n > 1 ? 'm08-flash 600ms ease-out' : undefined,
+        borderRadius: 6,
+        padding: '1px 6px',
+        font: '600 11px var(--font-mono)',
+        color: n > 1 ? 'var(--warn)' : 'var(--ink-3)',
+      }}
+    >
       renders: {n}
     </span>
   );
@@ -43,14 +57,29 @@ const CustomerRow = memo(function CustomerRow({ customer, onSelect }: { customer
   );
 });
 
-const CustomerTable = memo(function CustomerTable({ customers, filter, onSelect }: {
-  customers: Customer[]; filter: { status: Status }; onSelect: (id: number) => void;
+const CustomerTable = memo(function CustomerTable({
+  customers,
+  filter,
+  onSelect,
+}: {
+  customers: Customer[];
+  filter: { status: Status };
+  onSelect: (id: number) => void;
 }) {
   const n = useRenders();
   const visible = customers.filter((c) => c.status === filter.status);
   return (
-    <Panel title={<Row gap={8}><span>CustomerTable (memo)</span><RenderCount n={n} /></Row>}>
-      {visible.map((c) => <CustomerRow key={c.id} customer={c} onSelect={onSelect} />)}
+    <Panel
+      title={
+        <Row gap={8}>
+          <span>CustomerTable (memo)</span>
+          <RenderCount n={n} />
+        </Row>
+      }
+    >
+      {visible.map((c) => (
+        <CustomerRow key={c.id} customer={c} onSelect={onSelect} />
+      ))}
     </Panel>
   );
 });
@@ -59,17 +88,36 @@ function StatusTabs({ value, onChange }: { value: Status; onChange: (s: Status) 
   return (
     <Row gap={6}>
       {(['active', 'churned'] as Status[]).map((s) => (
-        <Button key={s} tone={value === s ? 'primary' : 'default'} onClick={() => onChange(s)}>{s}</Button>
+        <Button key={s} tone={value === s ? 'primary' : 'default'} onClick={() => onChange(s)}>
+          {s}
+        </Button>
       ))}
     </Row>
   );
 }
 
-const textareaStyle = { font: '14px var(--font-body)', padding: 8, borderRadius: 8, border: '1px solid var(--line-2)', background: 'var(--surface)', color: 'var(--ink)', resize: 'vertical' as const, minHeight: 48 };
+const textareaStyle = {
+  font: '14px var(--font-body)',
+  padding: 8,
+  borderRadius: 8,
+  border: '1px solid var(--line-2)',
+  background: 'var(--surface)',
+  color: 'var(--ink)',
+  resize: 'vertical' as const,
+  minHeight: 48,
+};
 
 function QuickNote() {
   const [note, setNote] = useState('');
-  return <textarea aria-label="Quick note" placeholder="Quick note… (try typing)" value={note} onChange={(e) => setNote(e.target.value)} style={textareaStyle} />;
+  return (
+    <textarea
+      aria-label="Quick note"
+      placeholder="Quick note… (try typing)"
+      value={note}
+      onChange={(e) => setNote(e.target.value)}
+      style={textareaStyle}
+    />
+  );
 }
 
 function Drawer({ id }: { id: number | null }) {
@@ -84,12 +132,21 @@ function CustomersPageBuggy() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   return (
     <Stack gap={10}>
-      <Row gap={8}><strong>Customers</strong><RenderCount n={n} /></Row>
-      <textarea aria-label="Quick note" placeholder="Quick note… (try typing)" value={note} onChange={(e) => setNote(e.target.value)} style={textareaStyle} />
+      <Row gap={8}>
+        <strong>Customers</strong>
+        <RenderCount n={n} />
+      </Row>
+      <textarea
+        aria-label="Quick note"
+        placeholder="Quick note… (try typing)"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        style={textareaStyle}
+      />
       <StatusTabs value={status} onChange={setStatus} />
       <CustomerTable
         customers={CUSTOMERS}
-        filter={{ status }}                  // new object every render
+        filter={{ status }} // new object every render
         onSelect={(id) => setSelectedId(id)} // new function every render
       />
       <Drawer id={selectedId} />
@@ -105,7 +162,10 @@ function CustomersPageFixed() {
   const handleSelect = useCallback((id: number) => setSelectedId(id), []);
   return (
     <Stack gap={10}>
-      <Row gap={8}><strong>Customers</strong><RenderCount n={n} /></Row>
+      <Row gap={8}>
+        <strong>Customers</strong>
+        <RenderCount n={n} />
+      </Row>
       <QuickNote />
       <StatusTabs value={status} onChange={setStatus} />
       <CustomerTable customers={CUSTOMERS} filter={filter} onSelect={handleSelect} />
@@ -119,13 +179,17 @@ function Demo({ fixed }: { fixed: boolean }) {
   return (
     <Stack gap={12}>
       <style>{FLASH_CSS}</style>
-      <Browser url="crm.example/customers">
-        {fixed ? <CustomersPageFixed key={key} /> : <CustomersPageBuggy key={key} />}
-      </Browser>
-      <Row><Button tone="ghost" onClick={() => setKey((k) => k + 1)}>Reset counters</Button></Row>
-      <Code>{fixed
-        ? `<QuickNote />  // note state lives here now\nconst filter = useMemo(() => ({ status }), [status]);\nconst handleSelect = useCallback((id) => setSelectedId(id), []);\n<CustomerTable filter={filter} onSelect={handleSelect} />`
-        : `const [note, setNote] = useState(''); // in CustomersPage\n<CustomerTable\n  filter={{ status }}\n  onSelect={(id) => setSelectedId(id)}\n/>`}</Code>
+      <Browser url="crm.example/customers">{fixed ? <CustomersPageFixed key={key} /> : <CustomersPageBuggy key={key} />}</Browser>
+      <Row>
+        <Button tone="ghost" onClick={() => setKey((k) => k + 1)}>
+          Reset counters
+        </Button>
+      </Row>
+      <Code>
+        {fixed
+          ? `<QuickNote />  // note state lives here now\nconst filter = useMemo(() => ({ status }), [status]);\nconst handleSelect = useCallback((id) => setSelectedId(id), []);\n<CustomerTable filter={filter} onSelect={handleSelect} />`
+          : `const [note, setNote] = useState(''); // in CustomersPage\n<CustomerTable\n  filter={{ status }}\n  onSelect={(id) => setSelectedId(id)}\n/>`}
+      </Code>
     </Stack>
   );
 }

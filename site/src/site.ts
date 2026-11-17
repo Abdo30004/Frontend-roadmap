@@ -5,5 +5,4 @@ export const REPO = {
   contentDir: 'content',
 };
 
-export const questionSourceUrl = (level: string, slug: string) =>
-  `${REPO.url}/blob/${REPO.branch}/${REPO.contentDir}/${level}/${slug}.md`;
+export const questionSourceUrl = (level: string, slug: string) => `${REPO.url}/blob/${REPO.branch}/${REPO.contentDir}/${level}/${slug}.md`;

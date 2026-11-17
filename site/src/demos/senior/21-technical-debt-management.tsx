@@ -1,15 +1,24 @@
 import { useState } from 'react';
 import { Badge, Browser, Button, Code, Meter, Note, Panel, Row, Stack, Stat } from '../../demo-kit';
 
-export const scenario = 'A five-year-old React SaaS app: the team plans 40 points per sprint, and the "reports" area keeps blowing its estimates.';
+export const scenario =
+  'A five-year-old React SaaS app: the team plans 40 points per sprint, and the "reports" area keeps blowing its estimates.';
 export const task = 'Press "Run next sprint" five or six times. Watch the feature points delivered and the bugs per sprint.';
-export const solutionNote = 'Same team and capacity, but 20% of every sprint pays down the top item of a debt register, and lint ratchets block new debt.';
+export const solutionNote =
+  'Same team and capacity, but 20% of every sprint pays down the top item of a debt register, and lint ratchets block new debt.';
 
 const CAPACITY = 40;
 const START_DEBT = 35;
 const MAX_SPRINTS = 8;
 
-interface Sprint { n: number; features: number; debtWork: number; bugs: number; debt: number; note: string }
+interface Sprint {
+  n: number;
+  features: number;
+  debtWork: number;
+  bugs: number;
+  debt: number;
+  note: string;
+}
 
 const REGISTER = [
   { id: 'D-3', text: 'Flaky E2E tests (9%) → ~6 dev-hours/week lost' },
@@ -38,7 +47,9 @@ function simulate(prev: Sprint | undefined, n: number, fixed: boolean): Sprint {
   const added = fixed ? 2 : 9; // lint ratchet blocks most new debt
   const nextDebt = Math.max(8, Math.min(95, debt + added - debtWork * 1.1));
   const note = fixed
-    ? (n <= REGISTER.length ? `Paid down ${REGISTER[n - 1].id} (8 pts). Features still shipped.` : 'Boy-scout fixes inside feature PRs; register reviewed with PM.')
+    ? n <= REGISTER.length
+      ? `Paid down ${REGISTER[n - 1].id} (8 pts). Features still shipped.`
+      : 'Boy-scout fixes inside feature PRs; register reviewed with PM.'
     : PROBLEM_NOTES[n - 1];
   return { n, features, debtWork, bugs, debt: Math.round(nextDebt), note };
 }
@@ -61,8 +72,12 @@ function Planner({ fixed }: { fixed: boolean }) {
             <Badge tone={fixed ? 'good' : 'warn'}>{fixed ? 'Plan: 80% features · 20% debt' : 'Plan: 100% features'}</Badge>
           </Row>
           <Row>
-            <Button tone="primary" onClick={run} disabled={sprints.length >= MAX_SPRINTS}>Run next sprint</Button>
-            <Button tone="ghost" onClick={() => setSprints([])}>Reset</Button>
+            <Button tone="primary" onClick={run} disabled={sprints.length >= MAX_SPRINTS}>
+              Run next sprint
+            </Button>
+            <Button tone="ghost" onClick={() => setSprints([])}>
+              Reset
+            </Button>
           </Row>
 
           {sprints.length === 0 && <Note>No sprints run yet. Capacity: {CAPACITY} points per sprint.</Note>}
@@ -71,7 +86,10 @@ function Planner({ fixed }: { fixed: boolean }) {
               <Stack key={s.n} gap={4}>
                 <Row style={{ justifyContent: 'space-between', fontSize: 13 }}>
                   <strong>Sprint {s.n}</strong>
-                  <span>{s.features} feature pts{s.debtWork ? ` + ${s.debtWork} debt` : ''} · <span style={{ color: 'var(--bad)' }}>{s.bugs} bugs</span></span>
+                  <span>
+                    {s.features} feature pts{s.debtWork ? ` + ${s.debtWork} debt` : ''} ·{' '}
+                    <span style={{ color: 'var(--bad)' }}>{s.bugs} bugs</span>
+                  </span>
                 </Row>
                 <Meter value={s.features} max={CAPACITY} tone={s.features >= 25 ? 'good' : s.features >= 18 ? 'warn' : 'bad'} />
                 <Meter value={s.bugs} max={22} tone="bad" />
@@ -84,7 +102,11 @@ function Planner({ fixed }: { fixed: boolean }) {
 
       <Row gap={8}>
         <Stat label="feature pts last sprint" value={last ? last.features : '-'} tone={!last ? 'neutral' : trend < 0 ? 'bad' : 'good'} />
-        <Stat label="change since sprint 1" value={last ? `${trend > 0 ? '+' : ''}${trend}` : '-'} tone={!last ? 'neutral' : trend < 0 ? 'bad' : 'good'} />
+        <Stat
+          label="change since sprint 1"
+          value={last ? `${trend > 0 ? '+' : ''}${trend}` : '-'}
+          tone={!last ? 'neutral' : trend < 0 ? 'bad' : 'good'}
+        />
         <Stat label="bugs last sprint" value={last ? last.bugs : '-'} tone={last && last.bugs > 12 ? 'bad' : 'neutral'} />
         <Stat label="debt level" value={`${debt}%`} tone={debt > 50 ? 'bad' : debt > 25 ? 'warn' : 'good'} />
       </Row>
@@ -108,7 +130,9 @@ function Planner({ fixed }: { fixed: boolean }) {
 // (${300 + sprints.length * 24} TODO comments, no owner, no priority)`}</Code>
         </Panel>
       )}
-      {fixed && <Code>{`rules: { '@typescript-eslint/no-explicit-any': 'error',\n  'no-restricted-imports': ['error', { paths: [{ name: 'moment' }] }] }\n// legacy folders: 'warn' + ratchet: CI fails if the count goes UP`}</Code>}
+      {fixed && (
+        <Code>{`rules: { '@typescript-eslint/no-explicit-any': 'error',\n  'no-restricted-imports': ['error', { paths: [{ name: 'moment' }] }] }\n// legacy folders: 'warn' + ratchet: CI fails if the count goes UP`}</Code>
+      )}
     </Stack>
   );
 }

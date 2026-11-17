@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="site/public/logo/frontend-field-guide-logo.svg" alt="Frontend Field Guide logo" width="96" height="96">
+
 # Frontend Field Guide
 
 **Learn the bug before you learn the answer.**
@@ -9,6 +11,7 @@ Each one starts with a real bug running live in your browser. You break it, thin
 
 [**Open the site**](https://frontend-roadmap-website.vercel.app) · [Questions as markdown](content/README.md) · [Contribute](CONTRIBUTING.md) · [Version française](README.fr.md)
 
+[![CI](https://github.com/ahmedgourmat/Frontend-roadmap/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedgourmat/Frontend-roadmap/actions/workflows/ci.yml)
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-0F172A)](LICENSE)
 [![Content license: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-4F46E5)](content/LICENSE)
 [![Languages: English, French](https://img.shields.io/badge/languages-EN%20%7C%20FR-34D399)](#languages)
@@ -44,7 +47,7 @@ Here, every question is built around one production bug:
 
 ## Run it locally
 
-You need Node.js 18.18 or newer (the version in [`.nvmrc`](.nvmrc) is the one we test with).
+You need Node.js 20.19 or newer (CI uses the version in [`.nvmrc`](.nvmrc)).
 
 ```bash
 git clone https://github.com/ahmedgourmat/Frontend-roadmap.git
@@ -58,7 +61,12 @@ npm run dev        # http://localhost:5173
 | `npm run dev` | Starts the dev server with hot reload |
 | `npm run build` | Type-checks and builds the static site into `site/dist` |
 | `npm run preview` | Serves the production build |
+| `npm run check` | Runs every check below, like CI does on a pull request |
+| `npm run check:content` | Checks every question: the four `##` sections, its `catalog.ts` line, its demo and its French files |
 | `npm run typecheck` | Runs TypeScript only |
+| `npm run lint` | Runs ESLint |
+| `npm run format` | Formats the code with Prettier (`npm run format:check` only checks) |
+| `npm test` | Runs the tests once with Vitest (`npm run test:watch` keeps them running) |
 | `npm run titles` | Regenerates `src/generated/titles.json` (runs automatically before `dev` and `build`) |
 
 ## Project layout
@@ -70,7 +78,7 @@ npm run dev        # http://localhost:5173
 │   ├── fr/                   French, same file names
 │   └── README.md             index of every question and the duplicates it merges
 └── site/                     the website (Vite + React + TypeScript)
-    ├── scripts/              build helpers (question titles for the map)
+    ├── scripts/              build helpers (question titles for the map, content check)
     └── src/
         ├── catalog.ts        levels, topics and the short label of every question
         ├── content.ts        loads and parses the markdown files

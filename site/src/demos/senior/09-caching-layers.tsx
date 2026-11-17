@@ -25,7 +25,11 @@ function CacheSim({ fixed }: { fixed: boolean }) {
       fixed
         ? { label: 'GET /index.html', detail: `Revalidated with the CDN → ${server}`, tone: 'info' as Tone }
         : { label: 'GET /index.html', detail: 'Served from browser cache (still "fresh") → v1', tone: 'warn' as Tone },
-      { label: `GET /${chunk}`, detail: chunkExists ? '200 · cached for a year (immutable)' : '404 · file no longer exists on the CDN', tone: (chunkExists ? 'good' : 'bad') as Tone },
+      {
+        label: `GET /${chunk}`,
+        detail: chunkExists ? '200 · cached for a year (immutable)' : '404 · file no longer exists on the CDN',
+        tone: (chunkExists ? 'good' : 'bad') as Tone,
+      },
       chunkExists
         ? { label: 'App boots', detail: `Customer sees ${server}`, tone: 'good' as Tone }
         : { label: 'App crashes', detail: 'ChunkLoadError → blank page', tone: 'bad' as Tone },
@@ -51,11 +55,29 @@ function CacheSim({ fixed }: { fixed: boolean }) {
       </Row>
 
       <Row>
-        <Button onClick={() => { setServer('v2'); setVisit(null); player.reset(); }} disabled={server === 'v2'}>
+        <Button
+          onClick={() => {
+            setServer('v2');
+            setVisit(null);
+            player.reset();
+          }}
+          disabled={server === 'v2'}
+        >
           Deploy v2
         </Button>
-        <Button tone="primary" onClick={open} disabled={player.playing}>Customer opens the site</Button>
-        <Button tone="ghost" onClick={() => { setServer('v1'); setVisit(null); player.reset(); }}>Reset</Button>
+        <Button tone="primary" onClick={open} disabled={player.playing}>
+          Customer opens the site
+        </Button>
+        <Button
+          tone="ghost"
+          onClick={() => {
+            setServer('v1');
+            setVisit(null);
+            player.reset();
+          }}
+        >
+          Reset
+        </Button>
       </Row>
 
       {visit && <Steps steps={visit.steps} active={player.step} />}

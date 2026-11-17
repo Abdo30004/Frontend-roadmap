@@ -1,7 +1,9 @@
 // Chaînes de l'interface en français. Même forme que ./en.ts.
 import type { Messages } from './en';
 
-type DeepStrings<T> = { [K in keyof T]: T[K] extends string ? string : T[K] extends Record<string, string> ? Record<string, string> : DeepStrings<T[K]> };
+type DeepStrings<T> = {
+  [K in keyof T]: T[K] extends string ? string : T[K] extends Record<string, string> ? Record<string, string> : DeepStrings<T[K]>;
+};
 
 const fr: DeepStrings<Messages> = {
   lang: { switchTo: 'EN', switchLabel: 'Switch to English' },
@@ -30,7 +32,11 @@ const fr: DeepStrings<Messages> = {
   },
   level: {
     junior: { label: 'Junior', title: 'Questions junior', blurb: 'Le langage, le navigateur et les bases de React.' },
-    mid: { label: 'Intermédiaire', title: 'Questions de niveau intermédiaire', blurb: 'Comment React se comporte vraiment, et les bugs qui en découlent.' },
+    mid: {
+      label: 'Intermédiaire',
+      title: 'Questions de niveau intermédiaire',
+      blurb: 'Comment React se comporte vraiment, et les bugs qui en découlent.',
+    },
     senior: { label: 'Senior', title: 'Questions senior', blurb: 'Systèmes, montée en charge, compromis et équipes.' },
   },
   category: {
@@ -75,7 +81,8 @@ const fr: DeepStrings<Messages> = {
     loadingDemo: 'Chargement de la démo…',
     noDemo: 'Pas encore de démo pour cette question. Lisez le scénario dans la réponse.',
     beforeYouLook: 'Avant de regarder :',
-    beforeYouLookText: 'qu’est-ce qui cause ce problème, et comment le corrigeriez-vous ? Dites-le à voix haute : c’est exactement ce qu’on attend en entretien.',
+    beforeYouLookText:
+      'qu’est-ce qui cause ce problème, et comment le corrigeriez-vous ? Dites-le à voix haute : c’est exactement ce qu’on attend en entretien.',
     reveal: 'Afficher la réponse',
     hide: 'Masquer la réponse',
     loadingExplanation: 'Chargement de l’explication…',
@@ -89,7 +96,8 @@ const fr: DeepStrings<Messages> = {
   },
   demo: {
     crashed: 'L’arbre de composants a planté.',
-    uncaught: 'Erreur non interceptée : <code>{{message}}</code>. Dans une vraie application sans error boundary, l’utilisateur verrait un écran blanc.',
+    uncaught:
+      'Erreur non interceptée : <code>{{message}}</code>. Dans une vraie application sans error boundary, l’utilisateur verrait un écran blanc.',
     reset: 'Réinitialiser la démo',
     consoleEmpty: 'Rien n’a encore été enregistré. Utilisez la démo ci-dessus.',
     code: 'Code',
@@ -104,15 +112,18 @@ const fr: DeepStrings<Messages> = {
     aSet: 'Un ensemble de skills',
     whenToUse: 'Quand l’utiliser',
     proTip: 'Astuce',
-    startIntro: 'Une fois un skill installé, Claude le charge tout seul dès qu’une tâche s’y prête. Inutile de l’appeler par son nom : décrivez simplement le travail.',
+    startIntro:
+      'Une fois un skill installé, Claude le charge tout seul dès qu’une tâche s’y prête. Inutile de l’appeler par son nom : décrivez simplement le travail.',
     howToInstall: 'Installer un skill',
     step1: 'Trouvez un skill dans ce guide et copiez sa commande d’installation.',
     step2: 'Lancez-la dans le dossier de votre projet. Ajoutez <c>-g</c> pour l’installer pour tous vos projets.',
     step3: 'Demandez la tâche à Claude. Le skill se charge quand il est utile.',
     onlyThree: 'Si vous n’en installez que trois',
-    onlyThreeText: 'Choisissez <a1>react-best-practices</a1>, <a2>frontend-design</a2> et <a3>web-design-guidelines</a3>. À eux trois, ils couvrent la façon dont votre code est écrit, l’apparence de votre interface, et sa tenue sur tous les écrans.',
+    onlyThreeText:
+      'Choisissez <a1>react-best-practices</a1>, <a2>frontend-design</a2> et <a3>web-design-guidelines</a3>. À eux trois, ils couvrent la façon dont votre code est écrit, l’apparence de votre interface, et sa tenue sur tous les écrans.',
     beforeInstall: 'Avant d’installer',
-    beforeInstallText: 'Un skill est un ensemble d’instructions que votre agent va suivre. Lisez-le sur skills.sh ou GitHub avant de l’installer, comme vous vérifieriez un paquet npm.',
+    beforeInstallText:
+      'Un skill est un ensemble d’instructions que votre agent va suivre. Lisez-le sur skills.sh ou GitHub avant de l’installer, comme vous vérifieriez un paquet npm.',
     nextCovers: 'Ce que couvrent les règles intégrées',
     pipelineTitle: 'Astuce : le workflow idéal du design au code',
     pipelineLead: 'Quatre outils, un seul pipeline :',
@@ -123,18 +134,27 @@ const fr: DeepStrings<Messages> = {
     footer: 'Nombre d’installations issu du registre skills.sh, {{date}}. Un skill à ajouter à ce guide ? <gh>Proposez-le sur GitHub</gh>.',
   },
   mcp: {
-    toc: { start: 'Pour commencer', order: 'Ordre d’installation', workflow: 'Un exemple de workflow', security: 'Sécurité et configuration', setup: 'Votre configuration' },
+    toc: {
+      start: 'Pour commencer',
+      order: 'Ordre d’installation',
+      workflow: 'Un exemple de workflow',
+      security: 'Sécurité et configuration',
+      setup: 'Votre configuration',
+    },
     h1: 'La boîte à outils MCP du développeur frontend',
     dek: 'Les serveurs MCP connectent Claude aux outils que vous utilisez déjà : vos maquettes, votre documentation, un vrai navigateur, votre dépôt et vos déploiements. Ce guide présente ceux qui valent la peine pour du React, du Next.js et du TypeScript, à quoi sert chacun, et comment les configurer en toute sécurité.',
     byline: 'Mis à jour en {{date}}',
     by: 'par <b>{{vendor}}</b>',
     kind: { Remote: 'Serveur hébergé', Local: 'S’exécute sur votre machine', Docs: 'Documentation' },
     helpsWith: 'À quoi il sert',
-    startIntro: 'Un <sk>skill</sk> apprend à Claude à faire un travail. Un serveur MCP lui donne accès à ce qu’il ne peut pas atteindre autrement : un fichier Figma, un onglet de navigateur, vos issues GitHub. Ensemble, ils couvrent tout le workflow frontend, du design à la production.',
+    startIntro:
+      'Un <sk>skill</sk> apprend à Claude à faire un travail. Un serveur MCP lui donne accès à ce qu’il ne peut pas atteindre autrement : un fichier Figma, un onglet de navigateur, vos issues GitHub. Ensemble, ils couvrent tout le workflow frontend, du design à la production.',
     howToAdd: 'Ajouter un serveur',
     step1: 'Copiez la commande du serveur depuis ce guide et lancez-la dans votre terminal, dans le dossier de votre projet.',
-    step2: 'Ajoutez <c1>--scope user</c1> après <c2>claude mcp add</c2> pour le rendre disponible dans tous vos projets, pas seulement celui-ci.',
-    step3: 'Ouvrez Claude Code et lancez <c>/mcp</c>. La commande liste vos serveurs et vous permet de vous connecter à ceux qui demandent un compte.',
+    step2:
+      'Ajoutez <c1>--scope user</c1> après <c2>claude mcp add</c2> pour le rendre disponible dans tous vos projets, pas seulement celui-ci.',
+    step3:
+      'Ouvrez Claude Code et lancez <c>/mcp</c>. La commande liste vos serveurs et vous permet de vous connecter à ceux qui demandent un compte.',
     step4: 'Demandez la tâche. Claude utilise les outils du serveur quand ils sont utiles.',
     badges: 'Lire les badges',
     badge: {
@@ -144,7 +164,8 @@ const fr: DeepStrings<Messages> = {
       situational: { label: 'Selon votre stack', text: 'Seulement si votre projet utilise ce service.' },
     },
     startSmall: 'Commencez petit',
-    startSmallText: 'N’installez pas tous les serveurs dont vous entendez parler. Commencez par la <a>boîte à outils de base</a>, puis ajoutez les autres quand une tâche récurrente en a vraiment besoin.',
+    startSmallText:
+      'N’installez pas tous les serveurs dont vous entendez parler. Commencez par la <a>boîte à outils de base</a>, puis ajoutez les autres quand une tâche récurrente en a vraiment besoin.',
     compareTitle: 'Playwright ou Chrome DevTools ?',
     compareLead: 'Ils se recoupent moins qu’on ne le pense, et la plupart des gens finissent par utiliser les deux.',
     orderIntro: 'Commencez avec peu d’outils, et ajoutez-en quand un vrai workflow le demande.',
@@ -152,13 +173,16 @@ const fr: DeepStrings<Messages> = {
     colPriority: 'Priorité',
     colPurpose: 'Rôle principal',
     workflowIntro: 'Imaginons que vous construisiez une nouvelle landing page Next.js. Voici à quel moment chaque serveur intervient.',
-    securityIntro: 'Chaque serveur connecté peut lire, et parfois modifier, un vrai compte. Ajoutez-en un comme vous donneriez un accès à un nouveau collègue.',
+    securityIntro:
+      'Chaque serveur connecté peut lire, et parfois modifier, un vrai compte. Ajoutez-en un comme vous donneriez un accès à un nouveau collègue.',
     setupIntro: 'Pour un développeur frontend qui travaille surtout avec React, Next.js, TypeScript, React Native et Expo.',
     core: 'Boîte à outils de base',
     addLater: 'À ajouter selon vos projets',
     finalTitle: 'La recommandation finale',
-    finalText: 'N’installez pas tous les serveurs MCP disponibles. Commencez par la boîte à outils de base, comprenez à quoi chacun a accès, et n’ajoutez des outils spécialisés que lorsqu’ils résolvent un problème qui revient souvent.',
-    footer: 'Commandes vérifiées dans la documentation de chaque éditeur, {{date}}. Un serveur manque à la liste ? <gh>Proposez-le sur GitHub</gh>.',
+    finalText:
+      'N’installez pas tous les serveurs MCP disponibles. Commencez par la boîte à outils de base, comprenez à quoi chacun a accès, et n’ajoutez des outils spécialisés que lorsqu’ils résolvent un problème qui revient souvent.',
+    footer:
+      'Commandes vérifiées dans la documentation de chaque éditeur, {{date}}. Un serveur manque à la liste ? <gh>Proposez-le sur GitHub</gh>.',
   },
   roadmap: {
     levels: 'Niveau de carrière',

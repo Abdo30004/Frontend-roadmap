@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Badge, Browser, Button, Code, Meter, Note, Panel, Row, Stack, Stat, Steps, usePlayer, type Tone } from '../../demo-kit';
 
-export const scenario = 'An insurance customer portal runs on AngularJS 1.x, which no longer gets security fixes. The team must move it to Next.js.';
-export const task = 'Move the portal to the new stack. Watch how long nothing ships, what breaks for customers, and what happens to logins and bookmarks.';
-export const solutionNote = 'Next.js becomes the front door, unmigrated paths fall back to AngularJS, one shared session, one route at a time.';
+export const scenario =
+  'An insurance customer portal runs on AngularJS 1.x, which no longer gets security fixes. The team must move it to Next.js.';
+export const task =
+  'Move the portal to the new stack. Watch how long nothing ships, what breaks for customers, and what happens to logins and bookmarks.';
+export const solutionNote =
+  'Next.js becomes the front door, unmigrated paths fall back to AngularJS, one shared session, one route at a time.';
 
-interface Route { path: string; name: string; hidden?: string }
+interface Route {
+  path: string;
+  name: string;
+  hidden?: string;
+}
 const ROUTES: Route[] = [
   { path: '/dashboard', name: 'Dashboard' },
   { path: '/claims/:id', name: 'Claim details' },
@@ -63,7 +70,15 @@ function Migration({ fixed }: { fixed: boolean }) {
     setPhase('cutover');
     setStatus(ROUTES.map((r) => (r.hidden || r.path.includes(':') ? 'broken' : 'new')));
   };
-  const reset = () => { setStatus(ROUTES.map(() => 'legacy')); setMonths(0); setShipped(0); setPhase('building'); setCurrent(-1); setSteps([]); player.reset(); };
+  const reset = () => {
+    setStatus(ROUTES.map(() => 'legacy'));
+    setMonths(0);
+    setShipped(0);
+    setPhase('building');
+    setCurrent(-1);
+    setSteps([]);
+    player.reset();
+  };
 
   const migrated = status.filter((s) => s === 'new').length;
   const badge = (s: Status, i: number) => {
@@ -79,12 +94,25 @@ function Migration({ fixed }: { fixed: boolean }) {
         <Stack gap={10}>
           <Row gap={6}>
             <Badge tone="info">portal.insurer.example</Badge>
-            <span style={{ fontSize: 13 }}>→ {fixed ? 'Next.js (front door) → fallback: AngularJS' : phase === 'cutover' ? 'Next.js (DNS switched)' : 'AngularJS'}</span>
+            <span style={{ fontSize: 13 }}>
+              → {fixed ? 'Next.js (front door) → fallback: AngularJS' : phase === 'cutover' ? 'Next.js (DNS switched)' : 'AngularJS'}
+            </span>
           </Row>
           <Stack gap={6}>
             {ROUTES.map((r, i) => (
-              <Row key={r.path} gap={8} style={{ justifyContent: 'space-between', fontSize: 13, opacity: fixed && player.playing && i === current ? 0.7 : 1, transition: 'opacity 200ms ease' }}>
-                <span><code>{r.path}</code> {r.name}</span>
+              <Row
+                key={r.path}
+                gap={8}
+                style={{
+                  justifyContent: 'space-between',
+                  fontSize: 13,
+                  opacity: fixed && player.playing && i === current ? 0.7 : 1,
+                  transition: 'opacity 200ms ease',
+                }}
+              >
+                <span>
+                  <code>{r.path}</code> {r.name}
+                </span>
                 {badge(status[i], i)}
               </Row>
             ))}
@@ -94,15 +122,34 @@ function Migration({ fixed }: { fixed: boolean }) {
 
       {fixed ? (
         <Row>
-          <Button tone="primary" onClick={migrateNext} disabled={player.playing || migrated === ROUTES.length}>Migrate next route</Button>
-          <Button tone="ghost" onClick={reset}>Reset</Button>
+          <Button tone="primary" onClick={migrateNext} disabled={player.playing || migrated === ROUTES.length}>
+            Migrate next route
+          </Button>
+          <Button tone="ghost" onClick={reset}>
+            Reset
+          </Button>
         </Row>
       ) : (
         <Row>
-          <Button tone="primary" onClick={() => setMonths((m) => m + 3)} disabled={phase !== 'building' || months >= 18}>Work 3 more months on the rewrite</Button>
-          <Button tone="danger" onClick={cutover} disabled={phase !== 'building' || months < 12}>Launch weekend: switch DNS</Button>
-          {phase === 'cutover' && <Button onClick={() => { setPhase('rolledBack'); setStatus(ROUTES.map(() => 'legacy')); }}>Roll back (2 days later)</Button>}
-          <Button tone="ghost" onClick={reset}>Reset</Button>
+          <Button tone="primary" onClick={() => setMonths((m) => m + 3)} disabled={phase !== 'building' || months >= 18}>
+            Work 3 more months on the rewrite
+          </Button>
+          <Button tone="danger" onClick={cutover} disabled={phase !== 'building' || months < 12}>
+            Launch weekend: switch DNS
+          </Button>
+          {phase === 'cutover' && (
+            <Button
+              onClick={() => {
+                setPhase('rolledBack');
+                setStatus(ROUTES.map(() => 'legacy'));
+              }}
+            >
+              Roll back (2 days later)
+            </Button>
+          )}
+          <Button tone="ghost" onClick={reset}>
+            Reset
+          </Button>
         </Row>
       )}
 
@@ -112,7 +159,9 @@ function Migration({ fixed }: { fixed: boolean }) {
         <Stack gap={6}>
           <Row style={{ justifyContent: 'space-between', fontSize: 13 }}>
             <span>Rewrite completeness (separate repo)</span>
-            <strong>{rewritten}/{legacyFeatures} features</strong>
+            <strong>
+              {rewritten}/{legacyFeatures} features
+            </strong>
           </Row>
           <Meter value={rewritten} max={legacyFeatures} tone="warn" />
           {months > 0 && <Note>Meanwhile legacy got {legacyFeatures - 40} urgent features the rewrite must also copy.</Note>}
@@ -121,22 +170,44 @@ function Migration({ fixed }: { fixed: boolean }) {
 
       <Row gap={8}>
         <Stat label="months elapsed" value={months} />
-        <Stat label="releases shipped to users" value={fixed ? shipped : 0} tone={fixed ? (shipped ? 'good' : 'neutral') : months ? 'bad' : 'neutral'} />
-        <Stat label="customer-facing bugs" value={fixed ? 0 : phase === 'building' ? '-' : CUTOVER_BUGS.length} tone={!fixed && phase !== 'building' ? 'bad' : 'good'} />
-        <Stat label="users logged out" value={!fixed && phase === 'cutover' ? 'all' : 0} tone={!fixed && phase === 'cutover' ? 'bad' : 'good'} />
+        <Stat
+          label="releases shipped to users"
+          value={fixed ? shipped : 0}
+          tone={fixed ? (shipped ? 'good' : 'neutral') : months ? 'bad' : 'neutral'}
+        />
+        <Stat
+          label="customer-facing bugs"
+          value={fixed ? 0 : phase === 'building' ? '-' : CUTOVER_BUGS.length}
+          tone={!fixed && phase !== 'building' ? 'bad' : 'good'}
+        />
+        <Stat
+          label="users logged out"
+          value={!fixed && phase === 'cutover' ? 'all' : 0}
+          tone={!fixed && phase === 'cutover' ? 'bad' : 'good'}
+        />
       </Row>
 
       {!fixed && phase !== 'building' && (
         <Panel title={phase === 'cutover' ? 'Launch weekend: support inbox' : 'After the rollback'} tone="bad">
-          {phase === 'cutover'
-            ? <Stack gap={4}>{CUTOVER_BUGS.map((b) => <div key={b} style={{ fontSize: 13 }}>✗ {b}</div>)}</Stack>
-            : <Note>Back on AngularJS after {months} months of work. Nothing shipped, and the rewrite lost the business's trust.</Note>}
+          {phase === 'cutover' ? (
+            <Stack gap={4}>
+              {CUTOVER_BUGS.map((b) => (
+                <div key={b} style={{ fontSize: 13 }}>
+                  ✗ {b}
+                </div>
+              ))}
+            </Stack>
+          ) : (
+            <Note>Back on AngularJS after {months} months of work. Nothing shipped, and the rewrite lost the business's trust.</Note>
+          )}
         </Panel>
       )}
 
-      <Code>{fixed
-        ? `// next.config.js: unmigrated paths go to the legacy app, same domain, same URLs\nrewrites: async () => ({ fallback: [{ source: '/:path*', destination: LEGACY_ORIGIN + '/:path*' }] })\n// middleware.ts: verifyLegacySession(req.cookies.get('PORTAL_SESSION'))`
-        : `location / {\n  proxy_pass http://next-app:3000;   # was: http://angularjs-app:8080\n}\nif (!req.cookies.get('next_auth_token')) redirect('/login');`}</Code>
+      <Code>
+        {fixed
+          ? `// next.config.js: unmigrated paths go to the legacy app, same domain, same URLs\nrewrites: async () => ({ fallback: [{ source: '/:path*', destination: LEGACY_ORIGIN + '/:path*' }] })\n// middleware.ts: verifyLegacySession(req.cookies.get('PORTAL_SESSION'))`
+          : `location / {\n  proxy_pass http://next-app:3000;   # was: http://angularjs-app:8080\n}\nif (!req.cookies.get('next_auth_token')) redirect('/login');`}
+      </Code>
     </Stack>
   );
 }

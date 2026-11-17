@@ -1,11 +1,19 @@
 import { useState } from 'react';
 import { Badge, Browser, Button, Code, Note, Panel, Row, Stack, Stat, usePlayer } from '../../demo-kit';
 
-export const scenario = 'A food-delivery web app home screen shows the user greeting, nearby restaurants, promotions and the active order, on a mid-range phone over 4G.';
+export const scenario =
+  'A food-delivery web app home screen shows the user greeting, nearby restaurants, promotions and the active order, on a mid-range phone over 4G.';
 export const task = 'Press "Open the app" and watch the network waterfall, the payload sizes and what the response contains.';
-export const solutionNote = 'Same screen: one call to /api/home; the BFF fans out in parallel on the server and returns only what the screen needs.';
+export const solutionNote =
+  'Same screen: one call to /api/home; the BFF fans out in parallel on the server and returns only what the screen needs.';
 
-interface Req { label: string; start: number; ms: number; kb: number; via?: 'server' }
+interface Req {
+  label: string;
+  start: number;
+  ms: number;
+  kb: number;
+  via?: 'server';
+}
 
 // Phone requests over 4G (~400 ms round trip). Each one waits for the previous (it needs its result).
 const DIRECT: Req[] = [
@@ -50,14 +58,35 @@ function HomeScreen({ fixed }: { fixed: boolean }) {
   return (
     <Stack gap={14}>
       <Row>
-        <Button tone="primary" onClick={() => { setOpened(true); player.play(); }} disabled={player.playing}>Open the app</Button>
-        <Button tone="ghost" onClick={() => { setOpened(false); player.reset(); }}>Reset</Button>
+        <Button
+          tone="primary"
+          onClick={() => {
+            setOpened(true);
+            player.play();
+          }}
+          disabled={player.playing}
+        >
+          Open the app
+        </Button>
+        <Button
+          tone="ghost"
+          onClick={() => {
+            setOpened(false);
+            player.reset();
+          }}
+        >
+          Reset
+        </Button>
       </Row>
       <Row gap={12} align="stretch">
         <Browser url="eats.example (mobile · 4G)" style={{ flex: '1 1 200px', maxWidth: 300 }}>
-          {!opened ? <Note>App not opened yet.</Note> : !loaded ? (
+          {!opened ? (
+            <Note>App not opened yet.</Note>
+          ) : !loaded ? (
             <Stack gap={8}>
-              {[0, 1, 2].map((i) => <div key={i} style={{ height: 16, borderRadius: 6, background: 'var(--paper-2)' }} />)}
+              {[0, 1, 2].map((i) => (
+                <div key={i} style={{ height: 16, borderRadius: 6, background: 'var(--paper-2)' }} />
+              ))}
               <Note>Loading…</Note>
             </Stack>
           ) : (
@@ -66,7 +95,9 @@ function HomeScreen({ fixed }: { fixed: boolean }) {
               <Badge tone="info">Order o_88 · On the way · 12 min</Badge>
               <Note>Free delivery over $20</Note>
               {['Pho Saigon · ★4.7 · 25 min', 'Pizza Nonna · ★4.5 · 30 min', 'Green Bowl · ★4.8 · 20 min'].map((r) => (
-                <div key={r} style={{ fontSize: 13, padding: '6px 8px', border: '1px solid var(--line)', borderRadius: 8 }}>{r}</div>
+                <div key={r} style={{ fontSize: 13, padding: '6px 8px', border: '1px solid var(--line)', borderRadius: 8 }}>
+                  {r}
+                </div>
               ))}
             </Stack>
           )}
@@ -75,11 +106,31 @@ function HomeScreen({ fixed }: { fixed: boolean }) {
           <Stack gap={6}>
             {reqs.map((r, i) => (
               <div key={r.label} style={{ opacity: i <= visible ? 1 : 0.15, transition: 'opacity 220ms ease' }}>
-                <div style={{ fontSize: 11.5, fontFamily: 'var(--font-mono)', color: r.via ? 'var(--ink-3)' : 'var(--ink-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {r.via ? '  ↳ ' : ''}{r.label} {r.kb ? `· ${r.kb} KB` : '· internal'}
+                <div
+                  style={{
+                    fontSize: 11.5,
+                    fontFamily: 'var(--font-mono)',
+                    color: r.via ? 'var(--ink-3)' : 'var(--ink-2)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {r.via ? '  ↳ ' : ''}
+                  {r.label} {r.kb ? `· ${r.kb} KB` : '· internal'}
                 </div>
                 <div style={{ position: 'relative', height: 8, background: 'var(--paper-2)', borderRadius: 4 }}>
-                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${(r.start / SCALE) * 100}%`, width: `${Math.max(1, (r.ms / SCALE) * 100)}%`, borderRadius: 4, background: r.kb > 100 ? 'var(--bad)' : r.via ? 'var(--ink-3)' : 'var(--info)' }} />
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      bottom: 0,
+                      left: `${(r.start / SCALE) * 100}%`,
+                      width: `${Math.max(1, (r.ms / SCALE) * 100)}%`,
+                      borderRadius: 4,
+                      background: r.kb > 100 ? 'var(--bad)' : r.via ? 'var(--ink-3)' : 'var(--info)',
+                    }}
+                  />
                 </div>
               </div>
             ))}

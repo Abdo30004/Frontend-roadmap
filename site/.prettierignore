@@ -1,0 +1,8 @@
+dist
+node_modules
+src/generated
+package-lock.json
+pnpm-lock.yaml
+
+# Compact one-line CSS rules are kept as written
+*.css

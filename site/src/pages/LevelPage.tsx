@@ -61,7 +61,11 @@ export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level
                 <a href={`#${q.slug}`} className={active === q.slug ? 'current' : undefined} onClick={closeMenu}>
                   <span className="side-num">{String(q.num).padStart(2, '0')}</span>
                   <span>{label.short(q)}</span>
-                  {isDone(questionId(q)) && <span className="side-check"><CheckIcon size={13} label={t('common.understood')} /></span>}
+                  {isDone(questionId(q)) && (
+                    <span className="side-check">
+                      <CheckIcon size={13} label={t('common.understood')} />
+                    </span>
+                  )}
                 </a>
               </li>
             ))}
@@ -75,20 +79,30 @@ export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level
           <p>{t('levelPage.intro', { blurb: label.blurb(level), count: questions.length })}</p>
         </header>
 
-        {full ? full.map((q) => <QuestionSection key={q.slug} q={q} />) : <p className="stage-missing" style={{ marginTop: 32 }}>{t('levelPage.loadingQuestions')}</p>}
+        {full ? (
+          full.map((q) => <QuestionSection key={q.slug} q={q} />)
+        ) : (
+          <p className="stage-missing" style={{ marginTop: 32 }}>
+            {t('levelPage.loadingQuestions')}
+          </p>
+        )}
 
         <div className="next-level">
           {next ? (
             <>
               <h3>{t('levelPage.next', { label: label.level(next.id) })}</h3>
               <p>{label.blurb(next.id)}</p>
-              <Link className="reveal-btn" to={`/${next.id}`} style={{ textDecoration: 'none' }}>{t('levelPage.goTo', { label: label.level(next.id) })}</Link>
+              <Link className="reveal-btn" to={`/${next.id}`} style={{ textDecoration: 'none' }}>
+                {t('levelPage.goTo', { label: label.level(next.id) })}
+              </Link>
             </>
           ) : (
             <>
               <h3>{t('levelPage.doneTitle')}</h3>
               <p>{t('levelPage.doneText')}</p>
-              <Link className="reveal-btn" to="/" style={{ textDecoration: 'none' }}>{t('levelPage.backToMap')}</Link>
+              <Link className="reveal-btn" to="/" style={{ textDecoration: 'none' }}>
+                {t('levelPage.backToMap')}
+              </Link>
             </>
           )}
         </div>

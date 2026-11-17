@@ -43,7 +43,9 @@ const figma: Server = {
   priorityLabel: 'Essentiel',
   kind: 'Remote',
   link: { label: 'figma.com', url: 'https://www.figma.com/' },
-  lead: ['Connecte Claude à vos fichiers Figma, pour qu’il lise directement le design au lieu de le deviner à partir d’une capture d’écran.'],
+  lead: [
+    'Connecte Claude à vos fichiers Figma, pour qu’il lise directement le design au lieu de le deviner à partir d’une capture d’écran.',
+  ],
   uses: [
     'Inspecter les mises en page, les espacements, la typographie et les couleurs',
     'Comprendre les composants et la structure du design',
@@ -51,7 +53,8 @@ const figma: Server = {
     'Référencer les assets et les variables du design',
   ],
   install: 'claude mcp add --transport http figma https://mcp.figma.com/mcp',
-  setup: 'Lancez `/mcp` dans Claude Code et connectez-vous à Figma quand on vous le demande. Vous préférez l’application desktop ? Activez son serveur MCP dans le Dev Mode et connectez-vous plutôt à `http://127.0.0.1:3845/mcp`.',
+  setup:
+    'Lancez `/mcp` dans Claude Code et connectez-vous à Figma quand on vous le demande. Vous préférez l’application desktop ? Activez son serveur MCP dans le Dev Mode et connectez-vous plutôt à `http://127.0.0.1:3845/mcp`.',
 };
 
 const shadcn: Server = {
@@ -62,7 +65,9 @@ const shadcn: Server = {
   priorityLabel: 'Essentiel si vous utilisez shadcn/ui',
   kind: 'Local',
   link: { label: 'ui.shadcn.com', url: 'https://ui.shadcn.com/docs/mcp' },
-  lead: ['Permet à Claude de parcourir, rechercher et installer des composants depuis shadcn/ui et tout autre registre utilisé par votre projet.'],
+  lead: [
+    'Permet à Claude de parcourir, rechercher et installer des composants depuis shadcn/ui et tout autre registre utilisé par votre projet.',
+  ],
   uses: [
     'Trouver des composants réutilisables',
     'Installer des composants depuis des registres',
@@ -92,7 +97,8 @@ const context7: Server = {
     'NestJS et d’autres bibliothèques backend',
   ],
   install: 'claude mcp add --transport http context7 https://mcp.context7.com/mcp -H "Authorization: Bearer YOUR_API_KEY"',
-  setup: 'Remplacez `YOUR_API_KEY` par une clé gratuite obtenue sur context7.com. Ou lancez `npx ctx7 setup --claude`, qui vous connecte et s’en charge pour vous.',
+  setup:
+    'Remplacez `YOUR_API_KEY` par une clé gratuite obtenue sur context7.com. Ou lancez `npx ctx7 setup --claude`, qui vous connecte et s’en charge pour vous.',
 };
 
 const expoDocs: Server = {
@@ -182,7 +188,9 @@ const linear: Server = {
   priorityLabel: 'Optionnel, idéal pour les équipes',
   kind: 'Remote',
   link: { label: 'linear.app', url: 'https://linear.app/docs/mcp' },
-  lead: ['Relie les tâches et la planification de votre équipe à Claude, pour qu’il travaille à partir du ticket plutôt que de votre résumé.'],
+  lead: [
+    'Relie les tâches et la planification de votre équipe à Claude, pour qu’il travaille à partir du ticket plutôt que de votre résumé.',
+  ],
   uses: [
     'Lire et créer des issues',
     'Mettre à jour le statut des tâches',
@@ -190,7 +198,8 @@ const linear: Server = {
     'Transformer les rapports de bugs en tâches concrètes',
   ],
   install: 'claude mcp add --transport http linear https://mcp.linear.app/mcp',
-  setup: 'Lancez `/mcp` dans Claude Code et connectez-vous à Linear quand on vous le demande. Pour un accès en lecture seule, utilisez plutôt `https://mcp.linear.app/mcp/readonly`.',
+  setup:
+    'Lancez `/mcp` dans Claude Code et connectez-vous à Linear quand on vous le demande. Pour un accès en lecture seule, utilisez plutôt `https://mcp.linear.app/mcp/readonly`.',
 };
 
 const sentry: Server = {
@@ -201,7 +210,9 @@ const sentry: Server = {
   priorityLabel: 'Recommandé',
   kind: 'Remote',
   link: { label: 'mcp.sentry.dev', url: 'https://mcp.sentry.dev/' },
-  lead: ['Fait entrer dans la conversation les erreurs et les problèmes de performance de votre app en production, stack traces comprises.'],
+  lead: [
+    'Fait entrer dans la conversation les erreurs et les problèmes de performance de votre app en production, stack traces comprises.',
+  ],
   uses: [
     'Enquêter sur les erreurs d’exécution React',
     'Examiner les stack traces',
@@ -210,7 +221,8 @@ const sentry: Server = {
     'Enquêter sur les problèmes de performance',
   ],
   install: 'claude mcp add --transport http sentry https://mcp.sentry.dev/mcp',
-  setup: 'Lancez `/mcp` dans Claude Code et connectez-vous à Sentry quand on vous le demande. Sentry recommande de le limiter à un seul projet en ajoutant `/your-org/your-project` à l’URL.',
+  setup:
+    'Lancez `/mcp` dans Claude Code et connectez-vous à Sentry quand on vous le demande. Sentry recommande de le limiter à un seul projet en ajoutant `/your-org/your-project` à l’URL.',
 };
 
 const vercel: Server = {
@@ -221,7 +233,9 @@ const vercel: Server = {
   priorityLabel: 'Recommandé pour Next.js',
   kind: 'Remote',
   link: { label: 'vercel.com', url: 'https://vercel.com/docs/agent-resources/vercel-mcp' },
-  lead: ['Permet à Claude de voir vos déploiements : un build en échec peut être lu et corrigé sans copier les logs dans un sens puis dans l’autre.'],
+  lead: [
+    'Permet à Claude de voir vos déploiements : un build en échec peut être lu et corrigé sans copier les logs dans un sens puis dans l’autre.',
+  ],
   uses: [
     'Inspecter les déploiements',
     'Examiner les logs de build',
@@ -248,8 +262,10 @@ const supabase: Server = {
     'Inspecter les policies de Row Level Security',
     'Travailler avec les Edge Functions',
   ],
-  install: 'claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF&read_only=true"',
-  setup: 'Remplacez `YOUR_PROJECT_REF` par un projet de développement, puis connectez-vous via `/mcp` dans un terminal classique. `read_only=true` empêche Claude de modifier les données.',
+  install:
+    'claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF&read_only=true"',
+  setup:
+    'Remplacez `YOUR_PROJECT_REF` par un projet de développement, puis connectez-vous via `/mcp` dans un terminal classique. `read_only=true` empêche Claude de modifier les données.',
 };
 
 const cloudflare: Server = {
@@ -259,8 +275,13 @@ const cloudflare: Server = {
   priority: 'situational',
   priorityLabel: 'Si vous utilisez Cloudflare',
   kind: 'Remote',
-  link: { label: 'developers.cloudflare.com', url: 'https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/' },
-  lead: ['Un seul serveur pour toute l’API Cloudflare, Workers et R2 compris, plus la documentation de Cloudflare. Il remplace les anciens serveurs par produit, désormais dépréciés.'],
+  link: {
+    label: 'developers.cloudflare.com',
+    url: 'https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/',
+  },
+  lead: [
+    'Un seul serveur pour toute l’API Cloudflare, Workers et R2 compris, plus la documentation de Cloudflare. Il remplace les anciens serveurs par produit, désormais dépréciés.',
+  ],
   uses: [
     'Gérer les Workers',
     'Travailler avec le stockage objet R2',
@@ -268,7 +289,8 @@ const cloudflare: Server = {
     'Accompagner les workflows d’infrastructure',
   ],
   install: 'claude mcp add --transport http cloudflare https://mcp.cloudflare.com/mcp',
-  setup: 'Lancez `/mcp` dans Claude Code et connectez-vous à Cloudflare. Vous choisissez les permissions à accorder au moment de la connexion.',
+  setup:
+    'Lancez `/mcp` dans Claude Code et connectez-vous à Cloudflare. Vous choisissez les permissions à accorder au moment de la connexion.',
 };
 
 const stripe: Server = {
@@ -279,14 +301,17 @@ const stripe: Server = {
   priorityLabel: 'Si vous acceptez des paiements',
   kind: 'Remote',
   link: { label: 'docs.stripe.com', url: 'https://docs.stripe.com/mcp' },
-  lead: ['Permet à Claude de consulter votre compte Stripe et la documentation de Stripe pendant que vous développez un parcours de paiement.'],
+  lead: [
+    'Permet à Claude de consulter votre compte Stripe et la documentation de Stripe pendant que vous développez un parcours de paiement.',
+  ],
   uses: [
     'Explorer les ressources de l’API Stripe',
     'Comprendre les workflows d’intégration des paiements',
     'Inspecter les objets et les événements de paiement',
   ],
   install: 'claude mcp add --transport http stripe https://mcp.stripe.com/',
-  setup: 'Lancez `/mcp` dans Claude Code et connectez-vous à Stripe, en mode test pendant le développement. Si vous utilisez plutôt une clé : à partir de décembre 2026, Stripe n’accepte plus que les clés d’API pour agents, et elle doit aller dans `.mcp.json`, pas dans la ligne de commande.',
+  setup:
+    'Lancez `/mcp` dans Claude Code et connectez-vous à Stripe, en mode test pendant le développement. Si vous utilisez plutôt une clé : à partir de décembre 2026, Stripe n’accepte plus que les clés d’API pour agents, et elle doit aller dans `.mcp.json`, pas dans la ligne de commande.',
 };
 
 /* ------------------------------------------------------------- sections */
@@ -301,7 +326,9 @@ export const MCP_SECTIONS: McpSection[] = [
   {
     id: 'docs',
     title: 'Documentation et références d’API',
-    intro: ['Les bibliothèques évoluent plus vite que les données d’entraînement de n’importe quel modèle. Ces ressources maintiennent Claude à jour sur l’API actuelle.'],
+    intro: [
+      'Les bibliothèques évoluent plus vite que les données d’entraînement de n’importe quel modèle. Ces ressources maintiennent Claude à jour sur l’API actuelle.',
+    ],
     servers: [context7, expoDocs],
   },
   {
@@ -358,8 +385,16 @@ export const WORKFLOW: { tool: string; id?: string; does: string }[] = [
   { tool: 'Context7', id: 'context7', does: 'Récupérer la documentation à jour de React, de Next.js et des bibliothèques.' },
   { tool: 'GitHub MCP', id: 'github', does: 'Comprendre la structure et les conventions du dépôt existant.' },
   { tool: 'Implémentation', does: 'Construire la page en suivant l’architecture et le design system du projet.' },
-  { tool: 'Playwright MCP', id: 'playwright', does: 'Tester la navigation, les formulaires, les interactions et le comportement responsive.' },
-  { tool: 'Chrome DevTools MCP', id: 'chrome-devtools', does: 'Vérifier les erreurs de la console, les requêtes réseau et la performance.' },
+  {
+    tool: 'Playwright MCP',
+    id: 'playwright',
+    does: 'Tester la navigation, les formulaires, les interactions et le comportement responsive.',
+  },
+  {
+    tool: 'Chrome DevTools MCP',
+    id: 'chrome-devtools',
+    does: 'Vérifier les erreurs de la console, les requêtes réseau et la performance.',
+  },
   { tool: 'Vercel', id: 'vercel', does: 'Inspecter le déploiement et ses logs de build.' },
   { tool: 'Sentry', id: 'sentry', does: 'Enquêter sur les erreurs après la mise en production.' },
 ];

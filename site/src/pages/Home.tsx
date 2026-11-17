@@ -18,8 +18,12 @@ export function Home() {
         <h1>{t('home.title')}</h1>
         <p>{t('home.lead', { total })}</p>
         <div className="hero-cta">
-          <Link to={`/${LEVELS[0].id}`} className="btn btn-primary">{t('home.start')}</Link>
-          <a href="#map" className="btn btn-secondary">{t('home.explore')}</a>
+          <Link to={`/${LEVELS[0].id}`} className="btn btn-primary">
+            {t('home.start')}
+          </Link>
+          <a href="#map" className="btn btn-secondary">
+            {t('home.explore')}
+          </a>
         </div>
       </div>
 

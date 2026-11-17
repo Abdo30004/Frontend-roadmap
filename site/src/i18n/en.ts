@@ -102,15 +102,18 @@ const en = {
     aSet: 'A set of skills',
     whenToUse: 'When to use it',
     proTip: 'Pro tip',
-    startIntro: 'Once a skill is installed, Claude loads it on its own whenever a task fits. You do not call it by name; you just describe the work.',
+    startIntro:
+      'Once a skill is installed, Claude loads it on its own whenever a task fits. You do not call it by name; you just describe the work.',
     howToInstall: 'How to install a skill',
     step1: 'Find a skill in this guide and copy its install command.',
     step2: 'Run it in your project folder. Add <c>-g</c> to install it for every project instead.',
     step3: 'Ask Claude for the task. The skill loads when it is relevant.',
     onlyThree: 'If you only install three',
-    onlyThreeText: 'Make them <a1>react-best-practices</a1>, <a2>frontend-design</a2> and <a3>web-design-guidelines</a3>. Together they cover how your code is written, how your interface looks, and whether it holds up on every screen.',
+    onlyThreeText:
+      'Make them <a1>react-best-practices</a1>, <a2>frontend-design</a2> and <a3>web-design-guidelines</a3>. Together they cover how your code is written, how your interface looks, and whether it holds up on every screen.',
     beforeInstall: 'Before you install',
-    beforeInstallText: 'A skill is a set of instructions your agent will follow. Read it on skills.sh or GitHub before you install it, the same way you would check an npm package.',
+    beforeInstallText:
+      'A skill is a set of instructions your agent will follow. Read it on skills.sh or GitHub before you install it, the same way you would check an npm package.',
     nextCovers: 'What the built-in rules cover',
     pipelineTitle: 'Pro tip: the ideal design-to-code workflow',
     pipelineLead: 'Four tools, one pipeline:',
@@ -121,14 +124,21 @@ const en = {
     footer: 'Install counts are from the skills.sh registry, {{date}}. Want a skill added to this guide? <gh>Suggest it on GitHub</gh>.',
   },
   mcp: {
-    toc: { start: 'Start here', order: 'Installation order', workflow: 'An example workflow', security: 'Security and configuration', setup: 'Your setup' },
+    toc: {
+      start: 'Start here',
+      order: 'Installation order',
+      workflow: 'An example workflow',
+      security: 'Security and configuration',
+      setup: 'Your setup',
+    },
     h1: 'The MCP toolkit for frontend developers',
     dek: 'MCP servers connect Claude to the tools you already use: your designs, your docs, a real browser, your repository and your deployments. This guide covers the ones worth adding for React, Next.js and TypeScript work, what each one is for, and how to set them up safely.',
     byline: 'Updated {{date}}',
     by: 'by <b>{{vendor}}</b>',
     kind: { Remote: 'Hosted server', Local: 'Runs on your machine', Docs: 'Documentation' },
     helpsWith: 'What it helps with',
-    startIntro: 'A <sk>skill</sk> teaches Claude how to do a job. An MCP server gives it access to something it can’t otherwise reach: a Figma file, a browser tab, your GitHub issues. Together they cover a frontend workflow from design to production.',
+    startIntro:
+      'A <sk>skill</sk> teaches Claude how to do a job. An MCP server gives it access to something it can’t otherwise reach: a Figma file, a browser tab, your GitHub issues. Together they cover a frontend workflow from design to production.',
     howToAdd: 'How to add a server',
     step1: 'Copy the server’s command from this guide and run it in your terminal, inside your project folder.',
     step2: 'Add <c1>--scope user</c1> after <c2>claude mcp add</c2> to make it available in every project instead of just this one.',
@@ -142,7 +152,8 @@ const en = {
       situational: { label: 'If you use it', text: 'Only if your project runs on that service.' },
     },
     startSmall: 'Start small',
-    startSmallText: 'Don’t install every server you read about. Begin with the <a>core toolkit</a> and add the others when a task you repeat would actually need them.',
+    startSmallText:
+      'Don’t install every server you read about. Begin with the <a>core toolkit</a> and add the others when a task you repeat would actually need them.',
     compareTitle: 'Playwright or Chrome DevTools?',
     compareLead: 'They overlap less than it seems, and most people end up using both.',
     orderIntro: 'Start with a small set and add tools when a real workflow needs them.',
@@ -150,13 +161,16 @@ const en = {
     colPriority: 'Priority',
     colPurpose: 'Main purpose',
     workflowIntro: 'Say you are building a new Next.js landing page. Here is where each server comes in.',
-    securityIntro: 'Every server you connect can read from, and sometimes write to, a real account. Treat adding one like giving a new teammate access.',
+    securityIntro:
+      'Every server you connect can read from, and sometimes write to, a real account. Treat adding one like giving a new teammate access.',
     setupIntro: 'For a frontend developer working mainly with React, Next.js, TypeScript, React Native and Expo.',
     core: 'Core toolkit',
     addLater: 'Add based on your projects',
     finalTitle: 'The final recommendation',
-    finalText: 'Do not install every MCP server available. Start with the core toolkit, understand what each one can access, and add specialized tools only when they solve a problem you keep running into.',
-    footer: 'Commands checked against each vendor’s documentation, {{date}}. Know a server that belongs here? <gh>Suggest it on GitHub</gh>.',
+    finalText:
+      'Do not install every MCP server available. Start with the core toolkit, understand what each one can access, and add specialized tools only when they solve a problem you keep running into.',
+    footer:
+      'Commands checked against each vendor’s documentation, {{date}}. Know a server that belongs here? <gh>Suggest it on GitHub</gh>.',
   },
   roadmap: {
     levels: 'Career level',

@@ -6,18 +6,39 @@ export const task = 'Click "Log out" in tab A, then look at tab B and try "Send 
 export const solutionNote = 'Same tabs: logout revokes the session on the server and is broadcast on a real BroadcastChannel.';
 
 type Log = (text: string, tone?: 'bad' | 'good' | 'info' | 'warn') => void;
-interface Server { valid: Set<string>; seq: number; loggedOut: Set<string> }
+interface Server {
+  valid: Set<string>;
+  seq: number;
+  loggedOut: Set<string>;
+}
 
 // The fake bank API. With the fix, logout deletes the session and every request checks it.
 async function api(server: Server, fixed: boolean, path: string, token: string, signal: AbortSignal) {
   await fakeRequest(null, { delay: 350, signal });
-  if (path === '/auth/logout') { if (fixed) server.valid.delete(token); server.loggedOut.add(token); return 204; }
+  if (path === '/auth/logout') {
+    if (fixed) server.valid.delete(token);
+    server.loggedOut.add(token);
+    return 204;
+  }
   if (fixed && !server.valid.has(token)) return 401;
   return 200; // bug: a stateless token is accepted until it expires (in 30 days)
 }
 
-function Tab({ name, page, fixed, server, channel, log, onStatus }: {
-  name: string; page: string; fixed: boolean; server: Server; channel: string; log: Log;
+function Tab({
+  name,
+  page,
+  fixed,
+  server,
+  channel,
+  log,
+  onStatus,
+}: {
+  name: string;
+  page: string;
+  fixed: boolean;
+  server: Server;
+  channel: string;
+  log: Log;
   onStatus: (tab: string, s: { signedIn: boolean; afterLogout?: boolean }) => void;
 }) {
   const [token, setToken] = useState<string | null>('tok_1'); // in-memory, per tab
@@ -39,19 +60,34 @@ function Tab({ name, page, fixed, server, channel, log, onStatus }: {
     chan.current = ch;
     ch.onmessage = (e: MessageEvent<{ type: string }>) => {
       if (e.data.type !== 'logout') return;
-      if (asleepRef.current) { log(`${name}: (asleep) missed the "logout" message`, 'warn'); return; }
+      if (asleepRef.current) {
+        log(`${name}: (asleep) missed the "logout" message`, 'warn');
+        return;
+      }
       log(`${name}: received "logout" on BroadcastChannel → clearing data`, 'good');
-      setToken(null); setNotice('You were signed out in another tab.');
+      setToken(null);
+      setNotice('You were signed out in another tab.');
     };
-    return () => { ch.close(); chan.current = null; };
+    return () => {
+      ch.close();
+      chan.current = null;
+    };
   }, [fixed, channel, name, log]);
 
   const logout = async () => {
     if (!token) return;
     const t = token;
-    setToken(null); setNotice('');
-    if (!fixed) { log(`${name}: cleared its own state, no server call, no message to other tabs`, 'warn'); return; }
-    try { await api(server, fixed, '/auth/logout', t, life.current.signal); } catch { return; }
+    setToken(null);
+    setNotice('');
+    if (!fixed) {
+      log(`${name}: cleared its own state, no server call, no message to other tabs`, 'warn');
+      return;
+    }
+    try {
+      await api(server, fixed, '/auth/logout', t, life.current.signal);
+    } catch {
+      return;
+    }
     log(`${name}: POST /auth/logout → 204, session revoked on the server`, 'info');
     chan.current?.postMessage({ type: 'logout' });
   };
@@ -59,10 +95,15 @@ function Tab({ name, page, fixed, server, channel, log, onStatus }: {
   const send = async () => {
     if (!token) return;
     let status: number;
-    try { status = await api(server, fixed, '/transfers', token, life.current.signal); } catch { return; }
+    try {
+      status = await api(server, fixed, '/transfers', token, life.current.signal);
+    } catch {
+      return;
+    }
     if (status === 401) {
       log(`${name}: POST /transfers → 401 (session revoked) → signed out`, 'good');
-      setToken(null); setNotice('Your session ended. Please log in again.');
+      setToken(null);
+      setNotice('Your session ended. Please log in again.');
       return;
     }
     setBalance((b) => b - 200);
@@ -74,7 +115,8 @@ function Tab({ name, page, fixed, server, channel, log, onStatus }: {
   return (
     <Browser url={`bank.example/${page}`} style={{ flex: '1 1 150px', minWidth: 0 }}>
       <Stack gap={8}>
-        <Row><strong style={{ flex: '1 1 auto' }}>Tab {name}</strong>
+        <Row>
+          <strong style={{ flex: '1 1 auto' }}>Tab {name}</strong>
           <label style={{ fontSize: 12, color: 'var(--ink-3)', display: 'flex', gap: 4, alignItems: 'center' }}>
             <input type="checkbox" checked={asleep} onChange={(e) => setAsleep(e.target.checked)} /> asleep
           </label>
@@ -84,7 +126,12 @@ function Tab({ name, page, fixed, server, channel, log, onStatus }: {
             <Badge tone="info">Signed in as the Jansen family</Badge>
             <div style={{ font: '600 20px var(--font-mono)' }}>€{balance.toLocaleString('en-US')}</div>
             <Note>Last: Rent −€1,150 · Salary +€3,400</Note>
-            <Row><Button onClick={send}>Send €200</Button><Button tone="ghost" onClick={logout}>Log out</Button></Row>
+            <Row>
+              <Button onClick={send}>Send €200</Button>
+              <Button tone="ghost" onClick={logout}>
+                Log out
+              </Button>
+            </Row>
           </>
         ) : (
           <Stack gap={6}>
@@ -121,16 +168,22 @@ function Bank({ fixed, reset }: { fixed: boolean; reset: () => void }) {
         <Stat label="tabs still showing balances after a logout" value={exposed} tone={exposed ? 'bad' : 'neutral'} />
         <Stat label="transfers after logout" value={abuse} tone={abuse ? 'bad' : 'neutral'} />
       </Row>
-      <Row><Button tone="ghost" onClick={reset}>Reset both tabs</Button></Row>
-      <Code>{fixed
-        ? `await api.post('/auth/logout');            // server deletes the session
+      <Row>
+        <Button tone="ghost" onClick={reset}>
+          Reset both tabs
+        </Button>
+      </Row>
+      <Code>
+        {fixed
+          ? `await api.post('/auth/logout');            // server deletes the session
 channel.postMessage({ type: 'logout' });    // other tabs clear their data
 channel.onmessage = (e) => e.data.type === 'logout' && clearLocalSession();
 // + any 401 from the API → clearLocalSession()`
-        : `onClick={() => {
+          : `onClick={() => {
   setUser(null); setAccessToken(null);   // only THIS tab's memory
   navigate('/login');                     // no server call, no message
-}}`}</Code>
+}}`}
+      </Code>
       <Console lines={c.lines} height={130} onClear={c.clear} />
     </Stack>
   );

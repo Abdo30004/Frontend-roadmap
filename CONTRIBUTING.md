@@ -16,7 +16,7 @@ You can contribute in English or French. Small pull requests are easiest to revi
 
 ## Set up the project
 
-You need Node.js 18.18 or newer and npm. Please use npm, not pnpm or yarn, so there is only one lockfile.
+You need Node.js 20.19 or newer and npm. Please use npm, not pnpm or yarn, so there is only one lockfile.
 
 ```bash
 git clone https://github.com/<your-username>/Frontend-roadmap.git
@@ -28,10 +28,19 @@ npm run dev
 Before you open a pull request, run:
 
 ```bash
+npm run check   # content, types, lint, formatting and tests
 npm run build
 ```
 
-It type-checks the whole site and fails if something is broken.
+CI runs the same commands on every pull request, so if they pass on your machine they should pass there too. If formatting fails, `npm run format` fixes it.
+
+| Command | What it checks |
+| --- | --- |
+| `npm run check:content` | Every question has the four `##` sections, a line in `catalog.ts`, a demo with its exports, and its French files (missing French is a warning, not an error) |
+| `npm run typecheck` | TypeScript |
+| `npm run lint` | ESLint: errors fail, warnings don't |
+| `npm run format:check` | Prettier. CSS files are left out on purpose, to keep their compact one-line rules |
+| `npm test` | Vitest: the markdown parser, the progress store and the translations |
 
 ## How a question is built
 
@@ -118,6 +127,7 @@ Build it with the pieces in `site/src/demo-kit` (`Browser`, `Button`, `Input`, `
 Demos run in the reader's browser, so:
 
 - no real network calls: use `fakeRequest` instead;
+- the `Problem` code is meant to be wrong, so ESLint may flag it. Silence that one line with a comment that says why, for example `// eslint-disable-next-line no-var -- this is the bug the demo shows`;
 - clean up every timer, listener and subscription when the component unmounts;
 - keep the text inside the demo in English.
 
@@ -144,7 +154,7 @@ The site is Vite, React 18 and TypeScript. Some conventions:
 ## Pull requests
 
 1. Fork the repo and create a branch: `fix/closures-typo`, `content/new-question-web-workers`, `i18n/fr-mid-level`…
-2. Make your change and run `npm run build` in `site/`.
+2. Make your change and run `npm run check` and `npm run build` in `site/`.
 3. Open the pull request and fill in the checklist.
 
 Commit messages follow the style already in the history: `feat: …`, `fix: …`, `content: …`, `i18n: …`, `docs: …`.

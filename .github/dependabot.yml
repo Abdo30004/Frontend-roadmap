@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /site
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # One pull request for all minor and patch updates, instead of one per package
+      minor-and-patch:
+        update-types: [minor, patch]
+      # Lint, format and test tools move together
+      tooling:
+        patterns: ['eslint*', '@eslint/*', 'typescript-eslint', 'prettier', 'vitest', 'jsdom', '@testing-library/*', 'globals']
+        update-types: [major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci

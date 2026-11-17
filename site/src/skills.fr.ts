@@ -140,7 +140,13 @@ const webDesignGuidelines = skill({
   ],
   list: {
     title: 'Ce qu’il couvre',
-    items: ['La typographie', 'Les espacements', 'Les systèmes de couleurs', 'Le comportement responsive', 'Les fondamentaux de l’accessibilité'],
+    items: [
+      'La typographie',
+      'Les espacements',
+      'Les systèmes de couleurs',
+      'Le comportement responsive',
+      'Les fondamentaux de l’accessibilité',
+    ],
   },
 });
 
@@ -253,7 +259,9 @@ const stitchLoop = skill({
       'On recommence jusqu’à ce que ce soit juste.',
     ],
   },
-  after: ['C’est plus lent qu’une traduction en une seule passe, mais les résultats sont systématiquement meilleurs pour les interfaces complexes.'],
+  after: [
+    'C’est plus lent qu’une traduction en une seule passe, mais les résultats sont systématiquement meilleurs pour les interfaces complexes.',
+  ],
 });
 
 const enhancePrompt = skill({
@@ -298,7 +306,9 @@ const canvasDesign = skill({
   author: 'Anthropic',
   pkg: 'anthropics/skills@canvas-design',
   installs: 133_000,
-  lead: ['Crée des visuels en PNG ou en PDF, guidé par une philosophie de design rédigée. Pratique pour les affiches, les couvertures et autres visuels statiques.'],
+  lead: [
+    'Crée des visuels en PNG ou en PDF, guidé par une philosophie de design rédigée. Pratique pour les affiches, les couvertures et autres visuels statiques.',
+  ],
 });
 
 const algorithmicArt = skill({
@@ -307,7 +317,9 @@ const algorithmicArt = skill({
   author: 'Anthropic',
   pkg: 'anthropics/skills@algorithmic-art',
   installs: 96_000,
-  lead: ['De l’art génératif avec p5.js : flow fields, particules et aléatoire à graine, pour qu’une même graine dessine toujours la même œuvre.'],
+  lead: [
+    'De l’art génératif avec p5.js : flow fields, particules et aléatoire à graine, pour qu’une même graine dessine toujours la même œuvre.',
+  ],
 });
 
 const wordpress = skill({
@@ -333,7 +345,9 @@ export const SECTIONS: Section[] = [
   {
     id: 'react',
     title: 'React',
-    intro: ['Les skills React sont la colonne vertébrale de la catégorie frontend. Commencez par le premier et ajoutez les autres selon les besoins de votre projet.'],
+    intro: [
+      'Les skills React sont la colonne vertébrale de la catégorie frontend. Commencez par le premier et ajoutez les autres selon les besoins de votre projet.',
+    ],
     skills: [reactBestPractices, compositionPatterns, remotion],
   },
   {
@@ -345,7 +359,9 @@ export const SECTIONS: Section[] = [
   {
     id: 'design',
     title: 'Qualité du design',
-    intro: ['On trouve ici deux types de skills : ceux qui poussent Claude vers un design plus audacieux et plus original, et ceux qui le maintiennent au niveau des standards professionnels. Il vous faut les deux.'],
+    intro: [
+      'On trouve ici deux types de skills : ceux qui poussent Claude vers un design plus audacieux et plus original, et ceux qui le maintiennent au niveau des standards professionnels. Il vous faut les deux.',
+    ],
     skills: [frontendDesign, webDesignGuidelines, uiUxProMax, platformDesign, uiSkills],
   },
   {
@@ -384,7 +400,10 @@ export const NEXTJS_NOTE = {
   ],
   commands: [
     { label: 'Sur les versions antérieures, récupérez la même documentation à la main :', cmd: 'npx @next/codemod@canary agents-md' },
-    { label: 'Les skills de workflow restants (cache components, partial prefetching) se trouvent dans le dépôt Next.js :', cmd: 'npx skills add vercel/next.js' },
+    {
+      label: 'Les skills de workflow restants (cache components, partial prefetching) se trouvent dans le dépôt Next.js :',
+      cmd: 'npx skills add vercel/next.js',
+    },
   ],
 };
 
@@ -404,7 +423,11 @@ export const STACKS: { title: string; rows: { name: string; id?: string; why: st
       { name: 'frontend-design', id: 'frontend-design', why: 'Une direction de design créative, loin du générique' },
       { name: 'web-design-guidelines', id: 'web-design-guidelines', why: 'Standards professionnels et comportement responsive' },
       { name: 'tailwind-design-system', id: 'tailwind-design-system', why: 'Une implémentation Tailwind méthodique' },
-      { name: 'Documentation intégrée à Next.js', id: 'nextjs', why: 'Recommandations sur l’App Router, intégrées à Next.js 16.3+ (rien à installer)' },
+      {
+        name: 'Documentation intégrée à Next.js',
+        id: 'nextjs',
+        why: 'Recommandations sur l’App Router, intégrées à Next.js 16.3+ (rien à installer)',
+      },
     ],
   },
   {
@@ -419,7 +442,11 @@ export const STACKS: { title: string; rows: { name: string; id?: string; why: st
   {
     title: 'Un workflow du design au code',
     rows: [
-      { name: 'figma-implement-design', id: 'figma-implement-design', why: 'Avec le serveur MCP Figma : lit vos maquettes et les traduit en code' },
+      {
+        name: 'figma-implement-design',
+        id: 'figma-implement-design',
+        why: 'Avec le serveur MCP Figma : lit vos maquettes et les traduit en code',
+      },
       { name: 'stitch-loop', id: 'stitch-loop', why: 'Affinage itératif' },
       { name: 'frontend-design', id: 'frontend-design', why: 'Un rendu singulier, loin du générique' },
       { name: 'web-design-guidelines', id: 'web-design-guidelines', why: 'Standards de qualité professionnels' },

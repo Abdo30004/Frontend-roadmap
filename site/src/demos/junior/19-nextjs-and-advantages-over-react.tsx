@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Badge, Browser, Button, Code, Note, Panel, Row, Stack, Stat, Steps, sleep, type Tone } from '../../demo-kit';
 
-export const scenario = 'Nordic Home sells furniture online. Marketing shares the new oak table page on social media and waits for Google traffic.';
+export const scenario =
+  'Nordic Home sells furniture online. Marketing shares the new oak table page on social media and waits for Google traffic.';
 export const task = 'Press "Crawl the page" and "Share the link", then "Open on a phone". Look at what each one actually receives.';
-export const solutionNote = 'Same page moved to the Next.js App Router: server-rendered HTML with metadata, ISR and one small client component.';
+export const solutionNote =
+  'Same page moved to the Next.js App Router: server-rendered HTML with metadata, ISR and one small client component.';
 
 const PRODUCT = { name: 'Oak Dining Table', desc: 'Solid oak table for 6, oiled finish, made in Sweden.', price: '899' };
 
@@ -35,7 +37,11 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
 
   // What a crawler (no JavaScript executed) can read from the response.
   const html = fixed ? NEXT_HTML : SPA_HTML;
-  const text = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<title>[\s\S]*?<\/title>/, '').replace(/<[^>]+>/g, ' ').trim();
+  const text = html
+    .replace(/<script[\s\S]*?<\/script>/g, '')
+    .replace(/<title>[\s\S]*?<\/title>/, '')
+    .replace(/<[^>]+>/g, ' ')
+    .trim();
   const words = text ? text.split(/\s+/).length : 0;
   const title = fixed ? `${PRODUCT.name} | Nordic Home` : 'React App';
 
@@ -64,15 +70,35 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
       }
       setBusy(false);
       setSeen((x) => ({ ...x, phone: true }));
-    } catch { /* unmounted */ }
+    } catch {
+      /* unmounted */
+    }
   };
 
   return (
     <Stack gap={14}>
       <Row>
-        <Button onClick={() => { setView('crawl'); setSeen((x) => ({ ...x, crawl: true })); }} disabled={busy}>Crawl the page (Googlebot)</Button>
-        <Button onClick={() => { setView('share'); setSeen((x) => ({ ...x, share: true })); }} disabled={busy}>Share the link</Button>
-        <Button tone="primary" onClick={phone} disabled={busy}>Open on a phone (4G)</Button>
+        <Button
+          onClick={() => {
+            setView('crawl');
+            setSeen((x) => ({ ...x, crawl: true }));
+          }}
+          disabled={busy}
+        >
+          Crawl the page (Googlebot)
+        </Button>
+        <Button
+          onClick={() => {
+            setView('share');
+            setSeen((x) => ({ ...x, share: true }));
+          }}
+          disabled={busy}
+        >
+          Share the link
+        </Button>
+        <Button tone="primary" onClick={phone} disabled={busy}>
+          Open on a phone (4G)
+        </Button>
       </Row>
 
       {view === 'none' && <Note>Pick who visits nordichome.example/products/oak-table.</Note>}
@@ -91,8 +117,18 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
 
       {view === 'share' && (
         <Panel title="Chat · link preview">
-          <div style={{ maxWidth: 280, border: '1px solid var(--line)', borderRadius: 10, overflow: 'hidden', background: 'var(--surface)' }}>
-            <div style={{ height: 90, display: 'grid', placeItems: 'center', fontSize: 40, background: fixed ? 'var(--warn-soft)' : 'var(--paper-2)' }}>
+          <div
+            style={{ maxWidth: 280, border: '1px solid var(--line)', borderRadius: 10, overflow: 'hidden', background: 'var(--surface)' }}
+          >
+            <div
+              style={{
+                height: 90,
+                display: 'grid',
+                placeItems: 'center',
+                fontSize: 40,
+                background: fixed ? 'var(--warn-soft)' : 'var(--paper-2)',
+              }}
+            >
               {fixed ? '🪵' : <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>no image</span>}
             </div>
             <div style={{ padding: 10 }}>
@@ -114,10 +150,17 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
                   <Stack gap={6}>
                     <strong>{PRODUCT.name}</strong>
                     <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>{PRODUCT.desc}</div>
-                    <Row><Badge tone="info">€{PRODUCT.price}</Badge><Button tone="primary" style={{ padding: '4px 10px', fontSize: 13 }}>Add to cart</Button></Row>
+                    <Row>
+                      <Badge tone="info">€{PRODUCT.price}</Badge>
+                      <Button tone="primary" style={{ padding: '4px 10px', fontSize: 13 }}>
+                        Add to cart
+                      </Button>
+                    </Row>
                   </Stack>
                 ) : (
-                  <div style={{ minHeight: 110, display: 'grid', placeItems: 'center', color: 'var(--ink-3)', fontSize: 13 }}>{fixed ? '…' : '⟳ (white screen + spinner)'}</div>
+                  <div style={{ minHeight: 110, display: 'grid', placeItems: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+                    {fixed ? '…' : '⟳ (white screen + spinner)'}
+                  </div>
                 )}
               </div>
             </Browser>
@@ -126,14 +169,28 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
       )}
 
       <Row gap={8}>
-        <Stat label="words a crawler can index" value={seen.crawl ? words : '-'} tone={!seen.crawl ? 'neutral' : words > 5 ? 'good' : 'bad'} />
-        <Stat label="preview title" value={seen.share ? (fixed ? 'product' : 'React App') : '-'} tone={!seen.share ? 'neutral' : fixed ? 'good' : 'bad'} />
-        <Stat label="first content on phone" value={seen.phone ? (fixed ? '0.6 s' : '3.1 s') : '-'} tone={!seen.phone ? 'neutral' : fixed ? 'good' : 'bad'} />
+        <Stat
+          label="words a crawler can index"
+          value={seen.crawl ? words : '-'}
+          tone={!seen.crawl ? 'neutral' : words > 5 ? 'good' : 'bad'}
+        />
+        <Stat
+          label="preview title"
+          value={seen.share ? (fixed ? 'product' : 'React App') : '-'}
+          tone={!seen.share ? 'neutral' : fixed ? 'good' : 'bad'}
+        />
+        <Stat
+          label="first content on phone"
+          value={seen.phone ? (fixed ? '0.6 s' : '3.1 s') : '-'}
+          tone={!seen.phone ? 'neutral' : fixed ? 'good' : 'bad'}
+        />
       </Row>
 
-      <Code>{fixed
-        ? `// app/products/[id]/page.tsx  (Server Component, ISR)\nexport const revalidate = 300;\nexport async function generateMetadata({ params }) { /* title, og:image */ }\nexport default async function ProductPage({ params }) {\n  const product = await getProduct((await params).id);\n  return <main><h1>{product.name}</h1> ... <AddToCartButton /></main>;\n}`
-        : `useEffect(() => {\n  fetch(\`/api/products/\${id}\`).then(r => r.json()).then(setProduct);\n}, [id]);\nif (!product) return <Spinner />;     // what the server sends first\ndocument.title = product.name;        // too late for crawlers/previews`}</Code>
+      <Code>
+        {fixed
+          ? `// app/products/[id]/page.tsx  (Server Component, ISR)\nexport const revalidate = 300;\nexport async function generateMetadata({ params }) { /* title, og:image */ }\nexport default async function ProductPage({ params }) {\n  const product = await getProduct((await params).id);\n  return <main><h1>{product.name}</h1> ... <AddToCartButton /></main>;\n}`
+          : `useEffect(() => {\n  fetch(\`/api/products/\${id}\`).then(r => r.json()).then(setProduct);\n}, [id]);\nif (!product) return <Spinner />;     // what the server sends first\ndocument.title = product.name;        // too late for crawlers/previews`}
+      </Code>
     </Stack>
   );
 }

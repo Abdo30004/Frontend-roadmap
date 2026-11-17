@@ -12,7 +12,10 @@ const DRIVERS: Record<Ride, { name: string; car: string }> = {
 };
 const CAP = 8; // demo safety: never more than 8 leaked pollers at once
 
-interface Loc { ride: Ride; progress: number }
+interface Loc {
+  ride: Ride;
+  progress: number;
+}
 interface Registry {
   add: (kind: 'poll' | 'listener', stop: () => void) => () => void;
   request: (ride: Ride) => void;
@@ -30,19 +33,29 @@ function DriverTracker({ rideId, fixed, reg }: { rideId: Ride; fixed: boolean; r
       try {
         const loc = await fakeRequest<Loc>(() => ({ ride: rideId, progress: Math.random() }), { delay: 250, signal: controller.signal });
         setPos(loc); // an old interval writes the OLD ride's driver here
-      } catch { /* aborted */ }
+      } catch {
+        /* aborted */
+      }
     };
     poll();
     const id = setInterval(poll, 1000);
-    const onVisibility = () => { if (document.hidden) clearInterval(id); };
+    const onVisibility = () => {
+      if (document.hidden) clearInterval(id);
+    };
     document.addEventListener('visibilitychange', onVisibility);
 
     // (The registry only lets the demo count and Reset what is still running.)
-    const stopPoll = reg.add('poll', () => { clearInterval(id); controller?.abort(); });
+    const stopPoll = reg.add('poll', () => {
+      clearInterval(id);
+      controller?.abort();
+    });
     const stopListener = reg.add('listener', () => document.removeEventListener('visibilitychange', onVisibility));
 
     if (!fixed) return; // BUG: no cleanup. Interval + listener live forever.
-    return () => { stopPoll(); stopListener(); };
+    return () => {
+      stopPoll();
+      stopListener();
+    };
   }, [rideId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const shown = pos ? DRIVERS[pos.ride] : null;
@@ -57,12 +70,31 @@ function DriverTracker({ rideId, fixed, reg }: { rideId: Ride; fixed: boolean; r
           </Row>
           <Note>{shown.car}</Note>
           <div style={{ position: 'relative', height: 8, borderRadius: 99, background: 'var(--paper-2)' }}>
-            <span style={{ position: 'absolute', inset: 0, transform: `translateX(${Math.round(pos.progress * 90)}%)`, transition: 'transform 300ms ease' }}>
-              <span style={{ position: 'absolute', top: -3, left: 0, width: 14, height: 14, borderRadius: '50%', background: wrong ? 'var(--bad)' : 'var(--accent)' }} />
+            <span
+              style={{
+                position: 'absolute',
+                inset: 0,
+                transform: `translateX(${Math.round(pos.progress * 90)}%)`,
+                transition: 'transform 300ms ease',
+              }}
+            >
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -3,
+                  left: 0,
+                  width: 14,
+                  height: 14,
+                  borderRadius: '50%',
+                  background: wrong ? 'var(--bad)' : 'var(--accent)',
+                }}
+              />
             </span>
           </div>
         </Stack>
-      ) : <Note>Locating your driver…</Note>}
+      ) : (
+        <Note>Locating your driver…</Note>
+      )}
     </Panel>
   );
 }
@@ -81,7 +113,8 @@ function RideApp({ fixed }: { fixed: boolean }) {
 
   const reg = useMemo<Registry>(() => {
     const sync = () => {
-      let polls = 0, listeners = 0;
+      let polls = 0,
+        listeners = 0;
       items.current.forEach((i) => (i.kind === 'poll' ? polls++ : listeners++));
       setCounts((s) => ({ ...s, polls, listeners }));
     };
@@ -90,11 +123,18 @@ function RideApp({ fixed }: { fixed: boolean }) {
         const id = nextId.current++;
         items.current.set(id, { kind, stop });
         const same = [...items.current].filter(([, v]) => v.kind === kind);
-        if (same.length > CAP) { same[0][1].stop(); items.current.delete(same[0][0]); } // demo cap
+        if (same.length > CAP) {
+          same[0][1].stop();
+          items.current.delete(same[0][0]);
+        } // demo cap
         sync();
         return () => {
           const it = items.current.get(id);
-          if (it) { it.stop(); items.current.delete(id); sync(); }
+          if (it) {
+            it.stop();
+            items.current.delete(id);
+            sync();
+          }
         };
       },
       request(r) {
@@ -122,9 +162,15 @@ function RideApp({ fixed }: { fixed: boolean }) {
       <Browser url="ride.example/trips/current">
         <Stack gap={10}>
           <Row gap={8}>
-            <Button tone="primary" onClick={() => setOpen((o) => !o)}>{open ? 'Close tracking' : 'Open tracking'}</Button>
-            <Button onClick={() => setRide((r) => (r === 'A' ? 'B' : 'A'))} disabled={!open}>Switch to ride {ride === 'A' ? 'B' : 'A'}</Button>
-            <Button tone="ghost" onClick={reset}>Reset</Button>
+            <Button tone="primary" onClick={() => setOpen((o) => !o)}>
+              {open ? 'Close tracking' : 'Open tracking'}
+            </Button>
+            <Button onClick={() => setRide((r) => (r === 'A' ? 'B' : 'A'))} disabled={!open}>
+              Switch to ride {ride === 'A' ? 'B' : 'A'}
+            </Button>
+            <Button tone="ghost" onClick={reset}>
+              Reset
+            </Button>
           </Row>
           {open ? <DriverTracker rideId={ride} fixed={fixed} reg={reg} /> : <Note>Tracking screen is closed.</Note>}
         </Stack>
@@ -134,9 +180,11 @@ function RideApp({ fixed }: { fixed: boolean }) {
         <Stat label="visibilitychange listeners" value={counts.listeners} tone={counts.listeners > expected ? 'bad' : 'good'} />
         <Stat label="requests sent" value={counts.requests} />
       </Row>
-      <Code>{fixed
-        ? `const id = setInterval(poll, 1000);\ndocument.addEventListener('visibilitychange', onVisibility);\nreturn () => {\n  clearInterval(id); controller?.abort();\n  document.removeEventListener('visibilitychange', onVisibility);\n};`
-        : `const id = setInterval(poll, 1000);\ndocument.addEventListener('visibilitychange', () => {\n  if (document.hidden) clearInterval(id);\n});\n// no cleanup returned`}</Code>
+      <Code>
+        {fixed
+          ? `const id = setInterval(poll, 1000);\ndocument.addEventListener('visibilitychange', onVisibility);\nreturn () => {\n  clearInterval(id); controller?.abort();\n  document.removeEventListener('visibilitychange', onVisibility);\n};`
+          : `const id = setInterval(poll, 1000);\ndocument.addEventListener('visibilitychange', () => {\n  if (document.hidden) clearInterval(id);\n});\n// no cleanup returned`}
+      </Code>
       <Console lines={c.lines} height={120} onClear={c.clear} />
     </Stack>
   );

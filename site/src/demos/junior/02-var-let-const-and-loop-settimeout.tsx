@@ -29,6 +29,7 @@ function Tracker({ fixed }: { fixed: boolean }) {
       }
     } else {
       // The real bug: one shared `var i` for the whole loop.
+      // eslint-disable-next-line no-var -- this is the bug the demo shows
       for (var i = 0; i < STEPS.length; i++) {
         setTimeout(() => light(i), (i + 1) * 700);
       }
@@ -42,17 +43,24 @@ function Tracker({ fixed }: { fixed: boolean }) {
         <Stack gap={12}>
           <Row gap={8}>
             {STEPS.map((s, i) => (
-              <Badge key={s} tone={lit[i] ? 'good' : 'neutral'}>{lit[i] ? '● ' : '○ '}{s}</Badge>
+              <Badge key={s} tone={lit[i] ? 'good' : 'neutral'}>
+                {lit[i] ? '● ' : '○ '}
+                {s}
+              </Badge>
             ))}
           </Row>
           <Row>
-            <Button tone="primary" onClick={start}>Start tracking</Button>
+            <Button tone="primary" onClick={start}>
+              Start tracking
+            </Button>
           </Row>
         </Stack>
       </Browser>
-      <Code>{fixed
-        ? `for (let i = 0; i < steps.length; i++) {\n  setTimeout(() => light(i), (i + 1) * 700);\n}`
-        : `for (var i = 0; i < steps.length; i++) {\n  setTimeout(() => light(i), (i + 1) * 700);\n}`}</Code>
+      <Code>
+        {fixed
+          ? `for (let i = 0; i < steps.length; i++) {\n  setTimeout(() => light(i), (i + 1) * 700);\n}`
+          : `for (var i = 0; i < steps.length; i++) {\n  setTimeout(() => light(i), (i + 1) * 700);\n}`}
+      </Code>
       <Console lines={c.lines} height={130} onClear={c.clear} />
     </Stack>
   );

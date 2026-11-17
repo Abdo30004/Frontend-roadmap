@@ -51,7 +51,8 @@ const figma: Server = {
     'Referencing design assets and variables',
   ],
   install: 'claude mcp add --transport http figma https://mcp.figma.com/mcp',
-  setup: 'Run `/mcp` in Claude Code and sign in to Figma when asked. Prefer the desktop app? Turn on its MCP server in Dev Mode and connect to `http://127.0.0.1:3845/mcp` instead.',
+  setup:
+    'Run `/mcp` in Claude Code and sign in to Figma when asked. Prefer the desktop app? Turn on its MCP server in Dev Mode and connect to `http://127.0.0.1:3845/mcp` instead.',
 };
 
 const shadcn: Server = {
@@ -92,7 +93,8 @@ const context7: Server = {
     'NestJS and other backend libraries',
   ],
   install: 'claude mcp add --transport http context7 https://mcp.context7.com/mcp -H "Authorization: Bearer YOUR_API_KEY"',
-  setup: 'Replace `YOUR_API_KEY` with a free key from context7.com. Or run `npx ctx7 setup --claude`, which signs you in and does it for you.',
+  setup:
+    'Replace `YOUR_API_KEY` with a free key from context7.com. Or run `npx ctx7 setup --claude`, which signs you in and does it for you.',
 };
 
 const expoDocs: Server = {
@@ -190,7 +192,8 @@ const linear: Server = {
     'Turning bug reports into actionable tasks',
   ],
   install: 'claude mcp add --transport http linear https://mcp.linear.app/mcp',
-  setup: 'Run `/mcp` in Claude Code and sign in to Linear when asked. For read-only access, use `https://mcp.linear.app/mcp/readonly` instead.',
+  setup:
+    'Run `/mcp` in Claude Code and sign in to Linear when asked. For read-only access, use `https://mcp.linear.app/mcp/readonly` instead.',
 };
 
 const sentry: Server = {
@@ -210,7 +213,8 @@ const sentry: Server = {
     'Investigating performance problems',
   ],
   install: 'claude mcp add --transport http sentry https://mcp.sentry.dev/mcp',
-  setup: 'Run `/mcp` in Claude Code and sign in to Sentry when asked. Sentry recommends limiting it to one project by adding `/your-org/your-project` to the URL.',
+  setup:
+    'Run `/mcp` in Claude Code and sign in to Sentry when asked. Sentry recommends limiting it to one project by adding `/your-org/your-project` to the URL.',
 };
 
 const vercel: Server = {
@@ -222,12 +226,7 @@ const vercel: Server = {
   kind: 'Remote',
   link: { label: 'vercel.com', url: 'https://vercel.com/docs/agent-resources/vercel-mcp' },
   lead: ['Lets Claude see your deployments, so a failed build can be read and fixed without copying logs back and forth.'],
-  uses: [
-    'Inspecting deployments',
-    'Reviewing build logs',
-    'Investigating deployment failures',
-    'Managing projects and environments',
-  ],
+  uses: ['Inspecting deployments', 'Reviewing build logs', 'Investigating deployment failures', 'Managing projects and environments'],
   install: 'claude mcp add --transport http vercel https://mcp.vercel.com',
   setup: 'Run `/mcp` in Claude Code and sign in to Vercel when asked.',
 };
@@ -248,8 +247,10 @@ const supabase: Server = {
     'Inspecting Row Level Security policies',
     'Working with Edge Functions',
   ],
-  install: 'claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF&read_only=true"',
-  setup: 'Replace `YOUR_PROJECT_REF` with a development project, then sign in through `/mcp` in a regular terminal. `read_only=true` keeps Claude from changing data.',
+  install:
+    'claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF&read_only=true"',
+  setup:
+    'Replace `YOUR_PROJECT_REF` with a development project, then sign in through `/mcp` in a regular terminal. `read_only=true` keeps Claude from changing data.',
 };
 
 const cloudflare: Server = {
@@ -259,8 +260,13 @@ const cloudflare: Server = {
   priority: 'situational',
   priorityLabel: 'If you use Cloudflare',
   kind: 'Remote',
-  link: { label: 'developers.cloudflare.com', url: 'https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/' },
-  lead: ['One server for the whole Cloudflare API, Workers and R2 included, plus Cloudflare’s docs. It replaces the older per-product servers, which are now deprecated.'],
+  link: {
+    label: 'developers.cloudflare.com',
+    url: 'https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/',
+  },
+  lead: [
+    'One server for the whole Cloudflare API, Workers and R2 included, plus Cloudflare’s docs. It replaces the older per-product servers, which are now deprecated.',
+  ],
   uses: [
     'Managing Workers',
     'Working with R2 object storage',
@@ -280,13 +286,10 @@ const stripe: Server = {
   kind: 'Remote',
   link: { label: 'docs.stripe.com', url: 'https://docs.stripe.com/mcp' },
   lead: ['Lets Claude look things up in your Stripe account and in Stripe’s docs while you build a payment flow.'],
-  uses: [
-    'Exploring Stripe API resources',
-    'Understanding payment integration workflows',
-    'Inspecting payment objects and events',
-  ],
+  uses: ['Exploring Stripe API resources', 'Understanding payment integration workflows', 'Inspecting payment objects and events'],
   install: 'claude mcp add --transport http stripe https://mcp.stripe.com/',
-  setup: 'Run `/mcp` in Claude Code and sign in to Stripe, using test mode while you build. If you use a key instead: from December 2026 Stripe only accepts agent API keys, and it should go in `.mcp.json`, not on the command line.',
+  setup:
+    'Run `/mcp` in Claude Code and sign in to Stripe, using test mode while you build. If you use a key instead: from December 2026 Stripe only accepts agent API keys, and it should go in `.mcp.json`, not on the command line.',
 };
 
 /* ------------------------------------------------------------- sections */

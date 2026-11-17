@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Badge, Browser, Button, Code, Console, Note, Row, Stack, Stat, fakeRequest, useConsole } from '../../demo-kit';
 
-export const scenario = 'A banking dashboard refreshes the account balance every second. The balance API is slow on mobile (0.3 to 2.6 s per request).';
-export const task = 'Open the account page and watch the balance and "in flight" for a few seconds. Then go back, open it again, and watch the network log.';
+export const scenario =
+  'A banking dashboard refreshes the account balance every second. The balance API is slow on mobile (0.3 to 2.6 s per request).';
+export const task =
+  'Open the account page and watch the balance and "in flight" for a few seconds. Then go back, open it again, and watch the network log.';
 export const solutionNote = 'Same card, but polling uses a recursive setTimeout and the effect cleans it up.';
 
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -119,7 +121,10 @@ function Dashboard({ fixed }: { fixed: boolean }) {
   const reset = () => {
     gen.current++;
     clearAll();
-    setOpen(false); setInFlight(0); setPollers(0); setOutOfOrder(0);
+    setOpen(false);
+    setInFlight(0);
+    setPollers(0);
+    setOutOfOrder(0);
     lastSeq.current.clear();
     c.clear();
   };
@@ -132,10 +137,16 @@ function Dashboard({ fixed }: { fixed: boolean }) {
         <Stack gap={12}>
           {open ? <BalanceCard fixed={fixed} net={net} /> : <Note>Home · Offers · Settings (no balance on this page)</Note>}
           <Row>
-            {open
-              ? <Button onClick={() => setOpen(false)}>← Back to home</Button>
-              : <Button tone="primary" onClick={() => setOpen(true)} disabled={capped}>Open account page</Button>}
-            <Button tone="ghost" onClick={reset}>Reset</Button>
+            {open ? (
+              <Button onClick={() => setOpen(false)}>← Back to home</Button>
+            ) : (
+              <Button tone="primary" onClick={() => setOpen(true)} disabled={capped}>
+                Open account page
+              </Button>
+            )}
+            <Button tone="ghost" onClick={reset}>
+              Reset
+            </Button>
           </Row>
           {capped && <Note>Demo cap: {MAX_LEAKED} pollers. Press Reset to clear them.</Note>}
         </Stack>
@@ -145,9 +156,11 @@ function Dashboard({ fixed }: { fixed: boolean }) {
         <Stat label="out-of-order updates" value={outOfOrder} tone={outOfOrder > 0 ? 'bad' : 'good'} />
         <Stat label="pollers running" value={pollers} tone={pollers > (open ? 1 : 0) ? 'bad' : 'good'} />
       </Row>
-      <Code>{fixed
-        ? `async function poll() {\n  try { setBalance((await getBalance()).amount); }\n  finally { if (!stopped) id = setTimeout(poll, 1000); }\n}\npoll();\nreturn () => { stopped = true; clearTimeout(id); };`
-        : `useEffect(() => {\n  setInterval(async () => {\n    setBalance((await getBalance()).amount);\n  }, 1000);\n  // no cleanup\n}, []);`}</Code>
+      <Code>
+        {fixed
+          ? `async function poll() {\n  try { setBalance((await getBalance()).amount); }\n  finally { if (!stopped) id = setTimeout(poll, 1000); }\n}\npoll();\nreturn () => { stopped = true; clearTimeout(id); };`
+          : `useEffect(() => {\n  setInterval(async () => {\n    setBalance((await getBalance()).amount);\n  }, 1000);\n  // no cleanup\n}, []);`}
+      </Code>
       <Console lines={c.lines} height={140} title="Network" onClear={c.clear} />
     </Stack>
   );

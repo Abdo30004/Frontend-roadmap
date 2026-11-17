@@ -3,13 +3,26 @@ import { Badge, Browser, Button, Code, Console, Resettable, Row, Stack, Stat, sl
 
 export const scenario =
   'A banking dashboard loads five widgets in parallel; access tokens expire after 15 minutes and the refresh token rotates on every use.';
-export const task = 'Press "Transfer €50" once. Then press "Wait 15 min" and "Refresh dashboard". Watch transfers, refresh calls and toasts.';
-export const solutionNote = 'Same client: one shared refresh promise, retries only for idempotent/keyed requests with backoff + jitter, deduped toasts.';
+export const task =
+  'Press "Transfer €50" once. Then press "Wait 15 min" and "Refresh dashboard". Watch transfers, refresh calls and toasts.';
+export const solutionNote =
+  'Same client: one shared refresh promise, retries only for idempotent/keyed requests with backoff + jitter, deduped toasts.';
 
 const WIDGETS = ['accounts', 'cards', 'transactions', 'notifications', 'limits'] as const;
 
-class HttpError extends Error { constructor(public status: number, msg: string) { super(msg); } }
-interface Req { method: 'GET' | 'POST'; path: string; key?: string }
+class HttpError extends Error {
+  constructor(
+    public status: number,
+    msg: string,
+  ) {
+    super(msg);
+  }
+}
+interface Req {
+  method: 'GET' | 'POST';
+  path: string;
+  key?: string;
+}
 
 /* ---------- fake bank API: rotating refresh tokens with reuse detection ---------- */
 function createServer() {
@@ -21,7 +34,7 @@ function createServer() {
       await latency();
       if (s.revoked || token !== s.access) throw new HttpError(401, 'token expired');
       if (req.method === 'POST') {
-        if (!(req.key && s.seenKeys.has(req.key))) s.transfers++;  // money moves...
+        if (!(req.key && s.seenKeys.has(req.key))) s.transfers++; // money moves...
         if (req.key) s.seenKeys.add(req.key);
         if (s.flaky-- > 0) throw new HttpError(503, 'gateway timeout'); // ...but the response is lost
         return 'transfer ok';
@@ -31,8 +44,13 @@ function createServer() {
     },
     async refresh(presented: string) {
       await latency();
-      if (s.revoked || presented !== s.refresh) { s.revoked = true; throw new HttpError(401, 'refresh token reuse → session revoked'); }
-      s.n++; s.access = `at-${s.n}`; s.refresh = `rt-${s.n}`;
+      if (s.revoked || presented !== s.refresh) {
+        s.revoked = true;
+        throw new HttpError(401, 'refresh token reuse → session revoked');
+      }
+      s.n++;
+      s.access = `at-${s.n}`;
+      s.refresh = `rt-${s.n}`;
       return { access: s.access, refresh: s.refresh };
     },
   };
@@ -63,7 +81,9 @@ function Dashboard({ fixed, reset }: { fixed: boolean; reset: () => void }) {
   };
   // FIX: every concurrent 401 awaits the same promise
   const refreshSingleFlight = () => {
-    refreshPromise.current ??= doRefresh().finally(() => { refreshPromise.current = null; });
+    refreshPromise.current ??= doRefresh().finally(() => {
+      refreshPromise.current = null;
+    });
     return refreshPromise.current;
   };
 
@@ -82,7 +102,10 @@ function Dashboard({ fixed, reset }: { fixed: boolean; reset: () => void }) {
       }
       if (err.status === 503 && attempt < 3) {
         const safe = req.method === 'GET' || !!req.key;
-        if (!fixed) { c.log(`${req.method} ${req.path} → 503, retrying immediately`, 'bad'); return call(req, attempt + 1, authRetried); }
+        if (!fixed) {
+          c.log(`${req.method} ${req.path} → 503, retrying immediately`, 'bad');
+          return call(req, attempt + 1, authRetried);
+        }
         if (safe) {
           const delay = Math.round(Math.random() * Math.min(2000, 300 * 2 ** (attempt + 1))); // full jitter
           c.log(`${req.method} ${req.path} → 503, retry #${attempt + 1} in ${delay}ms${req.key ? ' (Idempotency-Key)' : ''}`, 'warn');
@@ -98,16 +121,18 @@ function Dashboard({ fixed, reset }: { fixed: boolean; reset: () => void }) {
     c.log('— refresh dashboard: 5 parallel GETs —', 'info');
     setWidgets(Object.fromEntries(WIDGETS.map((w) => [w, 'loading'])));
     server.state.flaky = 1; // /transactions will hiccup once
-    await Promise.all(WIDGETS.map(async (w) => {
-      try {
-        await call({ method: 'GET', path: `/${w}` });
-        setWidgets((s) => ({ ...s, [w]: 'ok' }));
-      } catch (e) {
-        c.log(`${w}: ${(e as Error).message}`, 'bad');
-        setWidgets((s) => ({ ...s, [w]: 'error' }));
-        toast((e as HttpError).status === 401 ? 'Your session ended. Please sign in again.' : 'Something went wrong');
-      }
-    }));
+    await Promise.all(
+      WIDGETS.map(async (w) => {
+        try {
+          await call({ method: 'GET', path: `/${w}` });
+          setWidgets((s) => ({ ...s, [w]: 'ok' }));
+        } catch (e) {
+          c.log(`${w}: ${(e as Error).message}`, 'bad');
+          setWidgets((s) => ({ ...s, [w]: 'error' }));
+          toast((e as HttpError).status === 401 ? 'Your session ended. Please sign in again.' : 'Something went wrong');
+        }
+      }),
+    );
     force((n) => n + 1);
   };
 
@@ -115,7 +140,12 @@ function Dashboard({ fixed, reset }: { fixed: boolean; reset: () => void }) {
     c.log('— POST /transfers €50 —', 'info');
     server.state.flaky = 1; // the bank commits, then the gateway times out
     const req: Req = { method: 'POST', path: '/transfers', key: fixed ? crypto.randomUUID().slice(0, 8) : undefined };
-    try { c.log(await call(req), 'good'); } catch (e) { c.log(`transfer: ${(e as Error).message}`, 'bad'); toast('Something went wrong'); }
+    try {
+      c.log(await call(req), 'good');
+    } catch (e) {
+      c.log(`transfer: ${(e as Error).message}`, 'bad');
+      toast('Something went wrong');
+    }
     force((n) => n + 1);
   };
 
@@ -128,13 +158,23 @@ function Dashboard({ fixed, reset }: { fixed: boolean; reset: () => void }) {
           <Row gap={6}>
             {WIDGETS.map((w) => {
               const st = widgets[w] ?? 'idle';
-              return <Badge key={w} tone={st === 'ok' ? 'good' : st === 'error' ? 'bad' : st === 'loading' ? 'info' : 'neutral'}>{w}{st === 'loading' ? '…' : st === 'ok' ? ' ✓' : st === 'error' ? ' ✕' : ''}</Badge>;
+              return (
+                <Badge key={w} tone={st === 'ok' ? 'good' : st === 'error' ? 'bad' : st === 'loading' ? 'info' : 'neutral'}>
+                  {w}
+                  {st === 'loading' ? '…' : st === 'ok' ? ' ✓' : st === 'error' ? ' ✕' : ''}
+                </Badge>
+              );
             })}
           </Row>
           {toasts.length > 0 && (
             <Stack gap={4}>
               {toasts.map((t) => (
-                <div key={t.id} style={{ padding: '6px 10px', borderRadius: 8, fontSize: 13, background: 'var(--bad-soft)', color: 'var(--bad)' }}>{t.text}</div>
+                <div
+                  key={t.id}
+                  style={{ padding: '6px 10px', borderRadius: 8, fontSize: 13, background: 'var(--bad-soft)', color: 'var(--bad)' }}
+                >
+                  {t.text}
+                </div>
               ))}
             </Stack>
           )}
@@ -142,10 +182,23 @@ function Dashboard({ fixed, reset }: { fixed: boolean; reset: () => void }) {
       </Browser>
 
       <Row gap={6}>
-        <Button onClick={() => { server.state.access = 'expired'; c.log('15 minutes later: access token expired', 'info'); }}>Wait 15 min</Button>
-        <Button tone="primary" onClick={refreshDashboard}>Refresh dashboard</Button>
-        <Button onClick={transfer} disabled={s.revoked}>Transfer €50</Button>
-        <Button tone="ghost" onClick={reset}>Reset</Button>
+        <Button
+          onClick={() => {
+            server.state.access = 'expired';
+            c.log('15 minutes later: access token expired', 'info');
+          }}
+        >
+          Wait 15 min
+        </Button>
+        <Button tone="primary" onClick={refreshDashboard}>
+          Refresh dashboard
+        </Button>
+        <Button onClick={transfer} disabled={s.revoked}>
+          Transfer €50
+        </Button>
+        <Button tone="ghost" onClick={reset}>
+          Reset
+        </Button>
       </Row>
 
       <Row gap={8}>
@@ -154,9 +207,11 @@ function Dashboard({ fixed, reset }: { fixed: boolean; reset: () => void }) {
         <Stat label="€50 transfers on server" value={s.transfers} tone={s.transfers > 1 ? 'bad' : s.transfers === 1 ? 'good' : 'neutral'} />
       </Row>
 
-      <Code>{fixed
-        ? `refreshPromise ??= refresh().finally(() => refreshPromise = null);\nawait refreshPromise;                      // all 401s share it\nif (isIdempotent(req) || req.headers['Idempotency-Key'])\n  await sleep(Math.random() * 300 * 2 ** n); // backoff + jitter`
-        : `if (status === 401) {\n  const { data } = await post('/auth/refresh'); // one per 401\n  return api(config);\n}\nif (status >= 500) return api(config);        // POST too, instantly`}</Code>
+      <Code>
+        {fixed
+          ? `refreshPromise ??= refresh().finally(() => refreshPromise = null);\nawait refreshPromise;                      // all 401s share it\nif (isIdempotent(req) || req.headers['Idempotency-Key'])\n  await sleep(Math.random() * 300 * 2 ** n); // backoff + jitter`
+          : `if (status === 401) {\n  const { data } = await post('/auth/refresh'); // one per 401\n  return api(config);\n}\nif (status >= 500) return api(config);        // POST too, instantly`}
+      </Code>
       <Console lines={c.lines} height={150} onClear={c.clear} />
     </Stack>
   );

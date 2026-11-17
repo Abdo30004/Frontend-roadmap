@@ -4,7 +4,8 @@ import { Badge, Browser, Button, Code, Input, Note, Row, Stack, Stat } from '../
 export const scenario =
   'A B2B parts catalog filters 8,000 SKUs on the client as the buyer types into the search box, with Grid and Table views.';
 export const task = 'Type "brake disc" quickly into the search box, then switch between Grid and Table. Watch the keystroke time.';
-export const solutionNote = 'Same catalog: the list renders from useDeferredValue, tabs switch in startTransition, and the list is memoized.';
+export const solutionNote =
+  'Same catalog: the list renders from useDeferredValue, tabs switch in startTransition, and the list is memoized.';
 
 const KINDS = ['Brake disc', 'Brake pad', 'Oil filter', 'Air filter', 'Spark plug', 'Wiper blade', 'Timing belt', 'Clutch kit'];
 const MAKES = ['Bosch', 'Brembo', 'Valeo', 'NGK', 'Mann', 'TRW', 'Gates', 'Sachs'];
@@ -18,7 +19,9 @@ const ROW_COST_MS = 0.7; // simulated per-row render cost (bounded: ~110ms max p
 
 function burn(ms: number) {
   const end = performance.now() + ms;
-  while (performance.now() < end) { /* simulated expensive row render */ }
+  while (performance.now() < end) {
+    /* simulated expensive row render */
+  }
 }
 
 type Item = (typeof PRODUCTS)[number];
@@ -28,7 +31,9 @@ function ProductRow({ item, view }: { item: Item; view: 'grid' | 'table' }) {
   return view === 'grid' ? (
     <div style={{ padding: 6, border: '1px solid var(--line)', borderRadius: 8, fontSize: 11, background: 'var(--paper)' }}>
       <strong>{item.name}</strong>
-      <div style={{ color: 'var(--ink-3)' }}>{item.sku} · €{item.price}</div>
+      <div style={{ color: 'var(--ink-3)' }}>
+        {item.sku} · €{item.price}
+      </div>
     </div>
   ) : (
     <div style={{ display: 'flex', gap: 8, fontSize: 11, padding: '3px 0', borderBottom: '1px solid var(--line)' }}>
@@ -42,7 +47,9 @@ function ProductRow({ item, view }: { item: Item; view: 'grid' | 'table' }) {
 function ProductList({ items, view }: { items: Item[]; view: 'grid' | 'table' }) {
   return (
     <div style={view === 'grid' ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 6 } : {}}>
-      {items.slice(0, SHOWN).map((item) => <ProductRow key={item.sku} item={item} view={view} />)}
+      {items.slice(0, SHOWN).map((item) => (
+        <ProductRow key={item.sku} item={item} view={view} />
+      ))}
     </div>
   );
 }
@@ -92,8 +99,12 @@ function Catalog({ fixed }: { fixed: boolean }) {
             }}
           />
           <Row gap={6}>
-            <Button tone={view === 'grid' ? 'primary' : 'default'} onClick={() => switchView('grid')}>Grid</Button>
-            <Button tone={view === 'table' ? 'primary' : 'default'} onClick={() => switchView('table')}>Table</Button>
+            <Button tone={view === 'grid' ? 'primary' : 'default'} onClick={() => switchView('grid')}>
+              Grid
+            </Button>
+            <Button tone={view === 'table' ? 'primary' : 'default'} onClick={() => switchView('table')}>
+              Table
+            </Button>
             <Badge>{results.length.toLocaleString()} parts</Badge>
             {(isPending || isStale) && <Badge tone="info">updating…</Badge>}
           </Row>
@@ -106,13 +117,19 @@ function Catalog({ fixed }: { fixed: boolean }) {
       <Row gap={8}>
         <Stat label="last keystroke → screen (ms)" value={last === undefined ? '—' : last.toFixed(0)} tone={tone(last)} />
         <Stat label="worst keystroke (ms)" value={lag.length ? worst.toFixed(0) : '—'} tone={tone(lag.length ? worst : undefined)} />
-        <Button tone="ghost" onClick={() => setLag([])}>Clear timings</Button>
+        <Button tone="ghost" onClick={() => setLag([])}>
+          Clear timings
+        </Button>
       </Row>
-      <Note>Each row costs ~{ROW_COST_MS}ms to render; {SHOWN} rows are shown.</Note>
+      <Note>
+        Each row costs ~{ROW_COST_MS}ms to render; {SHOWN} rows are shown.
+      </Note>
 
-      <Code>{fixed
-        ? `const deferredQuery = useDeferredValue(query);\nconst results = useMemo(() => filter(deferredQuery), [deferredQuery]);\n<input value={query} onChange={e => setQuery(e.target.value)} />\n<MemoList items={results} />   // re-renders in the background\nonClick={() => startTransition(() => setView('table'))}`
-        : `const results = filter(query); // same render as the keystroke\n<input value={query} onChange={e => setQuery(e.target.value)} />\n<ProductList items={results} />  // 160 slow rows, blocking\nonClick={() => setView('table')}`}</Code>
+      <Code>
+        {fixed
+          ? `const deferredQuery = useDeferredValue(query);\nconst results = useMemo(() => filter(deferredQuery), [deferredQuery]);\n<input value={query} onChange={e => setQuery(e.target.value)} />\n<MemoList items={results} />   // re-renders in the background\nonClick={() => startTransition(() => setView('table'))}`
+          : `const results = filter(query); // same render as the keystroke\n<input value={query} onChange={e => setQuery(e.target.value)} />\n<ProductList items={results} />  // 160 slow rows, blocking\nonClick={() => setView('table')}`}
+      </Code>
     </Stack>
   );
 }

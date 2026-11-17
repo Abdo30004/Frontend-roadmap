@@ -7,7 +7,13 @@ export const task = 'Try removing "use client" from page.tsx, put it back, then 
 export const solutionNote = 'Same page: click files to move "use client" down to AddToCart; the page passes a DTO, not the DB row.';
 
 type NodeId = 'page' | 'title' | 'description' | 'addToCart' | 'seller';
-interface FileNode { id: NodeId; file: string; kb: number; note: string; needsClient?: boolean }
+interface FileNode {
+  id: NodeId;
+  file: string;
+  kb: number;
+  note: string;
+  needsClient?: boolean;
+}
 
 const RUNTIME_KB = 88; // React + Next client runtime, always shipped
 const NODES: FileNode[] = [
@@ -34,7 +40,12 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
 
   const toggle = (id: NodeId) => {
     if (!fixed && id !== 'page') return;
-    setDirectives((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+    setDirectives((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
   };
 
   return (
@@ -51,10 +62,20 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
                 onClick={() => toggle(n.id)}
                 disabled={!clickable}
                 style={{
-                  display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', textAlign: 'left', font: 'inherit', fontSize: 13,
-                  marginLeft: n.id === 'page' ? 0 : 18, padding: '6px 8px', borderRadius: 8, cursor: clickable ? 'pointer' : 'default',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 6,
+                  alignItems: 'center',
+                  textAlign: 'left',
+                  font: 'inherit',
+                  fontSize: 13,
+                  marginLeft: n.id === 'page' ? 0 : 18,
+                  padding: '6px 8px',
+                  borderRadius: 8,
+                  cursor: clickable ? 'pointer' : 'default',
                   border: `1px solid ${directives.has(n.id) ? 'var(--warn)' : 'var(--line)'}`,
-                  background: client ? 'var(--warn-soft)' : 'var(--paper)', color: 'var(--ink)',
+                  background: client ? 'var(--warn-soft)' : 'var(--paper)',
+                  color: 'var(--ink)',
                   transition: 'background-color 200ms ease, border-color 200ms ease',
                 }}
               >
@@ -72,12 +93,16 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
         {error ? (
           <Stack gap={6}>
             <Badge tone="bad">Build error</Badge>
-            <code style={{ fontSize: 12, color: 'var(--bad)' }}>{`${error.file}: useState only works in Client Components. Add the "use client" directive.`}</code>
+            <code
+              style={{ fontSize: 12, color: 'var(--bad)' }}
+            >{`${error.file}: useState only works in Client Components. Add the "use client" directive.`}</code>
           </Stack>
         ) : (
           <Stack gap={8}>
             <strong>Leica M6, 1984, serviced</strong>
-            <span style={{ fontSize: 13, color: 'var(--ink-2)' }}>Shutter recently <em>CLA'd</em>. Comes with strap and box.</span>
+            <span style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+              Shutter recently <em>CLA'd</em>. Comes with strap and box.
+            </span>
             <Row gap={6}>
               <Button onClick={() => setQty((q) => Math.max(1, q - 1))}>−</Button>
               <code>{qty}</code>
@@ -91,17 +116,25 @@ function ProductPageSim({ fixed }: { fixed: boolean }) {
 
       <Row gap={8}>
         <Stat label="route JS shipped" value={error ? '—' : `${shipped} KB`} tone={error ? 'neutral' : shipped > 150 ? 'bad' : 'good'} />
-        <Stat label="seller secrets in HTML" value={error ? '—' : leaks ? 'IBAN, email, margin' : 'none'} tone={error ? 'neutral' : leaks ? 'bad' : 'good'} />
-        <Button onClick={() => setSource((s) => !s)} disabled={!!error}>{source ? 'Hide' : 'View'} page source</Button>
+        <Stat
+          label="seller secrets in HTML"
+          value={error ? '—' : leaks ? 'IBAN, email, margin' : 'none'}
+          tone={error ? 'neutral' : leaks ? 'bad' : 'good'}
+        />
+        <Button onClick={() => setSource((s) => !s)} disabled={!!error}>
+          {source ? 'Hide' : 'View'} page source
+        </Button>
       </Row>
 
       {source && !error && (
         <Code>{`<script>self.__next_f.push([1,"...\n  \\"seller\\":${JSON.stringify(sellerProps, null, 1).replace(/\n\s*/g, ' ')}\n..."])</script>`}</Code>
       )}
 
-      <Code>{fixed
-        ? `// page.tsx (Server Component, no directive)\nconst product = await getProductView(id); // DTO, 'server-only'\n<Description md={product.descriptionMd} /> // marked runs on server\n<AddToCart productId={product.id} />      // 'use client' leaf`
-        : `'use client';                 // top of page.tsx\nimport { marked } from 'marked';\nimport hljs from 'highlight.js';\n<SellerCard seller={product.seller} /> // whole DB row`}</Code>
+      <Code>
+        {fixed
+          ? `// page.tsx (Server Component, no directive)\nconst product = await getProductView(id); // DTO, 'server-only'\n<Description md={product.descriptionMd} /> // marked runs on server\n<AddToCart productId={product.id} />      // 'use client' leaf`
+          : `'use client';                 // top of page.tsx\nimport { marked } from 'marked';\nimport hljs from 'highlight.js';\n<SellerCard seller={product.seller} /> // whole DB row`}
+      </Code>
     </Stack>
   );
 }

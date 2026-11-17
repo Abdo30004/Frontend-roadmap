@@ -17,29 +17,49 @@ function SkillEntry({ s, compact }: { s: Skill; compact: Intl.NumberFormat }) {
   const List = s.list?.ordered ? 'ol' : 'ul';
   return (
     <article className="post-skill" id={s.id} aria-labelledby={`${s.id}-t`}>
-      <h3 id={`${s.id}-t`}><a href={`#${s.id}`}>{s.name}</a></h3>
+      <h3 id={`${s.id}-t`}>
+        <a href={`#${s.id}`}>{s.name}</a>
+      </h3>
       <p className="post-meta">
-        <span><Trans i18nKey="skills.by" values={{ author: s.author }} components={{ b: <strong /> }} /></span>
+        <span>
+          <Trans i18nKey="skills.by" values={{ author: s.author }} components={{ b: <strong /> }} />
+        </span>
         <span>{s.installs === null ? t('skills.aSet') : t('skills.installs', { n: compact.format(s.installs) })}</span>
         {s.platforms && <span>{s.platforms}</span>}
         <span>
-          <a href={s.url} target="_blank" rel="noreferrer">{onRegistry ? 'skills.sh' : 'GitHub'} <span aria-hidden>↗</span></a>
+          <a href={s.url} target="_blank" rel="noreferrer">
+            {onRegistry ? 'skills.sh' : 'GitHub'} <span aria-hidden>↗</span>
+          </a>
         </span>
       </p>
-      {s.lead.map((p) => <p key={p}>{rich(p)}</p>)}
+      {s.lead.map((p) => (
+        <p key={p}>{rich(p)}</p>
+      ))}
       {s.list && (
         <>
           {s.list.title && <h4>{s.list.title}</h4>}
-          <List>{s.list.items.map((item) => <li key={item}>{rich(item)}</li>)}</List>
+          <List>
+            {s.list.items.map((item) => (
+              <li key={item}>{rich(item)}</li>
+            ))}
+          </List>
         </>
       )}
-      {s.after?.map((p) => <p key={p}>{rich(p)}</p>)}
+      {s.after?.map((p) => (
+        <p key={p}>{rich(p)}</p>
+      ))}
       {s.when && (
-        <p className="post-when"><strong>{t('skills.whenToUse')}</strong>{rich(s.when)}</p>
+        <p className="post-when">
+          <strong>{t('skills.whenToUse')}</strong>
+          {rich(s.when)}
+        </p>
       )}
       <Install command={`npx skills add ${s.pkg}`} />
       {s.tip && (
-        <aside className="post-tip"><strong>{t('skills.proTip')}</strong><p>{rich(s.tip)}</p></aside>
+        <aside className="post-tip">
+          <strong>{t('skills.proTip')}</strong>
+          <p>{rich(s.tip)}</p>
+        </aside>
       )}
     </article>
   );
@@ -51,11 +71,14 @@ export default function SkillsPage() {
   const { INSTALLS_AS_OF, NEXTJS_NOTE, PIPELINE, SECTIONS, STACKS } = DATA[lang];
   const compact = useMemo(() => new Intl.NumberFormat(lang, { notation: 'compact', maximumFractionDigits: 1 }), [lang]);
 
-  const TOC: TocItem[] = useMemo(() => [
-    { id: 'start', title: t('skills.toc.start') },
-    ...SECTIONS.map((s) => ({ id: s.id, title: s.title })),
-    { id: 'stacks', title: t('skills.toc.stacks') },
-  ], [SECTIONS, t]);
+  const TOC: TocItem[] = useMemo(
+    () => [
+      { id: 'start', title: t('skills.toc.start') },
+      ...SECTIONS.map((s) => ({ id: s.id, title: s.title })),
+      { id: 'stacks', title: t('skills.toc.stacks') },
+    ],
+    [SECTIONS, t],
+  );
   const active = useActiveSection(TOC);
   useScrollToHash();
 
@@ -79,7 +102,9 @@ export default function SkillsPage() {
           <h4>{t('skills.howToInstall')}</h4>
           <ol>
             <li>{t('skills.step1')}</li>
-            <li><Trans i18nKey="skills.step2" components={{ c: <code /> }} /></li>
+            <li>
+              <Trans i18nKey="skills.step2" components={{ c: <code /> }} />
+            </li>
             <li>{t('skills.step3')}</li>
           </ol>
           <h4>{t('skills.onlyThree')}</h4>
@@ -102,14 +127,24 @@ export default function SkillsPage() {
         {SECTIONS.map((sec) => (
           <section className="post-section" id={sec.id} key={sec.id} aria-labelledby={`${sec.id}-t`}>
             <SectionHead id={sec.id} title={sec.title} />
-            {sec.intro.map((p) => <p className="post-intro" key={p}>{rich(p)}</p>)}
+            {sec.intro.map((p) => (
+              <p className="post-intro" key={p}>
+                {rich(p)}
+              </p>
+            ))}
 
             {sec.id === 'nextjs' && (
               <div className="post-notice">
                 <h3>{NEXTJS_NOTE.title}</h3>
-                {NEXTJS_NOTE.body.map((p) => <p key={p}>{rich(p)}</p>)}
+                {NEXTJS_NOTE.body.map((p) => (
+                  <p key={p}>{rich(p)}</p>
+                ))}
                 <h4>{t('skills.nextCovers')}</h4>
-                <ul>{NEXTJS_NOTE.covers.map((c) => <li key={c}>{rich(c)}</li>)}</ul>
+                <ul>
+                  {NEXTJS_NOTE.covers.map((c) => (
+                    <li key={c}>{rich(c)}</li>
+                  ))}
+                </ul>
                 {NEXTJS_NOTE.commands.map((c) => (
                   <Fragment key={c.cmd}>
                     <p className="install-label">{c.label}</p>
@@ -119,7 +154,9 @@ export default function SkillsPage() {
               </div>
             )}
 
-            {sec.skills.map((s) => <SkillEntry key={s.id} s={s} compact={compact} />)}
+            {sec.skills.map((s) => (
+              <SkillEntry key={s.id} s={s} compact={compact} />
+            ))}
 
             {sec.id === 'design-to-code' && (
               <aside className="post-notice">
@@ -146,7 +183,10 @@ export default function SkillsPage() {
               <h3>{t('skills.stackFor', { title: lowerFirst(stack.title) })}</h3>
               <table className="post-table">
                 <thead>
-                  <tr><th scope="col">{t('skills.colSkill')}</th><th scope="col">{t('skills.colWhy')}</th></tr>
+                  <tr>
+                    <th scope="col">{t('skills.colSkill')}</th>
+                    <th scope="col">{t('skills.colWhy')}</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {stack.rows.map((r) => (

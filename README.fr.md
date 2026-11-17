@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="site/public/logo/frontend-field-guide-logo.svg" alt="Frontend Field Guide logo" width="96" height="96">
+
 # Frontend Field Guide
 
 **Comprenez le bug avant d’apprendre la réponse.**
@@ -35,7 +37,7 @@ Ici, chaque question est construite autour d’un bug de production :
 
 ## Lancer le projet
 
-Il faut Node.js 18.18 ou plus récent.
+Il faut Node.js 20.19 ou plus récent.
 
 ```bash
 git clone https://github.com/ahmedgourmat/Frontend-roadmap.git
@@ -44,7 +46,7 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
-`npm run build` vérifie les types et génère le site statique dans `site/dist`.
+`npm run check` lance toutes les vérifications (contenu, types, lint, formatage, tests), comme la CI. `npm run build` génère le site statique dans `site/dist`.
 
 ## Contribuer
 

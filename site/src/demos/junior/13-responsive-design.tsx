@@ -36,7 +36,12 @@ const CSS = `
 .rd13-good .rd13-add { min-height: 44px; min-width: 44px; padding: 10px 16px; font: 600 15px var(--font-body); border-radius: 8px; border: none; background: var(--accent); color: var(--paper); cursor: pointer; }
 `;
 
-interface Metrics { frame: number; overflow: number; columns: number; btn: number }
+interface Metrics {
+  frame: number;
+  overflow: number;
+  columns: number;
+  btn: number;
+}
 
 function MenuPage({ fixed }: { fixed: boolean }) {
   const [pct, setPct] = useState(100); // 0 = 320px, 100 = full width
@@ -75,7 +80,10 @@ function MenuPage({ fixed }: { fixed: boolean }) {
       <style>{CSS}</style>
       <Label text={`Screen width: ${m.frame}px`}>
         <input
-          type="range" min={0} max={100} value={pct}
+          type="range"
+          min={0}
+          max={100}
+          value={pct}
           onChange={(e) => setPct(Number(e.target.value))}
           aria-label="Screen width"
           style={{ width: '100%', maxWidth: 300, accentColor: 'var(--accent)' }}
@@ -86,16 +94,24 @@ function MenuPage({ fixed }: { fixed: boolean }) {
         <div className={fixed ? 'rd13-good' : 'rd13-bad'} style={{ width, minWidth: 320 }}>
           <Browser url="pizzaplace.example/menu">
             <div className="rd13-frame" ref={frameRef}>
-              <div className="rd13-head">🍕 Pizza Place · Menu <span style={{ float: 'right', fontWeight: 500 }}>Cart: {cart}</span></div>
+              <div className="rd13-head">
+                🍕 Pizza Place · Menu <span style={{ float: 'right', fontWeight: 500 }}>Cart: {cart}</span>
+              </div>
               <div className="rd13-menu" ref={menuRef}>
                 {ITEMS.map((it) => (
                   <div className="rd13-item" key={it.name}>
                     <div className="rd13-body">
-                      <div className="rd13-thumb" aria-hidden>🍕</div>
+                      <div className="rd13-thumb" aria-hidden>
+                        🍕
+                      </div>
                       <div>
                         <h4>{it.name}</h4>
-                        <p>{it.desc} · €{it.price}</p>
-                        <button type="button" className="rd13-add" onClick={() => setCart((c) => c + 1)}>Add to cart</button>
+                        <p>
+                          {it.desc} · €{it.price}
+                        </p>
+                        <button type="button" className="rd13-add" onClick={() => setCart((c) => c + 1)}>
+                          Add to cart
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -112,16 +128,20 @@ function MenuPage({ fixed }: { fixed: boolean }) {
         <Stat label="Add button height (px)" value={m.btn} tone={m.btn >= 44 ? 'good' : 'bad'} />
       </Row>
       <Row gap={6}>
-        {m.overflow > 0
-          ? <Badge tone="bad">Horizontal scroll: the user must swipe sideways to see the menu</Badge>
-          : <Badge tone="good">Everything fits, no sideways scroll</Badge>}
+        {m.overflow > 0 ? (
+          <Badge tone="bad">Horizontal scroll: the user must swipe sideways to see the menu</Badge>
+        ) : (
+          <Badge tone="good">Everything fits, no sideways scroll</Badge>
+        )}
         {m.btn < 44 && <Badge tone="warn">Touch target below 44px</Badge>}
       </Row>
       {!fixed && <Note>Tip: at full width it looks fine. That is the only width it was tested at.</Note>}
 
-      <Code>{fixed
-        ? `.menu { display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }\n.menu-item { container-type: inline-size; }\n@container (min-width: 15rem) { .body { display: flex; } }\n.add-btn { min-height: 44px; min-width: 44px; }`
-        : `.menu { display: flex; }\n.menu-item { width: 190px; margin-right: 14px; } /* x3 = 612px */\n.add-btn { font-size: 11px; padding: 2px 6px; }`}</Code>
+      <Code>
+        {fixed
+          ? `.menu { display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }\n.menu-item { container-type: inline-size; }\n@container (min-width: 15rem) { .body { display: flex; } }\n.add-btn { min-height: 44px; min-width: 44px; }`
+          : `.menu { display: flex; }\n.menu-item { width: 190px; margin-right: 14px; } /* x3 = 612px */\n.add-btn { font-size: 11px; padding: 2px 6px; }`}
+      </Code>
     </Stack>
   );
 }

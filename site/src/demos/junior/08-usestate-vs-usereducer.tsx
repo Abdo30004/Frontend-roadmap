@@ -1,12 +1,21 @@
 import { memo, useReducer, useRef, useState } from 'react';
 import { Badge, Browser, Button, Code, Note, Panel, Resettable, Row, Stack, Stat } from '../../demo-kit';
 
-export const scenario = 'A food-delivery cart: add dishes from the menu, the header badge counts them, and the cart shows the item count and total.';
-export const task = 'Press "Add ×3" on the pizza, then "Add" on the ramen. Compare the badge, the rows, "Items" and "Total". Then remove a row.';
+export const scenario =
+  'A food-delivery cart: add dishes from the menu, the header badge counts them, and the cart shows the item count and total.';
+export const task =
+  'Press "Add ×3" on the pizza, then "Add" on the ramen. Compare the badge, the rows, "Items" and "Total". Then remove a row.';
 export const solutionNote = 'Same cart, but one reducer owns the items and count/total are derived from them.';
 
-interface Dish { id: string; name: string; price: number }
-interface Line extends Dish { qty: number; key: number }
+interface Dish {
+  id: string;
+  name: string;
+  price: number;
+}
+interface Line extends Dish {
+  qty: number;
+  key: number;
+}
 
 const MENU: Dish[] = [
   { id: 'pizza', name: 'Margherita pizza', price: 11 },
@@ -36,8 +45,12 @@ function cartReducer(state: { items: Line[] }, action: Action): { items: Line[] 
 }
 
 interface CartModel {
-  items: Line[]; count: number; total: number;
-  add: (d: Dish) => void; addThree: (d: Dish) => void; remove: (line: Line) => void;
+  items: Line[];
+  count: number;
+  total: number;
+  add: (d: Dish) => void;
+  addThree: (d: Dish) => void;
+  remove: (line: Line) => void;
 }
 
 function useBrokenCart(): CartModel {
@@ -52,9 +65,15 @@ function useBrokenCart(): CartModel {
     setTotal(total + dish.price);
   }
   return {
-    items, count, total,
+    items,
+    count,
+    total,
     add: addItem,
-    addThree: (dish) => { addItem(dish); addItem(dish); addItem(dish); },
+    addThree: (dish) => {
+      addItem(dish);
+      addItem(dish);
+      addItem(dish);
+    },
     remove: (line) => {
       setItems(items.filter((i) => i !== line));
       setCount(count - 1); // forgot to update total
@@ -67,9 +86,13 @@ function useFixedCart(): CartModel {
   const count = state.items.reduce((n, i) => n + i.qty, 0); // derived, never stored
   const total = state.items.reduce((sum, i) => sum + i.price * i.qty, 0);
   return {
-    items: state.items, count, total,
+    items: state.items,
+    count,
+    total,
     add: (dish) => dispatch({ type: 'added', dish, qty: 1 }),
-    addThree: (dish) => { for (let i = 0; i < 3; i++) dispatch({ type: 'added', dish, qty: 1 }); },
+    addThree: (dish) => {
+      for (let i = 0; i < 3; i++) dispatch({ type: 'added', dish, qty: 1 });
+    },
     remove: (line) => dispatch({ type: 'removed', id: line.id }),
   };
 }
@@ -89,7 +112,9 @@ function CartView({ cart, reset, fixed }: { cart: CartModel; reset: () => void; 
             <Stack gap={8}>
               {MENU.map((d) => (
                 <Row key={d.id} gap={8}>
-                  <span style={{ flex: '1 1 140px' }}>{d.name} · ${d.price}</span>
+                  <span style={{ flex: '1 1 140px' }}>
+                    {d.name} · ${d.price}
+                  </span>
                   <Button onClick={() => cart.add(d)}>Add</Button>
                   <Button onClick={() => cart.addThree(d)}>Add ×3</Button>
                 </Row>
@@ -101,23 +126,35 @@ function CartView({ cart, reset, fixed }: { cart: CartModel; reset: () => void; 
               {cart.items.length === 0 && <Note>Empty.</Note>}
               {cart.items.map((line) => (
                 <Row key={line.key} gap={8}>
-                  <span style={{ flex: '1 1 140px' }}>{line.name} × {line.qty}</span>
-                  <Button tone="ghost" onClick={() => cart.remove(line)}>Remove</Button>
+                  <span style={{ flex: '1 1 140px' }}>
+                    {line.name} × {line.qty}
+                  </span>
+                  <Button tone="ghost" onClick={() => cart.remove(line)}>
+                    Remove
+                  </Button>
                 </Row>
               ))}
-              <span>Items: <strong>{cart.count}</strong> · Total: <strong>${cart.total.toFixed(2)}</strong></span>
+              <span>
+                Items: <strong>{cart.count}</strong> · Total: <strong>${cart.total.toFixed(2)}</strong>
+              </span>
             </Stack>
           </Panel>
-          <Row><Button tone="ghost" onClick={reset}>Reset</Button></Row>
+          <Row>
+            <Button tone="ghost" onClick={reset}>
+              Reset
+            </Button>
+          </Row>
         </Stack>
       </Browser>
       <Row gap={10}>
         <Stat label="items shown vs rows" value={`${cart.count} / ${rowsQty}`} tone={cart.count === rowsQty ? 'good' : 'bad'} />
         <Stat label="total shown vs rows" value={`$${cart.total} / $${rowsTotal}`} tone={cart.total === rowsTotal ? 'good' : 'bad'} />
       </Row>
-      <Code>{fixed
-        ? `const [state, dispatch] = useReducer(cartReducer, { items: [] });\nconst count = state.items.reduce((n, i) => n + i.qty, 0);   // derived\nconst total = state.items.reduce((s, i) => s + i.price * i.qty, 0);\ndispatch({ type: 'added', dish, qty: 1 }); // reducer returns new arrays`
-        : `function addItem(dish) {\n  items.push({ ...dish, qty: 1 });\n  setItems(items);\n  setCount(count + 1);\n  setTotal(total + dish.price);\n}\n// removeItem: setItems(filtered); setCount(count - 1);`}</Code>
+      <Code>
+        {fixed
+          ? `const [state, dispatch] = useReducer(cartReducer, { items: [] });\nconst count = state.items.reduce((n, i) => n + i.qty, 0);   // derived\nconst total = state.items.reduce((s, i) => s + i.price * i.qty, 0);\ndispatch({ type: 'added', dish, qty: 1 }); // reducer returns new arrays`
+          : `function addItem(dish) {\n  items.push({ ...dish, qty: 1 });\n  setItems(items);\n  setCount(count + 1);\n  setTotal(total + dish.price);\n}\n// removeItem: setItems(filtered); setCount(count - 1);`}
+      </Code>
     </Stack>
   );
 }

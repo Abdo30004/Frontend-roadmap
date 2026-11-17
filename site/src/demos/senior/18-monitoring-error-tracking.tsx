@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Badge, Browser, Button, Code, Note, Panel, Row, Stack, Stat } from '../../demo-kit';
 
-export const scenario = 'A food-delivery checkout reports browser errors to an error tracker. On Saturday, paying with a meal voucher starts failing.';
-export const task = 'Press "Pay with meal voucher" once, then "Simulate Saturday traffic". Can you tell what broke, where in the code, since which deploy, and who got alerted?';
-export const solutionNote = 'Hidden source maps + release tag + user context, noise filtered, events grouped into issues, and a rate-based alert.';
+export const scenario =
+  'A food-delivery checkout reports browser errors to an error tracker. On Saturday, paying with a meal voucher starts failing.';
+export const task =
+  'Press "Pay with meal voucher" once, then "Simulate Saturday traffic". Can you tell what broke, where in the code, since which deploy, and who got alerted?';
+export const solutionNote =
+  'Hidden source maps + release tag + user context, noise filtered, events grouped into issues, and a rate-based alert.';
 
 type Kind = 'voucher' | 'resize' | 'ext' | 'abort';
-interface Ev { id: number; kind: Kind; user: string }
+interface Ev {
+  id: number;
+  kind: Kind;
+  user: string;
+}
 
 const RAW: Record<Kind, string> = {
   voucher: 'TypeError: a.b is not a function\n    at main.3f9a.js:1:84213',
@@ -56,7 +63,12 @@ function Monitoring({ fixed }: { fixed: boolean }) {
     }, 120);
   };
 
-  const reset = () => { clearInterval(timer.current); setEvents([]); setPaidMsg(null); setTicks(0); };
+  const reset = () => {
+    clearInterval(timer.current);
+    setEvents([]);
+    setPaidMsg(null);
+    setTicks(0);
+  };
 
   const voucher = events.filter((e) => e.kind === 'voucher');
   const noise = events.length - voucher.length;
@@ -70,9 +82,15 @@ function Monitoring({ fixed }: { fixed: boolean }) {
         <Stack gap={8}>
           <strong>Order #5521 · 2× Pad thai · €24.80</strong>
           <Row>
-            <Button tone="primary" onClick={pay}>Pay with meal voucher</Button>
-            <Button onClick={traffic} disabled={ticks > 0 && !simDone}>Simulate Saturday traffic</Button>
-            <Button tone="ghost" onClick={reset}>Reset</Button>
+            <Button tone="primary" onClick={pay}>
+              Pay with meal voucher
+            </Button>
+            <Button onClick={traffic} disabled={ticks > 0 && !simDone}>
+              Simulate Saturday traffic
+            </Button>
+            <Button tone="ghost" onClick={reset}>
+              Reset
+            </Button>
           </Row>
           {paidMsg && <Badge tone="bad">{paidMsg}</Badge>}
         </Stack>
@@ -81,7 +99,11 @@ function Monitoring({ fixed }: { fixed: boolean }) {
       <Browser url="errors.tracker.example/acme/web/issues">
         <Stack gap={12}>
           <Row gap={8}>
-            <Stat label={fixed ? 'issues' : 'issues (ungrouped)'} value={fixed ? (voucher.length ? 1 : 0) : events.length} tone={!fixed && events.length > 10 ? 'bad' : 'neutral'} />
+            <Stat
+              label={fixed ? 'issues' : 'issues (ungrouped)'}
+              value={fixed ? (voucher.length ? 1 : 0) : events.length}
+              tone={!fixed && events.length > 10 ? 'bad' : 'neutral'}
+            />
             <Stat label={fixed ? 'noise dropped' : 'noise in the list'} value={noise} tone={fixed ? 'good' : noise ? 'warn' : 'neutral'} />
             <Stat label="on-call paged" value={alerted ? 'yes' : 'no'} tone={alerted ? 'good' : simDone ? 'bad' : 'neutral'} />
           </Row>
@@ -98,7 +120,9 @@ function Monitoring({ fixed }: { fixed: boolean }) {
                   <Badge tone="info">release {RELEASE}</Badge>
                   <Badge tone="warn">first seen in this release</Badge>
                   <Badge>production</Badge>
-                  <Badge>{voucher.length} events · {users} users</Badge>
+                  <Badge>
+                    {voucher.length} events · {users} users
+                  </Badge>
                 </Row>
                 <Note>Breadcrumbs: GET /api/vouchers/LUNCH-10 200 → click "Pay with meal voucher" → error. User: id only, no email.</Note>
               </Stack>
@@ -107,23 +131,42 @@ function Monitoring({ fixed }: { fixed: boolean }) {
 
           {!fixed && events.length > 0 && (
             <div style={{ maxHeight: 220, overflow: 'auto', border: '1px solid var(--line)', borderRadius: 8 }}>
-              {[...events].reverse().slice(0, 40).map((e) => (
-                <pre key={e.id} style={{ margin: 0, padding: '6px 10px', fontSize: 11.5, borderBottom: '1px solid var(--line)', whiteSpace: 'pre-wrap', wordBreak: 'break-all', color: e.kind === 'voucher' ? 'var(--ink)' : 'var(--ink-3)' }}>
-                  {RAW[e.kind]}
-                  {'\n'}<span style={{ color: 'var(--ink-3)' }}>release: (none) · user: (none) · 1 event</span>
-                </pre>
-              ))}
+              {[...events]
+                .reverse()
+                .slice(0, 40)
+                .map((e) => (
+                  <pre
+                    key={e.id}
+                    style={{
+                      margin: 0,
+                      padding: '6px 10px',
+                      fontSize: 11.5,
+                      borderBottom: '1px solid var(--line)',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-all',
+                      color: e.kind === 'voucher' ? 'var(--ink)' : 'var(--ink-3)',
+                    }}
+                  >
+                    {RAW[e.kind]}
+                    {'\n'}
+                    <span style={{ color: 'var(--ink-3)' }}>release: (none) · user: (none) · 1 event</span>
+                  </pre>
+                ))}
             </div>
           )}
 
           {alerted && <Badge tone="good">Alert "checkout errors ≥ 3× baseline" → paged on-call (payments) within minutes</Badge>}
-          {!fixed && simDone && <Badge tone="bad">No alert rules. Found out 6 h later from a ★☆☆☆☆ review: "can't pay with voucher!!"</Badge>}
+          {!fixed && simDone && (
+            <Badge tone="bad">No alert rules. Found out 6 h later from a ★☆☆☆☆ review: "can't pay with voucher!!"</Badge>
+          )}
         </Stack>
       </Browser>
 
-      <Code>{fixed
-        ? `build: { sourcemap: 'hidden' }  // uploaded to the tracker in CI, then deleted\nSentry.init({ release: GIT_SHA, environment: 'production',\n  allowUrls: [/foodie\\.example/], ignoreErrors: ['ResizeObserver loop', 'AbortError'] })`
-        : `build: { sourcemap: true }      // .map files public on the CDN, never uploaded\nSentry.init({ dsn })              // no release, no environment, no filtering`}</Code>
+      <Code>
+        {fixed
+          ? `build: { sourcemap: 'hidden' }  // uploaded to the tracker in CI, then deleted\nSentry.init({ release: GIT_SHA, environment: 'production',\n  allowUrls: [/foodie\\.example/], ignoreErrors: ['ResizeObserver loop', 'AbortError'] })`
+          : `build: { sourcemap: true }      // .map files public on the CDN, never uploaded\nSentry.init({ dsn })              // no release, no environment, no filtering`}
+      </Code>
     </Stack>
   );
 }

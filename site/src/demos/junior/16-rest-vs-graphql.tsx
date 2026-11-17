@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Badge, Browser, Button, Code, Note, Row, Stack, Stat, sleep } from '../../demo-kit';
 
-export const scenario = 'A shop\'s mobile "My orders" screen on a 3G connection: it shows your name and your last orders with a product name each.';
+export const scenario =
+  'A shop\'s mobile "My orders" screen on a 3G connection: it shows your name and your last orders with a product name each.';
 export const task = 'Press "Open My orders" and watch the network panel fill up. Compare requests, KB and time to screen.';
 export const solutionNote = 'Same screen, one GraphQL query that asks for exactly the fields it renders.';
 
@@ -15,7 +16,13 @@ const ORDERS = [
   { id: 'A-1012', product: 'Hiking poles', status: 'Delivered', total: 64.0 },
 ];
 
-interface Req { label: string; kb: number; usedKb: number; start: number; end: number }
+interface Req {
+  label: string;
+  kb: number;
+  usedKb: number;
+  start: number;
+  end: number;
+}
 
 function OrdersScreen({ fixed }: { fixed: boolean }) {
   const [reqs, setReqs] = useState<Req[]>([]);
@@ -64,7 +71,9 @@ function OrdersScreen({ fixed }: { fixed: boolean }) {
   return (
     <Stack gap={14}>
       <Row>
-        <Button tone="primary" onClick={open} disabled={phase === 'loading'}>Open My orders</Button>
+        <Button tone="primary" onClick={open} disabled={phase === 'loading'}>
+          Open My orders
+        </Button>
         <Badge tone="info">3G · ~{RTT} ms per round trip</Badge>
       </Row>
 
@@ -75,15 +84,31 @@ function OrdersScreen({ fixed }: { fixed: boolean }) {
             {phase === 'loading' && (
               <Stack gap={8}>
                 <Note>Loading your orders…</Note>
-                {[0, 1, 2].map((i) => <div key={i} style={{ height: 34, borderRadius: 8, background: 'var(--paper-2)' }} />)}
+                {[0, 1, 2].map((i) => (
+                  <div key={i} style={{ height: 34, borderRadius: 8, background: 'var(--paper-2)' }} />
+                ))}
               </Stack>
             )}
             {phase === 'done' && (
               <Stack gap={6}>
                 <strong>Hi Maya 👋</strong>
                 {ORDERS.map((o) => (
-                  <div key={o.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, padding: '6px 0', borderBottom: '1px solid var(--line)' }}>
-                    <span>📦 {o.product}<br /><small style={{ color: 'var(--ink-3)' }}>{o.status}</small></span>
+                  <div
+                    key={o.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      gap: 8,
+                      fontSize: 13,
+                      padding: '6px 0',
+                      borderBottom: '1px solid var(--line)',
+                    }}
+                  >
+                    <span>
+                      📦 {o.product}
+                      <br />
+                      <small style={{ color: 'var(--ink-3)' }}>{o.status}</small>
+                    </span>
                     <span>€{o.total.toFixed(2)}</span>
                   </div>
                 ))}
@@ -93,7 +118,18 @@ function OrdersScreen({ fixed }: { fixed: boolean }) {
         </div>
 
         <div style={{ flex: '1 1 240px', minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Network</div>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--ink-3)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              marginBottom: 6,
+            }}
+          >
+            Network
+          </div>
           <div style={{ overflowX: 'auto' }}>
             <div style={{ minWidth: 240, display: 'flex', flexDirection: 'column', gap: 3 }}>
               {reqs.length === 0 && <Note>No requests yet.</Note>}
@@ -104,7 +140,16 @@ function OrdersScreen({ fixed }: { fixed: boolean }) {
                     <span style={{ color: r.kb > 10 ? 'var(--bad)' : 'var(--ink-3)' }}>{r.kb} KB</span>
                   </div>
                   <div style={{ position: 'relative', height: 6, background: 'var(--paper-2)', borderRadius: 3 }}>
-                    <div style={{ position: 'absolute', height: 6, borderRadius: 3, left: `${(r.start / span) * 100}%`, width: `${Math.max(1.5, ((r.end - r.start) / span) * 100)}%`, background: fixed ? 'var(--good)' : 'var(--info)' }} />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        height: 6,
+                        borderRadius: 3,
+                        left: `${(r.start / span) * 100}%`,
+                        width: `${Math.max(1.5, ((r.end - r.start) / span) * 100)}%`,
+                        background: fixed ? 'var(--good)' : 'var(--info)',
+                      }}
+                    />
                   </div>
                 </div>
               ))}
@@ -117,12 +162,18 @@ function OrdersScreen({ fixed }: { fixed: boolean }) {
         <Stat label="requests" value={reqs.length} tone={reqs.length > 2 ? 'bad' : reqs.length ? 'good' : 'neutral'} />
         <Stat label="KB downloaded" value={total.toFixed(1)} tone={total > 20 ? 'bad' : total ? 'good' : 'neutral'} />
         <Stat label="KB actually shown" value={used.toFixed(1)} />
-        <Stat label="time to screen" value={phase === 'done' ? `${(elapsed / 1000).toFixed(1)} s` : '-'} tone={phase !== 'done' ? 'neutral' : elapsed > 1000 ? 'bad' : 'good'} />
+        <Stat
+          label="time to screen"
+          value={phase === 'done' ? `${(elapsed / 1000).toFixed(1)} s` : '-'}
+          tone={phase !== 'done' ? 'neutral' : elapsed > 1000 ? 'bad' : 'good'}
+        />
       </Row>
 
-      <Code>{fixed
-        ? `query OrdersScreen($userId: ID!) {\n  user(id: $userId) {\n    firstName\n    orders(last: 6) { id status total product { name } }\n  }\n}`
-        : `const user = await get(\`/api/users/\${id}\`);\nconst orders = await get(\`/api/users/\${id}/orders\`);\nfor (const order of orders) {\n  const product = await get(\`/api/products/\${order.productId}\`); // 30 KB\n  order.productName = product.name;                               // uses 1 field\n}`}</Code>
+      <Code>
+        {fixed
+          ? `query OrdersScreen($userId: ID!) {\n  user(id: $userId) {\n    firstName\n    orders(last: 6) { id status total product { name } }\n  }\n}`
+          : `const user = await get(\`/api/users/\${id}\`);\nconst orders = await get(\`/api/users/\${id}/orders\`);\nfor (const order of orders) {\n  const product = await get(\`/api/products/\${order.productId}\`); // 30 KB\n  order.productName = product.name;                               // uses 1 field\n}`}
+      </Code>
     </Stack>
   );
 }

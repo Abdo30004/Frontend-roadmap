@@ -1,13 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { Badge, Browser, Button, Code, Console, Input, Note, Row, Stack, Stat, fakeRequest, useConsole } from '../../demo-kit';
 
-export const scenario = 'A shop search box suggests products as you type. It is meant to call the API only once you stop typing for 300 ms.';
+export const scenario =
+  'A shop search box suggests products as you type. It is meant to call the API only once you stop typing for 300 ms.';
 export const task = 'Type "laptop" quickly into the search box, then compare the keystrokes with the requests sent.';
 export const solutionNote = 'Same debounce helper, but timerId lives in the outer function, so every call shares it.';
 
 const CATALOG = [
-  'Laptop Pro 14"', 'Laptop Air 13"', 'Laptop stand', 'Laptop sleeve', 'Lamp (desk)', 'Lavender soap',
-  'Phone case', 'Phone charger', 'Headphones', 'Keyboard', 'Mouse pad', 'Monitor 27"',
+  'Laptop Pro 14"',
+  'Laptop Air 13"',
+  'Laptop stand',
+  'Laptop sleeve',
+  'Lamp (desk)',
+  'Lavender soap',
+  'Phone case',
+  'Phone charger',
+  'Headphones',
+  'Keyboard',
+  'Mouse pad',
+  'Monitor 27"',
 ];
 
 type Timer = ReturnType<typeof setTimeout>;
@@ -17,6 +28,7 @@ function debounceBroken<A extends unknown[]>(fn: (...args: A) => void, delay: nu
   return (...args: A) => {
     let timerId: Timer | undefined = undefined; // new variable on EVERY call
     clearTimeout(timerId); // always clears undefined
+    // eslint-disable-next-line no-useless-assignment -- the lost timer id is the bug the demo shows
     timerId = setTimeout(() => fn(...args), delay);
   };
 }
@@ -58,9 +70,7 @@ function SearchBox({ fixed }: { fixed: boolean }) {
 
   // debounce() runs ONCE for this component, like a module-level helper would.
   const [debounced] = useState(() =>
-    fixed
-      ? debounceFixed((q: string) => searchRef.current(q), 300)
-      : debounceBroken((q: string) => searchRef.current(q), 300),
+    fixed ? debounceFixed((q: string) => searchRef.current(q), 300) : debounceBroken((q: string) => searchRef.current(q), 300),
   );
 
   useEffect(() => {
@@ -72,7 +82,11 @@ function SearchBox({ fixed }: { fixed: boolean }) {
   }, [debounced]);
 
   const reset = () => {
-    setText(''); setKeys(0); setRequests(0); setSuggestions([]); c.clear();
+    setText('');
+    setKeys(0);
+    setRequests(0);
+    setSuggestions([]);
+    c.clear();
   };
 
   const perKey = keys > 1 && requests >= keys;
@@ -96,7 +110,9 @@ function SearchBox({ fixed }: { fixed: boolean }) {
             {!loading && suggestions.length > 0 && (
               <Stack gap={4}>
                 {suggestions.map((s) => (
-                  <div key={s} style={{ padding: '4px 8px', borderRadius: 6, background: 'var(--paper-2)', fontSize: 14 }}>{s}</div>
+                  <div key={s} style={{ padding: '4px 8px', borderRadius: 6, background: 'var(--paper-2)', fontSize: 14 }}>
+                    {s}
+                  </div>
                 ))}
               </Stack>
             )}
@@ -107,12 +123,18 @@ function SearchBox({ fixed }: { fixed: boolean }) {
       <Row gap={10}>
         <Stat label="keystrokes" value={keys} />
         <Stat label="API requests" value={requests} tone={requests === 0 ? 'neutral' : perKey ? 'bad' : 'good'} />
-        {requests > 0 && <Badge tone={perKey ? 'bad' : 'good'}>{perKey ? 'one request per keystroke' : 'waits until you stop typing'}</Badge>}
-        <Button tone="ghost" onClick={reset}>Reset</Button>
+        {requests > 0 && (
+          <Badge tone={perKey ? 'bad' : 'good'}>{perKey ? 'one request per keystroke' : 'waits until you stop typing'}</Badge>
+        )}
+        <Button tone="ghost" onClick={reset}>
+          Reset
+        </Button>
       </Row>
-      <Code>{fixed
-        ? `function debounce(fn, delay) {\n  let timerId;               // shared by every call\n  return (...args) => {\n    clearTimeout(timerId);\n    timerId = setTimeout(() => fn(...args), delay);\n  };\n}`
-        : `function debounce(fn, delay) {\n  return (...args) => {\n    let timerId;             // new one per call\n    clearTimeout(timerId);\n    timerId = setTimeout(() => fn(...args), delay);\n  };\n}`}</Code>
+      <Code>
+        {fixed
+          ? `function debounce(fn, delay) {\n  let timerId;               // shared by every call\n  return (...args) => {\n    clearTimeout(timerId);\n    timerId = setTimeout(() => fn(...args), delay);\n  };\n}`
+          : `function debounce(fn, delay) {\n  return (...args) => {\n    let timerId;             // new one per call\n    clearTimeout(timerId);\n    timerId = setTimeout(() => fn(...args), delay);\n  };\n}`}
+      </Code>
       <Console lines={c.lines} height={120} title="Network" onClear={c.clear} />
     </Stack>
   );

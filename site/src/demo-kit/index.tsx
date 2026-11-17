@@ -21,8 +21,18 @@ export type Tone = 'neutral' | 'bad' | 'good' | 'warn' | 'info';
 
 /* ---------- layout ---------- */
 
-export function Row({ children, gap = 8, wrap = true, align = 'center', style }: {
-  children: ReactNode; gap?: number; wrap?: boolean; align?: CSSProperties['alignItems']; style?: CSSProperties;
+export function Row({
+  children,
+  gap = 8,
+  wrap = true,
+  align = 'center',
+  style,
+}: {
+  children: ReactNode;
+  gap?: number;
+  wrap?: boolean;
+  align?: CSSProperties['alignItems'];
+  style?: CSSProperties;
 }) {
   return <div style={{ display: 'flex', gap, flexWrap: wrap ? 'wrap' : 'nowrap', alignItems: align, ...style }}>{children}</div>;
 }
@@ -55,7 +65,11 @@ export function Browser({ url = 'app.example.com', children, style }: { url?: st
 
 /* ---------- controls ---------- */
 
-export function Button({ tone = 'default', className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement> & {
+export function Button({
+  tone = 'default',
+  className = '',
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
   tone?: 'default' | 'primary' | 'danger' | 'ghost';
 }) {
   return <button type="button" {...props} className={`dk-btn ${className}`} data-tone={tone} />;
@@ -86,7 +100,11 @@ export function Stat({ label, value, tone = 'neutral' }: { label: string; value:
 }
 
 export function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: Tone }) {
-  return <span className="dk-badge" data-tone={tone}>{children}</span>;
+  return (
+    <span className="dk-badge" data-tone={tone}>
+      {children}
+    </span>
+  );
 }
 
 /** Small muted caption explaining what to look at. Never put the answer here in a Problem demo. */
@@ -97,11 +115,19 @@ export function Note({ children }: { children: ReactNode }) {
 /** Splits a line into code and a trailing `// comment` (ignores the `//` in URLs like `https://`). */
 function withComment(line: string, i: number): ReactNode {
   const m = /(^|\s)(\/\/.*)$/.exec(line);
-  if (!m) return <Fragment key={i}>{line}{'\n'}</Fragment>;
+  if (!m)
+    return (
+      <Fragment key={i}>
+        {line}
+        {'\n'}
+      </Fragment>
+    );
   const at = m.index + m[1].length;
   return (
     <Fragment key={i}>
-      {line.slice(0, at)}<span className="dk-code-comment">{m[2]}</span>{'\n'}
+      {line.slice(0, at)}
+      <span className="dk-code-comment">{m[2]}</span>
+      {'\n'}
     </Fragment>
   );
 }
@@ -109,11 +135,16 @@ function withComment(line: string, i: number): ReactNode {
 /** Code block for a few lines shown inside a demo, in a dark editor frame. `title` is the label in its top bar. */
 export function Code({ children, title }: { children: string; title?: string }) {
   const { t } = useTranslation();
-  const lines = children.replace(/^\n/, '').replace(/\n\s*$/, '').split('\n');
+  const lines = children
+    .replace(/^\n/, '')
+    .replace(/\n\s*$/, '')
+    .split('\n');
   return (
     <figure className="dk-codeblock">
       <figcaption className="dk-code-bar">{title ?? t('demo.code')}</figcaption>
-      <pre className="dk-code"><code>{lines.map(withComment)}</code></pre>
+      <pre className="dk-code">
+        <code>{lines.map(withComment)}</code>
+      </pre>
     </figure>
   );
 }
@@ -131,22 +162,37 @@ export function Meter({ value, max = 100, tone = 'info', label }: { value: numbe
 
 /* ---------- console ---------- */
 
-export interface ConsoleLine { id: number; text: string; tone: Tone }
+export interface ConsoleLine {
+  id: number;
+  text: string;
+  tone: Tone;
+}
 
 /** A tiny console. `const c = useConsole(); c.log('hi', 'bad'); <Console lines={c.lines} />` */
 export function useConsole(max = 60) {
   const [lines, setLines] = useState<ConsoleLine[]>([]);
   const id = useRef(0);
-  const log = useCallback((text: unknown, tone: Tone = 'neutral') => {
-    const str = typeof text === 'string' ? text : JSON.stringify(text);
-    setLines((prev) => [...prev, { id: id.current++, text: str, tone }].slice(-max));
-  }, [max]);
+  const log = useCallback(
+    (text: unknown, tone: Tone = 'neutral') => {
+      const str = typeof text === 'string' ? text : JSON.stringify(text);
+      setLines((prev) => [...prev, { id: id.current++, text: str, tone }].slice(-max));
+    },
+    [max],
+  );
   const clear = useCallback(() => setLines([]), []);
   return { lines, log, clear };
 }
 
-export function Console({ lines, height = 160, title = 'Console', onClear }: {
-  lines: ConsoleLine[]; height?: number; title?: string; onClear?: () => void;
+export function Console({
+  lines,
+  height = 160,
+  title = 'Console',
+  onClear,
+}: {
+  lines: ConsoleLine[];
+  height?: number;
+  title?: string;
+  onClear?: () => void;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
@@ -158,12 +204,18 @@ export function Console({ lines, height = 160, title = 'Console', onClear }: {
     <div className="dk-console">
       <div className="dk-console-bar">
         <span>{title}</span>
-        {onClear && <button type="button" onClick={onClear}>clear</button>}
+        {onClear && (
+          <button type="button" onClick={onClear}>
+            clear
+          </button>
+        )}
       </div>
       <div className="dk-console-body" ref={ref} style={{ height }} aria-live="polite">
         {lines.length === 0 && <div className="dk-console-empty">{t('demo.consoleEmpty')}</div>}
         {lines.map((l) => (
-          <div key={l.id} className="dk-console-line" data-tone={l.tone}>{l.text}</div>
+          <div key={l.id} className="dk-console-line" data-tone={l.tone}>
+            {l.text}
+          </div>
         ))}
       </div>
     </div>
@@ -173,8 +225,14 @@ export function Console({ lines, height = 160, title = 'Console', onClear }: {
 /* ---------- step-by-step simulations ---------- */
 
 /** Highlights the active step of a process. Use with usePlayer for animated walk-throughs. */
-export function Steps({ steps, active, vertical = false }: {
-  steps: { label: string; detail?: string; tone?: Tone }[]; active: number; vertical?: boolean;
+export function Steps({
+  steps,
+  active,
+  vertical = false,
+}: {
+  steps: { label: string; detail?: string; tone?: Tone }[];
+  active: number;
+  vertical?: boolean;
 }) {
   return (
     <ol className="dk-steps" data-vertical={vertical || undefined}>
@@ -208,9 +266,15 @@ export function usePlayer(count: number, interval = 900) {
     step,
     playing,
     done: step >= count - 1,
-    play: () => { setStep(-1); setPlaying(true); },
+    play: () => {
+      setStep(-1);
+      setPlaying(true);
+    },
     next: () => setStep((s) => Math.min(count - 1, s + 1)),
-    reset: () => { setPlaying(false); setStep(-1); },
+    reset: () => {
+      setPlaying(false);
+      setStep(-1);
+    },
   };
 }
 
@@ -226,9 +290,14 @@ export const sleep = (ms: number, signal?: AbortSignal) =>
   });
 
 /** Simulated network request. Abortable, can fail, random-ish latency if delay is [min,max]. */
-export async function fakeRequest<T>(value: T | (() => T), opts: {
-  delay?: number | [number, number]; fail?: boolean | string; signal?: AbortSignal;
-} = {}): Promise<T> {
+export async function fakeRequest<T>(
+  value: T | (() => T),
+  opts: {
+    delay?: number | [number, number];
+    fail?: boolean | string;
+    signal?: AbortSignal;
+  } = {},
+): Promise<T> {
   const { delay = 600, fail = false, signal } = opts;
   const ms = Array.isArray(delay) ? delay[0] + Math.random() * (delay[1] - delay[0]) : delay;
   await sleep(ms, signal);

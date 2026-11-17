@@ -1,20 +1,39 @@
 import { createContext, memo, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Badge, Browser, Button, Code, Note, Row, Stack } from '../../demo-kit';
 
-export const scenario = 'A food-delivery app shows a restaurant menu, a cart badge and a live courier ETA. App data (user, cart, ETA) is shared through context.';
+export const scenario =
+  'A food-delivery app shows a restaurant menu, a cart badge and a live courier ETA. App data (user, cart, ETA) is shared through context.';
 export const task = 'Click "Add" on a dish, then turn on live ETA for a few seconds. Watch the render counters on every menu item.';
 export const solutionNote = 'Same app, but user, cart state, cart actions and ETA live in separate contexts with memoized values.';
 
-interface Dish { id: number; name: string; price: number }
+interface Dish {
+  id: number;
+  name: string;
+  price: number;
+}
 const MENU: Dish[] = [
-  { id: 1, name: 'Margherita', price: 9 }, { id: 2, name: 'Diavola', price: 11 }, { id: 3, name: 'Quattro formaggi', price: 12 },
-  { id: 4, name: 'Tiramisu', price: 6 }, { id: 5, name: 'Lemonade', price: 3 }, { id: 6, name: 'Garlic bread', price: 4 },
+  { id: 1, name: 'Margherita', price: 9 },
+  { id: 2, name: 'Diavola', price: 11 },
+  { id: 3, name: 'Quattro formaggi', price: 12 },
+  { id: 4, name: 'Tiramisu', price: 6 },
+  { id: 5, name: 'Lemonade', price: 3 },
+  { id: 6, name: 'Garlic bread', price: 4 },
 ];
 type User = { name: string } | null;
-interface Eta { minutes: number; live: boolean; setLive: (v: boolean) => void }
+interface Eta {
+  minutes: number;
+  live: boolean;
+  setLive: (v: boolean) => void;
+}
 
 /* ---- the buggy version: one big context ---- */
-interface AppValue { user: User; setUser: (u: User) => void; cart: Dish[]; addToCart: (d: Dish) => void; eta: Eta }
+interface AppValue {
+  user: User;
+  setUser: (u: User) => void;
+  cart: Dish[];
+  addToCart: (d: Dish) => void;
+  eta: Eta;
+}
 const AppContext = createContext<AppValue | null>(null);
 
 /* ---- the fixed version: split by what changes together ---- */
@@ -66,17 +85,46 @@ function SplitProviders({ children }: { children: ReactNode }) {
 
 /* Hooks: each component subscribes ONLY to the contexts that are actually provided in its version. */
 const Fixed = createContext(false);
-const useUser = () => { const f = useContext(Fixed); const app = useContext(AppContext); const u = useContext(UserContext); return f ? u! : { user: app!.user, setUser: app!.setUser }; };
-const useAdd = () => { const f = useContext(Fixed); const app = useContext(AppContext); const a = useContext(CartActionsContext); return f ? a!.add : app!.addToCart; };
-const useCart = () => { const f = useContext(Fixed); const app = useContext(AppContext); const c = useContext(CartStateContext); return f ? c : app!.cart; };
-const useEta = () => { const f = useContext(Fixed); const app = useContext(AppContext); const e = useContext(EtaContext); return f ? e! : app!.eta; };
+const useUser = () => {
+  const f = useContext(Fixed);
+  const app = useContext(AppContext);
+  const u = useContext(UserContext);
+  return f ? u! : { user: app!.user, setUser: app!.setUser };
+};
+const useAdd = () => {
+  const f = useContext(Fixed);
+  const app = useContext(AppContext);
+  const a = useContext(CartActionsContext);
+  return f ? a!.add : app!.addToCart;
+};
+const useCart = () => {
+  const f = useContext(Fixed);
+  const app = useContext(AppContext);
+  const c = useContext(CartStateContext);
+  return f ? c : app!.cart;
+};
+const useEta = () => {
+  const f = useContext(Fixed);
+  const app = useContext(AppContext);
+  const e = useContext(EtaContext);
+  return f ? e! : app!.eta;
+};
 
 const FLASH_CSS = '@keyframes m10-flash { from { background-color: var(--warn-soft); } to { background-color: transparent; } }';
 function Renders() {
   const r = useRef(0);
   const n = ++r.current;
   return (
-    <span key={n} style={{ animation: n > 1 ? 'm10-flash 500ms ease-out' : undefined, borderRadius: 6, padding: '1px 6px', font: '600 11px var(--font-mono)', color: n > 1 ? 'var(--warn)' : 'var(--ink-3)' }}>
+    <span
+      key={n}
+      style={{
+        animation: n > 1 ? 'm10-flash 500ms ease-out' : undefined,
+        borderRadius: 6,
+        padding: '1px 6px',
+        font: '600 11px var(--font-mono)',
+        color: n > 1 ? 'var(--warn)' : 'var(--ink-3)',
+      }}
+    >
       renders: {n}
     </span>
   );
@@ -87,9 +135,13 @@ const MenuItem = memo(function MenuItem({ dish }: { dish: Dish }) {
   const add = useAdd();
   return (
     <Row gap={8} wrap={false} style={{ padding: '6px 0', borderTop: '1px solid var(--line)' }}>
-      <span style={{ flex: '1 1 auto', fontSize: 14 }}>{dish.name} <span style={{ color: 'var(--ink-3)' }}>€{dish.price}</span></span>
+      <span style={{ flex: '1 1 auto', fontSize: 14 }}>
+        {dish.name} <span style={{ color: 'var(--ink-3)' }}>€{dish.price}</span>
+      </span>
       <Renders />
-      <Button disabled={!user} onClick={() => add(dish)} style={{ padding: '4px 10px' }}>Add</Button>
+      <Button disabled={!user} onClick={() => add(dish)} style={{ padding: '4px 10px' }}>
+        Add
+      </Button>
     </Row>
   );
 });
@@ -101,7 +153,9 @@ function Header() {
     <Row gap={8}>
       <strong style={{ flex: '1 1 auto' }}>Luigi's Pizzeria</strong>
       <Badge tone={cart.length ? 'info' : 'neutral'}>🛒 {cart.length}</Badge>
-      <Button tone="ghost" onClick={() => setUser(user ? null : { name: 'Sam' })}>{user ? 'Log out' : 'Log in'}</Button>
+      <Button tone="ghost" onClick={() => setUser(user ? null : { name: 'Sam' })}>
+        {user ? 'Log out' : 'Log in'}
+      </Button>
     </Row>
   );
 }
@@ -122,7 +176,11 @@ const PAGE = (
   <Stack gap={10}>
     <Header />
     <EtaBanner />
-    <div>{MENU.map((d) => <MenuItem key={d.id} dish={d} />)}</div>
+    <div>
+      {MENU.map((d) => (
+        <MenuItem key={d.id} dish={d} />
+      ))}
+    </div>
   </Stack>
 );
 
@@ -136,11 +194,17 @@ function App({ fixed }: { fixed: boolean }) {
           {fixed ? <SplitProviders key={key}>{PAGE}</SplitProviders> : <BigAppProvider key={key}>{PAGE}</BigAppProvider>}
         </Browser>
       </Fixed.Provider>
-      <Row><Button tone="ghost" onClick={() => setKey((k) => k + 1)}>Reset</Button></Row>
+      <Row>
+        <Button tone="ghost" onClick={() => setKey((k) => k + 1)}>
+          Reset
+        </Button>
+      </Row>
       <Note>Menu items are wrapped in memo and get the same props every time.</Note>
-      <Code>{fixed
-        ? `const { user } = useContext(UserContext);     // login/logout only\nconst { add } = useContext(CartActionsContext); // never changes\n// cart → CartStateContext, ETA → EtaContext`
-        : `<AppContext.Provider value={{ user, setUser, cart, addToCart, eta }}>\n\nconst { user, addToCart } = useContext(AppContext); // in MenuItem`}</Code>
+      <Code>
+        {fixed
+          ? `const { user } = useContext(UserContext);     // login/logout only\nconst { add } = useContext(CartActionsContext); // never changes\n// cart → CartStateContext, ETA → EtaContext`
+          : `<AppContext.Provider value={{ user, setUser, cart, addToCart, eta }}>\n\nconst { user, addToCart } = useContext(AppContext); // in MenuItem`}
+      </Code>
     </Stack>
   );
 }

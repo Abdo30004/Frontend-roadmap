@@ -124,7 +124,7 @@ code, pre, kbd { font-family: var(--font-mono); font-variant-ligatures: none; fo
   border-bottom: 1px solid var(--line);
 }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 15.5px; letter-spacing: -0.02em; white-space: nowrap; }
-.brand-mark { width: 26px; height: 26px; border-radius: 5px; background: var(--primary); display: grid; place-items: center; color: var(--on-primary); }
+.brand-mark { flex: none; display: block; }
 .topnav { display: flex; gap: 4px; margin-left: auto; }
 .topnav a {
   padding: 6px 12px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px; font-weight: 500;

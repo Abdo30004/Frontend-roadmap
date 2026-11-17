@@ -1,15 +1,29 @@
 import { useState, type ContextType, type MouseEvent, type ReactNode } from 'react';
 import {
-  Link, MemoryRouter, NavLink, Outlet, Route, Routes, useLocation, useNavigate, useParams,
-  UNSAFE_LocationContext, UNSAFE_RouteContext,
+  Link,
+  MemoryRouter,
+  NavLink,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+  UNSAFE_LocationContext,
+  UNSAFE_RouteContext,
 } from 'react-router-dom';
 import { Badge, Browser, Button, Code, Note, Row, Stack, Stat } from '../../demo-kit';
 
-export const scenario = 'A small online shop: add deals to your cart on the home page, browse products and open a product page. The header shows your cart.';
+export const scenario =
+  'A small online shop: add deals to your cart on the home page, browse products and open a product page. The header shows your cart.';
 export const task = 'Add 2 deals to the cart, click "Products" in the header, then open any product. Watch the cart and the page.';
 export const solutionNote = 'Same shop: a layout route with <Outlet />, <NavLink> instead of <a href>, and a :productId param.';
 
-interface Product { id: string; name: string; price: number }
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+}
 const PRODUCTS: Product[] = [
   { id: '1', name: 'Trail running shoes', price: 89 },
   { id: '2', name: 'Rain jacket', price: 120 },
@@ -35,12 +49,21 @@ function ProductPage({ onAdd }: { onAdd: (p: Product) => void }) {
     <Stack gap={6}>
       <strong>{p.name}</strong>
       <span>${p.price}</span>
-      <Row><Button onClick={() => onAdd(p)}>Add to cart</Button><Button tone="ghost" onClick={() => navigate('/products')}>Back to products</Button></Row>
+      <Row>
+        <Button onClick={() => onAdd(p)}>Add to cart</Button>
+        <Button tone="ghost" onClick={() => navigate('/products')}>
+          Back to products
+        </Button>
+      </Row>
     </Stack>
   );
 }
 
-interface ShopProps { fixed: boolean; loads: number; hardNavigate: (path: string) => void }
+interface ShopProps {
+  fixed: boolean;
+  loads: number;
+  hardNavigate: (path: string) => void;
+}
 
 function Shop({ fixed, loads, hardNavigate }: ShopProps) {
   const [cart, setCart] = useState<string[]>([]); // in-memory state
@@ -49,10 +72,21 @@ function Shop({ fixed, loads, hardNavigate }: ShopProps) {
 
   // A plain <a href>: the browser throws the page away and loads the URL from scratch (simulated here).
   const a = (to: string, label: string) => (
-    <a href={to} onClick={(e: MouseEvent) => { e.preventDefault(); hardNavigate(to); }} style={{ color: 'var(--accent)' }}>{label}</a>
+    <a
+      href={to}
+      onClick={(e: MouseEvent) => {
+        e.preventDefault();
+        hardNavigate(to);
+      }}
+      style={{ color: 'var(--accent)' }}
+    >
+      {label}
+    </a>
   );
   const link = (to: string, label: string) => (
-    <NavLink to={to} end style={({ isActive }) => ({ color: 'var(--accent)', fontWeight: isActive ? 700 : 400 })}>{label}</NavLink>
+    <NavLink to={to} end style={({ isActive }) => ({ color: 'var(--accent)', fontWeight: isActive ? 700 : 400 })}>
+      {label}
+    </NavLink>
   );
 
   const header = (
@@ -68,7 +102,12 @@ function Shop({ fixed, loads, hardNavigate }: ShopProps) {
     <Stack gap={6}>
       <strong>Today's deals</strong>
       {PRODUCTS.slice(0, 2).map((p) => (
-        <Row key={p.id} gap={8}><span style={{ flex: '1 1 140px' }}>{p.name} · ${p.price}</span><Button onClick={() => add(p)}>Add to cart</Button></Row>
+        <Row key={p.id} gap={8}>
+          <span style={{ flex: '1 1 140px' }}>
+            {p.name} · ${p.price}
+          </span>
+          <Button onClick={() => add(p)}>Add to cart</Button>
+        </Row>
       ))}
     </Stack>
   );
@@ -76,7 +115,11 @@ function Shop({ fixed, loads, hardNavigate }: ShopProps) {
   const list = (
     <Stack gap={6}>
       <strong>All products</strong>
-      {PRODUCTS.map((p) => <Link key={p.id} to={`/products/${p.id}`} style={{ color: 'var(--accent)' }}>{p.name}</Link>)}
+      {PRODUCTS.map((p) => (
+        <Link key={p.id} to={`/products/${p.id}`} style={{ color: 'var(--accent)' }}>
+          {p.name}
+        </Link>
+      ))}
     </Stack>
   );
 
@@ -86,7 +129,15 @@ function Shop({ fixed, loads, hardNavigate }: ShopProps) {
         <div style={{ minHeight: 150 }}>
           {fixed ? (
             <Routes>
-              <Route path="/" element={<Stack gap={10}>{header}<Outlet /></Stack>}>
+              <Route
+                path="/"
+                element={
+                  <Stack gap={10}>
+                    {header}
+                    <Outlet />
+                  </Stack>
+                }
+              >
                 <Route index element={home} />
                 <Route path="products" element={list} />
                 <Route path="products/:productId" element={<ProductPage onAdd={add} />} />
@@ -95,7 +146,15 @@ function Shop({ fixed, loads, hardNavigate }: ShopProps) {
             </Routes>
           ) : (
             <Routes>
-              <Route path="/" element={<Stack gap={10}>{header}{home}</Stack>} />
+              <Route
+                path="/"
+                element={
+                  <Stack gap={10}>
+                    {header}
+                    {home}
+                  </Stack>
+                }
+              />
               <Route path="/products" element={list} />
               <Route path="/products/id" element={<ProductPage onAdd={add} />} />
             </Routes>
@@ -105,7 +164,9 @@ function Shop({ fixed, loads, hardNavigate }: ShopProps) {
       <Row gap={10}>
         <Stat label="cart (in memory)" value={cart.length} />
         <Stat label="full page loads" value={loads} tone={loads > 1 ? 'bad' : 'good'} />
-        <Button tone="ghost" onClick={() => hardNavigate('/')}>Type trailshop.example/ in the URL bar</Button>
+        <Button tone="ghost" onClick={() => hardNavigate('/')}>
+          Type trailshop.example/ in the URL bar
+        </Button>
       </Row>
     </Stack>
   );
@@ -121,9 +182,11 @@ function RouterDemo({ fixed }: { fixed: boolean }) {
           <Shop fixed={fixed} loads={boot.loads} hardNavigate={hardNavigate} />
         </MemoryRouter>
       </Isolated>
-      <Code>{fixed
-        ? `<Route path="/" element={<RootLayout />}>   {/* header + <Outlet /> */}\n  <Route index element={<Home />} />\n  <Route path="products" element={<ProductList />} />\n  <Route path="products/:productId" element={<ProductPage />} />\n  <Route path="*" element={<NotFound />} />\n</Route>\n// header: <NavLink to="/products">Products</NavLink>`
-        : `<Route path="/" element={<><Header /><Home /></>} />\n<Route path="/products" element={<ProductList />} />\n<Route path="/products/id" element={<ProductPage />} />\n// Header: <a href="/products">Products</a>`}</Code>
+      <Code>
+        {fixed
+          ? `<Route path="/" element={<RootLayout />}>   {/* header + <Outlet /> */}\n  <Route index element={<Home />} />\n  <Route path="products" element={<ProductList />} />\n  <Route path="products/:productId" element={<ProductPage />} />\n  <Route path="*" element={<NotFound />} />\n</Route>\n// header: <NavLink to="/products">Products</NavLink>`
+          : `<Route path="/" element={<><Header /><Home /></>} />\n<Route path="/products" element={<ProductList />} />\n<Route path="/products/id" element={<ProductPage />} />\n// Header: <a href="/products">Products</a>`}
+      </Code>
     </Stack>
   );
 }

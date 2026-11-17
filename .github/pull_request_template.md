@@ -13,7 +13,7 @@
 
 ## Checklist
 
-- [ ] `npm run build` passes in `site/`
+- [ ] `npm run check` and `npm run build` pass in `site/`
 - [ ] Markdown files keep the four `##` headings, in English (also in `content/fr/`)
 - [ ] New question: added to `site/src/catalog.ts` and `content/README.md`, with a demo in `site/src/demos/<level>/`
 - [ ] Interface text: added to both `site/src/i18n/en.ts` and `site/src/i18n/fr.ts`

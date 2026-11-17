@@ -163,10 +163,10 @@ const platformDesign = skill({
   installs: 1_600,
   platforms: 'All major agents',
   lead: [
-    'The reference skill: more than 300 design rules taken from Apple\'s Human Interface Guidelines, Material Design 3 and WCAG 2.2.',
+    "The reference skill: more than 300 design rules taken from Apple's Human Interface Guidelines, Material Design 3 and WCAG 2.2.",
     'It does not make creative decisions for you; it enforces standards: touch targets, contrast ratios, type scales, spacing systems and accessibility requirements. It is a set with one skill per platform, and the command below installs the web one.',
   ],
-  when: 'When Claude\'s output has to meet specific platform guidelines, for example in enterprise applications.',
+  when: "When Claude's output has to meet specific platform guidelines, for example in enterprise applications.",
 });
 
 const uiSkills = skill({
@@ -298,7 +298,9 @@ const canvasDesign = skill({
   author: 'Anthropic',
   pkg: 'anthropics/skills@canvas-design',
   installs: 133_000,
-  lead: ['Creates visual art as PNG or PDF files, guided by a written design philosophy. Handy for posters, covers and other static graphics.'],
+  lead: [
+    'Creates visual art as PNG or PDF files, guided by a written design philosophy. Handy for posters, covers and other static graphics.',
+  ],
 });
 
 const algorithmicArt = skill({
@@ -333,7 +335,9 @@ export const SECTIONS: Section[] = [
   {
     id: 'react',
     title: 'React',
-    intro: ['React skills are the backbone of the frontend category. Start with the first one and add the others as your project needs them.'],
+    intro: [
+      'React skills are the backbone of the frontend category. Start with the first one and add the others as your project needs them.',
+    ],
     skills: [reactBestPractices, compositionPatterns, remotion],
   },
   {
@@ -345,7 +349,9 @@ export const SECTIONS: Section[] = [
   {
     id: 'design',
     title: 'Design quality',
-    intro: ['Two kinds of skill live here: ones that push Claude toward bolder, more original design, and ones that hold it to professional standards. You want both.'],
+    intro: [
+      'Two kinds of skill live here: ones that push Claude toward bolder, more original design, and ones that hold it to professional standards. You want both.',
+    ],
     skills: [frontendDesign, webDesignGuidelines, uiUxProMax, platformDesign, uiSkills],
   },
   {
@@ -384,7 +390,10 @@ export const NEXTJS_NOTE = {
   ],
   commands: [
     { label: 'On earlier versions, pull in the same docs by hand:', cmd: 'npx @next/codemod@canary agents-md' },
-    { label: 'The workflow skills that remain (cache components, partial prefetching) live in the Next.js repo:', cmd: 'npx skills add vercel/next.js' },
+    {
+      label: 'The workflow skills that remain (cache components, partial prefetching) live in the Next.js repo:',
+      cmd: 'npx skills add vercel/next.js',
+    },
   ],
 };
 
@@ -419,7 +428,11 @@ export const STACKS: { title: string; rows: { name: string; id?: string; why: st
   {
     title: 'A design-to-code workflow',
     rows: [
-      { name: 'figma-implement-design', id: 'figma-implement-design', why: 'With the Figma MCP server: reads your designs and translates them to code' },
+      {
+        name: 'figma-implement-design',
+        id: 'figma-implement-design',
+        why: 'With the Figma MCP server: reads your designs and translates them to code',
+      },
       { name: 'stitch-loop', id: 'stitch-loop', why: 'Iterative refinement' },
       { name: 'frontend-design', id: 'frontend-design', why: 'Distinctive, non-generic output' },
       { name: 'web-design-guidelines', id: 'web-design-guidelines', why: 'Professional quality standards' },

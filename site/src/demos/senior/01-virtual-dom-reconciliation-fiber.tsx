@@ -10,14 +10,12 @@ export const solutionNote = 'Same page, but one <Card variant> component: same t
 function QuoteForm({ onMount }: { onMount: () => void }) {
   const [values, setValues] = useState({ name: '', address: '', plate: '' });
   // runs once per mount: a second call means React threw the old fiber away
-  useEffect(() => { onMount(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    onMount();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const field = (key: keyof typeof values, text: string, placeholder: string) => (
     <Label text={text}>
-      <Input
-        value={values[key]}
-        placeholder={placeholder}
-        onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
-      />
+      <Input value={values[key]} placeholder={placeholder} onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))} />
     </Label>
   );
   return (
@@ -40,10 +38,20 @@ const cardStyle = (premium: boolean) => ({
 
 // BUG version: two different component types
 function BasicCard({ children }: { children: ReactNode }) {
-  return <section style={cardStyle(false)}><strong>Basic quote</strong><div style={{ marginTop: 10 }}>{children}</div></section>;
+  return (
+    <section style={cardStyle(false)}>
+      <strong>Basic quote</strong>
+      <div style={{ marginTop: 10 }}>{children}</div>
+    </section>
+  );
 }
 function PremiumCard({ children }: { children: ReactNode }) {
-  return <section style={cardStyle(true)}><strong>Premium quote ★</strong><div style={{ marginTop: 10 }}>{children}</div></section>;
+  return (
+    <section style={cardStyle(true)}>
+      <strong>Premium quote ★</strong>
+      <div style={{ marginTop: 10 }}>{children}</div>
+    </section>
+  );
 }
 
 // FIX version: one stable type, the difference is a prop
@@ -57,7 +65,11 @@ function Card({ variant, children }: { variant: 'basic' | 'premium'; children: R
   );
 }
 
-interface Diff { before: string; after: string; same: boolean }
+interface Diff {
+  before: string;
+  after: string;
+  same: boolean;
+}
 
 function QuotePage({ fixed, reset }: { fixed: boolean; reset: () => void }) {
   const [premium, setPremium] = useState(false);
@@ -86,15 +98,23 @@ function QuotePage({ fixed, reset }: { fixed: boolean; reset: () => void }) {
     <Stack gap={14}>
       <Browser url="quotes.example-insure.com/car">
         {fixed ? (
-          <Card variant={premium ? 'premium' : 'basic'}>{form}{toggleBox}</Card>
+          <Card variant={premium ? 'premium' : 'basic'}>
+            {form}
+            {toggleBox}
+          </Card>
         ) : (
-          <CardType>{form}{toggleBox}</CardType>
+          <CardType>
+            {form}
+            {toggleBox}
+          </CardType>
         )}
       </Browser>
 
       <Row gap={10}>
         <Stat label="QuoteForm mounts" value={mounts} tone={mounts > 1 ? 'bad' : 'good'} />
-        <Button tone="ghost" onClick={reset}>Reset</Button>
+        <Button tone="ghost" onClick={reset}>
+          Reset
+        </Button>
       </Row>
 
       <Panel title="What the reconciler compared on the last toggle">
@@ -106,9 +126,7 @@ function QuotePage({ fixed, reset }: { fixed: boolean; reset: () => void }) {
               <Badge tone={diff.same ? 'good' : 'bad'}>{diff.after}</Badge>
             </Row>
             <Row gap={6}>
-              <Badge tone={diff.same ? 'good' : 'bad'}>
-                {diff.same ? 'same type → update props' : 'different type → unmount + mount'}
-              </Badge>
+              <Badge tone={diff.same ? 'good' : 'bad'}>{diff.same ? 'same type → update props' : 'different type → unmount + mount'}</Badge>
               <Note>
                 {diff.same
                   ? 'Fibers reused: QuoteForm keeps its useState, only className changes.'
@@ -121,9 +139,11 @@ function QuotePage({ fixed, reset }: { fixed: boolean; reset: () => void }) {
         )}
       </Panel>
 
-      <Code>{fixed
-        ? `<Card variant={premium ? 'premium' : 'basic'}>\n  <QuoteForm />\n</Card>`
-        : `const Card = premium ? PremiumCard : BasicCard;\n<Card>\n  <QuoteForm />\n</Card>`}</Code>
+      <Code>
+        {fixed
+          ? `<Card variant={premium ? 'premium' : 'basic'}>\n  <QuoteForm />\n</Card>`
+          : `const Card = premium ? PremiumCard : BasicCard;\n<Card>\n  <QuoteForm />\n</Card>`}
+      </Code>
     </Stack>
   );
 }

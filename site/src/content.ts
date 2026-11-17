@@ -2,17 +2,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CATALOG, CATEGORIES, LEVELS, type CategoryId, type Level } from './catalog';
 import { useLang, type Lang } from './i18n';
+import { parseQuestion as parse } from './parse';
 
 // Question markdown, one lazy chunk per file. The .md files stay the single source of truth.
-const RAW = import.meta.glob('../../content/*/*.md', { query: '?raw', import: 'default' }) as Record<
-  string,
-  () => Promise<string>
->;
+const RAW = import.meta.glob('../../content/*/*.md', { query: '?raw', import: 'default' }) as Record<string, () => Promise<string>>;
 // French translations mirror the same layout under content/fr/<level>/<slug>.md.
-const RAW_FR = import.meta.glob('../../content/fr/*/*.md', { query: '?raw', import: 'default' }) as Record<
-  string,
-  () => Promise<string>
->;
+const RAW_FR = import.meta.glob('../../content/fr/*/*.md', { query: '?raw', import: 'default' }) as Record<string, () => Promise<string>>;
 
 /** Lightweight metadata from the catalog — enough for the map and the sidebar. */
 export interface QuestionMeta {
@@ -58,51 +53,6 @@ export function useLabels() {
   };
 }
 export const questionId = (q: Pick<QuestionMeta, 'level' | 'slug'>) => `${q.level}/${q.slug}`;
-
-type Section = 'concept' | 'problem' | 'fix' | 'interview';
-
-function parse(md: string) {
-  const text = md.replace(/\r\n/g, '\n');
-  const lines = text.split('\n');
-  const title = (lines.find((l) => l.startsWith('# ')) ?? '').slice(2).trim();
-
-  const merged: string[] = [];
-  const mi = lines.findIndex((l) => l.startsWith('**Merged from'));
-  if (mi >= 0) {
-    for (let i = mi + 1; i < lines.length; i++) {
-      const l = lines[i];
-      if (l.startsWith('- ')) merged.push(l.slice(2).trim());
-      else if (l.trim() === '' && merged.length === 0) continue;
-      else break;
-    }
-  }
-
-  // Split on "## " headings, but never on a "## " line inside a ``` code block
-  // (some answers show markdown documents as examples).
-  const parts: string[] = [];
-  let inFence = false;
-  let current: string[] | null = null;
-  for (const line of lines) {
-    if (line.startsWith('```')) inFence = !inFence;
-    if (!inFence && line.startsWith('## ')) {
-      if (current) parts.push(current.join('\n'));
-      current = [line.slice(3)];
-    } else if (current) current.push(line);
-  }
-  if (current) parts.push(current.join('\n'));
-
-  const sections: Partial<Record<Section, string>> = {};
-  for (const part of parts) {
-    const nl = part.indexOf('\n');
-    const heading = (nl < 0 ? part : part.slice(0, nl)).toLowerCase();
-    const body = nl < 0 ? '' : part.slice(nl + 1).trim();
-    if (heading.startsWith('the concept')) sections.concept = body;
-    else if (heading.startsWith('real-life')) sections.problem = body;
-    else if (heading.startsWith('how to fix')) sections.fix = body;
-    else if (heading.startsWith('how to say')) sections.interview = body;
-  }
-  return { title, merged, ...sections };
-}
 
 const cache = new Map<string, Promise<Question[]>>();
 
