@@ -50,7 +50,7 @@ export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level
     <div className="docs" style={{ ['--c' as string]: `var(--${level})` }}>
       <div className="sidebar-backdrop" data-open={menuOpen || undefined} onClick={closeMenu} />
       <nav className="sidebar" data-open={menuOpen || undefined} aria-label={`${meta.label} questions`}>
-        <h2><i className="lvl-dot" />{meta.label}</h2>
+        <h2>{meta.label}</h2>
         <p className="sidebar-sub">{doneCount} / {questions.length} understood</p>
         <div className="side-group">
           <ul>
@@ -69,7 +69,7 @@ export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level
 
       <main className="docs-main">
         <header className="docs-intro">
-          <h1><i className="lvl-dot" style={{ width: 14, height: 14 }} />{meta.label} questions</h1>
+          <h1>{meta.label} questions</h1>
           <p>{meta.blurb} {questions.length} questions. Each one has a live bug, a hidden answer and a live fix.</p>
         </header>
 

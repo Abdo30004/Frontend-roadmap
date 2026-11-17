@@ -45,7 +45,6 @@ export function Browser({ url = 'app.example.com', children, style }: { url?: st
   return (
     <div className="dk-browser" style={style}>
       <div className="dk-browser-bar">
-        <span className="dk-dots"><i /><i /><i /></span>
         <span className="dk-url">{url}</span>
       </div>
       <div className="dk-browser-body">{children}</div>

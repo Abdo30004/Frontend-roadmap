@@ -19,8 +19,6 @@
 
 .dk-browser { border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; background: var(--surface); }
 .dk-browser-bar { display: flex; align-items: center; gap: 12px; padding: 9px 12px; background: var(--paper-2); border-bottom: 1px solid var(--line); }
-.dk-dots { display: flex; gap: 6px; }
-.dk-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); display: block; }
 .dk-url {
   flex: 1; font: 12.5px var(--font-mono); color: var(--ink-2); background: var(--surface); border: 1px solid var(--line);
   border-radius: 5px; padding: 4px 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;

@@ -40,8 +40,8 @@ export function Home() {
           {LEVELS.map((l) => (
             <div key={l.id}>
               <Link to={`/${l.id}`} style={{ ['--c' as string]: `var(--${l.id})` }}>
-                <strong><i className="lvl-dot" />{l.label}</strong>
-                <span>{META[l.id].length} questions · {l.blurb}</span>
+                <strong>{l.label}</strong>
+                <span>{META[l.id].length} questions. {l.blurb}</span>
               </Link>
             </div>
           ))}

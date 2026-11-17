@@ -79,10 +79,9 @@ function QuestionsMenu({ onOpen }: { onOpen: () => void }) {
       <div className="nav-dropdown" id="questions-menu">
         {LEVELS.map((l) => (
           <NavLink key={l.id} to={`/${l.id}`} className="nav-level" style={{ ['--c' as string]: `var(--${l.id})` }} onClick={() => setOpen(false)}>
-            <i className="lvl-dot" />
             <span>
               <strong>{l.label}</strong>
-              <small>{META[l.id].length} questions · {l.blurb}</small>
+              <small>{META[l.id].length} questions. {l.blurb}</small>
             </span>
           </NavLink>
         ))}

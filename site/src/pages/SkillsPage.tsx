@@ -60,7 +60,7 @@ export default function SkillsPage() {
             well. This guide walks through the ones worth installing for frontend work: what each one does, when to use it,
             and how they fit together.
           </p>
-          <p className="post-byline">Updated {INSTALLS_AS_OF} · Install counts from skills.sh</p>
+          <p className="post-byline">Updated {INSTALLS_AS_OF}. Install counts from skills.sh.</p>
           <TocInline toc={TOC} />
         </header>
 
