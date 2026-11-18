@@ -4,9 +4,9 @@
  * Colors: only use CSS variables (var(--ink), var(--bad), ...) so dark mode works.
  */
 import {
-  Fragment,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ButtonHTMLAttributes,
@@ -15,7 +15,19 @@ import {
   type ReactNode,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
+import xml from 'highlight.js/lib/languages/xml';
+import css from 'highlight.js/lib/languages/css';
+import bash from 'highlight.js/lib/languages/bash';
 import './kit.css';
+
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('css', css);
+hljs.registerLanguage('bash', bash);
 
 export type Tone = 'neutral' | 'bad' | 'good' | 'warn' | 'info';
 
@@ -112,38 +124,40 @@ export function Note({ children }: { children: ReactNode }) {
   return <p className="dk-note">{children}</p>;
 }
 
-/** Splits a line into code and a trailing `// comment` (ignores the `//` in URLs like `https://`). */
-function withComment(line: string, i: number): ReactNode {
-  const m = /(^|\s)(\/\/.*)$/.exec(line);
-  if (!m)
-    return (
-      <Fragment key={i}>
-        {line}
-        {'\n'}
-      </Fragment>
-    );
-  const at = m.index + m[1].length;
-  return (
-    <Fragment key={i}>
-      {line.slice(0, at)}
-      <span className="dk-code-comment">{m[2]}</span>
-      {'\n'}
-    </Fragment>
-  );
+function detectLang(title?: string, lang?: string): string {
+  if (lang) return lang;
+  if (!title) return 'typescript';
+  const lower = title.toLowerCase();
+  if (lower.endsWith('.css')) return 'css';
+  if (lower.endsWith('.html') || lower.endsWith('.svg')) return 'xml';
+  if (lower.endsWith('.sh') || lower.endsWith('.bash')) return 'bash';
+  return 'typescript';
+}
+
+function highlightSnippet(code: string, title?: string, lang?: string): string {
+  const clean = code.replace(/^\n/, '').replace(/\n\s*$/, '');
+  const chosenLang = detectLang(title, lang);
+  try {
+    return hljs.highlight(clean, { language: chosenLang }).value;
+  } catch {
+    try {
+      return hljs.highlightAuto(clean).value;
+    } catch {
+      return clean;
+    }
+  }
 }
 
 /** Code block for a few lines shown inside a demo, in a dark editor frame. `title` is the label in its top bar. */
-export function Code({ children, title }: { children: string; title?: string }) {
+export function Code({ children, title, lang }: { children: string; title?: string; lang?: string }) {
   const { t } = useTranslation();
-  const lines = children
-    .replace(/^\n/, '')
-    .replace(/\n\s*$/, '')
-    .split('\n');
+  const highlighted = useMemo(() => highlightSnippet(children, title, lang), [children, title, lang]);
+
   return (
     <figure className="dk-codeblock">
       <figcaption className="dk-code-bar">{title ?? t('demo.code')}</figcaption>
-      <pre className="dk-code">
-        <code>{lines.map(withComment)}</code>
+      <pre className="dk-code hljs" tabIndex={0}>
+        <code dangerouslySetInnerHTML={{ __html: highlighted }} />
       </pre>
     </figure>
   );
