@@ -1,6 +1,7 @@
 // Shared pieces of the long-form article pages (/skills, /mcp).
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useScrollSpy } from '../scrollSpy';
 
 export interface TocItem {
   id: string;
@@ -59,22 +60,7 @@ export function SectionHead({ id, title }: { toc?: TocItem[]; id: string; title:
 
 /** The id of the section currently near the top of the viewport. */
 export function useActiveSection(toc: TocItem[]) {
-  const [active, setActive] = useState(toc[0].id);
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: '-80px 0px -60% 0px' },
-    );
-    toc.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
-  }, [toc]);
-  return active;
+  return useScrollSpy(toc.map((item) => item.id));
 }
 
 /** On first render: jump to the #hash target if there is one, otherwise to the top. */

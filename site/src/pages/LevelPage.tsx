@@ -6,25 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { META, questionId, useLabels, useLevel } from '../content';
 import { useProgress } from '../progress';
 import { CheckIcon } from '../components/Icons';
-
-function useActiveSection(ids: string[], ready: boolean) {
-  const [active, setActive] = useState(ids[0]);
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: '-70px 0px -65% 0px' },
-    );
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
-  }, [ids, ready]);
-  return active;
-}
+import { useScrollSpy } from '../scrollSpy';
 
 export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level; menuOpen: boolean; closeMenu: () => void }) {
   const { t } = useTranslation();
@@ -35,7 +17,7 @@ export default function LevelPage({ level, menuOpen, closeMenu }: { level: Level
   const { isDone } = useProgress();
   const { hash } = useLocation();
   const [ids] = useState(() => questions.map((q) => q.slug));
-  const active = useActiveSection(ids, !!full);
+  const active = useScrollSpy(ids, !!full);
   const doneCount = questions.filter((q) => isDone(questionId(q))).length;
 
   // Jump to #slug once the questions are on the page.
