@@ -3,11 +3,12 @@ import { Trans, useTranslation } from 'react-i18next';
 import { REPO } from '../site';
 import * as en from '../skills';
 import * as fr from '../skills.fr';
+import * as ar from '../skills.ar';
 import { useLang } from '../i18n';
 import { Install, SectionHead, TocAside, TocInline, rich, useActiveSection, useScrollToHash, type TocItem } from '../components/Article';
 
 type Skill = en.Skill;
-const DATA = { en, fr };
+const DATA = { en, fr, ar };
 
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 

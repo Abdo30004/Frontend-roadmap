@@ -30,8 +30,8 @@ function rollup(statuses: Status[]): Status {
 /** The interview question itself (the question's title), in the current language. */
 function useQuestionText() {
   const lang = useLang();
-  const all = TITLES as Record<'en' | 'fr', Record<string, string>>;
-  return (q: QuestionMeta) => all[lang][questionId(q)] ?? all.en[questionId(q)] ?? q.short;
+  const all = TITLES as Record<string, Record<string, string>>;
+  return (q: QuestionMeta) => all[lang]?.[questionId(q)] ?? all.en?.[questionId(q)] ?? q.short;
 }
 
 const questionHref = (q: QuestionMeta) => `/${q.level}#${q.slug}`;

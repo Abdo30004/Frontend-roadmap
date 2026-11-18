@@ -9,7 +9,7 @@
 73 questions d’entretien frontend, du niveau junior au niveau senior.
 Chacune commence par un vrai bug qui tourne en direct dans votre navigateur. Vous le provoquez, vous réfléchissez, puis vous affichez la correction.
 
-[**Ouvrir le site**](https://frontend-roadmap-website.vercel.app/?lang=fr) · [Les questions en markdown](content/README.md) · [Contribuer](CONTRIBUTING.md) · [English version](README.md)
+[**Ouvrir le site**](https://frontend-roadmap-website.vercel.app/?lang=fr) · [Les questions en markdown](content/README.md) · [Contribuer](CONTRIBUTING.md) · [English version](README.md) · [النسخة العربية](README.ar.md)
 
 </div>
 

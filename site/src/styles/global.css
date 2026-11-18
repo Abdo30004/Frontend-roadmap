@@ -660,6 +660,69 @@ a.icon-btn { text-decoration: none; }
 .answer { margin-top: 8px; }
 .untranslated { margin: 28px 0 0; padding: 10px 14px; border-radius: 6px; background: var(--warn-soft); color: var(--ink); font-size: 14px; }
 .lang-btn { width: auto; min-width: 34px; padding: 0 8px; font: 600 12.5px var(--font-body); letter-spacing: 0.02em; }
+.lang-menu { position: relative; }
+.lang-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0; width: 140px; z-index: 45;
+  display: grid; gap: 2px; padding: 5px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-enter), visibility 0s linear 160ms;
+}
+.lang-menu[data-open] .lang-dropdown {
+  opacity: 1; visibility: visible; transform: translateY(0);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-enter), visibility 0s;
+}
+.lang-option {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  padding: 7px 10px; border: none; background: transparent; font-size: 13.5px;
+  font-family: inherit; font-weight: 500; color: var(--ink); border-radius: 6px; cursor: pointer; text-align: start;
+}
+.lang-option:hover { background: var(--paper-2); }
+.lang-option.active { font-weight: 600; color: var(--accent); background: var(--accent-soft); }
+
+/* ---------- RTL support ---------- */
+[dir="rtl"] {
+  --font-body: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  --font-head: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+}
+[dir="rtl"] .sidebar {
+  border-right: none;
+  border-left: 1px solid var(--line);
+  padding: 28px 20px 40px 16px;
+}
+[dir="rtl"] .side-check {
+  margin-left: 0;
+  margin-right: auto;
+}
+[dir="rtl"] .q-src {
+  margin-left: 0;
+  margin-right: auto;
+}
+[dir="rtl"] .lang-dropdown {
+  right: auto;
+  left: 0;
+}
+[dir="rtl"] pre,
+[dir="rtl"] code,
+[dir="rtl"] kbd,
+[dir="rtl"] .install-row,
+[dir="rtl"] .stage-body,
+[dir="rtl"] .stage-missing,
+[dir="rtl"] .console-output,
+[dir="rtl"] .mm-map {
+  direction: ltr !important;
+  text-align: left !important;
+}
+@media (max-width: 960px) {
+  [dir="rtl"] .sidebar {
+    left: auto;
+    right: 0;
+    transform: translateX(102%);
+  }
+  [dir="rtl"] .sidebar[data-open] {
+    transform: none;
+  }
+}
 .answer[data-open] { animation: answer-in 200ms var(--ease-out); }
 @keyframes answer-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .answer h3 { font-size: 19px; margin: 34px 0 10px; display: flex; align-items: center; gap: 10px; }
