@@ -7,12 +7,12 @@
 ## The concept (short answer)
 - تنقيح الأخطاء (Debugging) هو منهجية علمية منظمة وليس مجرد وضع عشوائي لدوال `console.log`: **إعادة إنتاج (reproduce)** المشكلة بشكل موثوق، **عزل (isolate)** مكان حدوثها، صياغة **فرضية (hypothesis)** واضحة، **التحقق (verify)** باستخدام الأدوات المتخصصة، إصلاح الخطأ، ثم كتابة اختبار يمنع تكراره.
 - **أدوات مطوري المتصفح (Browser DevTools)** هي صندوق أدواتك الأساسي:
-  - **الـ Console**: تفحص الأخطاء ومكدس الاستدعاءات (stack traces)، ودوال `console.table`، و `console.trace`، والتعبيرات اللحظية (live expressions).
+  - **الـ Console**: تفحص الأخطاء ومكدس الاستدعاءات (stack traces)، ودوال `console.table`، و `console.trace`، والتعبيرات اللحظية (live expressions).‏
   - **تبويب Sources**: نقاط التوقف (breakpoints)، ونقاط التوقف الشرطية (conditional breakpoints)، ونقاط التسجيل (logpoints)، وعبارة `debugger;`، والتنقل خطوة بخطوة (step over/into)، ومراقبة المتغيرات. وتسترجع ملفات الخرائط (Source maps) كودك الأصلي من الكود المضغوط.
   - **تبويب Network**: فحص رموز الحالة، وحمولات الطلبات، وأجسام الاستجابات، والتوقيت، وخنق سرعة الاتصال ("Slow 4G")، وتعطيل الكاش.
   - **تبويب Elements / Application**: فحص شجرة الـ DOM، وحسابات CSS، و localStorage، وملفات الكوكيز؛ وتبويب **Performance** لتشخيص بطء التصيير.
-- **إضافة React DevTools**: تبويب Components لتفحص الـ props والـ state والـ hooks لأي مكون؛ وتبويب Profiler لمعرفة أي المكونات تعيد التصيير وسبب ذلك ("Highlight updates when components render").
-- أدوات خاصة بـ React: وضع StrictMode (يشغل الـ effects مرتين في بيئة التطوير لكشف غياب دوال التنظيف)، وقاعدة `react-hooks/exhaustive-deps` في eslint، ومكونات حدود الأخطاء (error boundaries).
+- **إضافة React DevTools**: تبويب Components لتفحص الـ props والـ state والـ hooks لأي مكون؛ وتبويب Profiler لمعرفة أي المكونات تعيد التصيير وسبب ذلك ("Highlight updates when components render").‏
+- أدوات خاصة بـ React: وضع StrictMode (يشغل الـ effects مرتين في بيئة التطوير لكشف غياب دوال التنظيف)، وقاعدة `react-hooks/exhaustive-deps` في eslint، ومكونات حدود الأخطاء (error boundaries).‏
 - في بيئة الإنتاج: مراقبة الأخطاء (عبر Sentry ونحوها) مع رفع ملفات source maps، بالإضافة إلى `git bisect` لمعرفة الإيداع الذي أدخل الخلل بدقة.
 
 ## Real-life example: the problem
@@ -44,11 +44,11 @@ function TicketPanel({ ticketId }) {
 ## How to fix it
 الخطوات المنهجية التي تكشف السبب الجذري:
 1. **إعادة الإنتاج (Reproduce)**: تبويب Network في DevTools -> تقليل السرعة إلى "Slow 4G"، النقر على #101 ثم سريعاً على #102. الآن يتكرر الخطأ في كل مرة.
-2. **الملاحظة (Observe)**: يوضح تبويب Network وجود طلبين قيد التنفيذ؛ طلب #101 يكتمل بعد طلب #102.
-3. **التحقق (Verify)**: وضع logpoint (بالنقر بالزر الأيمن على رقم السطر -> "Add logpoint") عند سطر `setMessages` لطباعة `ticketId, data[0]?.ticketId`؛ فتطبع `102, 101`. وتظهر React DevTools أن `ticketId: 102` بينما الـ `messages` تعود للطلب 101.
+2. **الملاحظة (Observe)**: يوضح تبويب Network وجود طلبين قيد التنفيذ؛ طلب #101 يكتمل بعد طلب #102.‏
+3. **التحقق (Verify)**: وضع logpoint (بالنقر بالزر الأيمن على رقم السطر -> "Add logpoint") عند سطر `setMessages` لطباعة `ticketId, data[0]?.ticketId`؛ فتطبع `102, 101`. وتظهر React DevTools أن `ticketId: 102` بينما الـ `messages` تعود للطلب 101.‏
 4. **تأكيد الفرضية**: حالة تسابق (race condition)؛ فالـ effect لا يلغي الطلب القديم المعلق.
 
-الحل: إلغاء الطلب السابق في دالة تنظيف الـ effect عبر `AbortController`.
+الحل: إلغاء الطلب السابق في دالة تنظيف الـ effect عبر `AbortController`.‏
 
 ```jsx
 function TicketPanel({ ticketId }) {
@@ -99,6 +99,6 @@ console.trace("who called me?");   // طباعة مكدس الاستدعاءات
 
 ## How to say it in the interview
 - "أبدأ دائماً بإعادة إنتاج الخطأ بشكل موثوق، ثم أعزله عبر أدوات DevTools: نقاط التوقف ومكدس الاستدعاءات في تبويب Sources، وتبويب Network لمشاكل الـ API، و React DevTools لفحص الـ props والـ state وإعادات التصيير. وبعد الإصلاح أضيف اختباراً يضمن عدم تكراره."
-- اذكر قصة واقعية محددة مثل مشكلة الـ race condition السابقة: محاكاة بطء الشبكة لإعادة إنتاجها، ثم حلها باستخدام `AbortController` في دالة تنظيف الـ effect.
+- اذكر قصة واقعية محددة مثل مشكلة الـ race condition السابقة: محاكاة بطء الشبكة لإعادة إنتاجها، ثم حلها باستخدام `AbortController` في دالة تنظيف الـ effect.‏
 - سؤال المتابعة: "كيف تنقح الأخطاء في بيئة الإنتاج؟" عبر أدوات مراقبة الأخطاء (Error monitoring) مع رفع ملفات الخرائط (source maps)، والسجلات المعززة بالسياق (المستخدم، المسار، الإصدار)، وأعلام الميزات، واستخدام `git bisect` لعزل التعديل المسبب للخلل.
-- المفاضلة: `console.log` سريعة للحالات البسيطة، لكن نقاط التوقف تتيح فحص المتغيرات الحية دون تعديل الكود وإعادة نشره؛ مع الحرص على تنظيف السجلات الزائدة قبل دمج الكود عبر قاعدة `no-console`.
+- المفاضلة: `console.log` سريعة للحالات البسيطة، لكن نقاط التوقف تتيح فحص المتغيرات الحية دون تعديل الكود وإعادة نشره؛ مع الحرص على تنظيف السجلات الزائدة قبل دمج الكود عبر قاعدة `no-console`.‏

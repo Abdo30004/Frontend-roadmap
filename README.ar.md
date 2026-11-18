@@ -47,7 +47,7 @@
 
 ## تشغيل المشروع محلياً
 
-يتطلب المشروع Node.js بإصدار 20.19 أو أحدث (تستخدم بيئة CI الإصدار المحدد في [`.nvmrc`](.nvmrc)).
+يتطلب المشروع Node.js بإصدار 20.19 أو أحدث (تستخدم بيئة CI الإصدار المحدد في [`.nvmrc`](.nvmrc)).‏
 
 ```bash
 git clone https://github.com/ahmedgourmat/Frontend-roadmap.git
@@ -95,8 +95,8 @@ npm run dev        # http://localhost:5173
 
 يحدد الموقع اللغة بناءً على الرابط `?lang=ar` أولاً، ثم خيارك الأخير المحفوظ، ثم لغة المتصفح. يمكنك التبديل بين اللغات في أي وقت من زر اللغة في شريط التنقل.
 
-- الأسئلة: `content/<level>/<slug>.md` (الإنجليزية)، `content/fr/<level>/<slug>.md` (الفرنسية)، و `content/ar/<level>/<slug>.md` (العربية).
-- نصوص الواجهة: `site/src/i18n/en.ts`، `site/src/i18n/fr.ts`، و `site/src/i18n/ar.ts`.
+- الأسئلة: `content/<level>/<slug>.md` (الإنجليزية)، `content/fr/<level>/<slug>.md` (الفرنسية)، و `content/ar/<level>/<slug>.md` (العربية).‏
+- نصوص الواجهة: `site/src/i18n/en.ts`، `site/src/i18n/fr.ts`، و `site/src/i18n/ar.ts`.‏
 - تعليمات العروض التفاعلية: `site/src/demos/fr.ts` و `site/src/demos/ar.ts`. تبقى النصوص داخل التطبيقات المصغرة بالعروض التفاعلية باللغة الإنجليزية لتطابق الكود الفعلي.
 
 إذا كان أي ملف باللغة العربية غير متوفر، يعرض الموقع النسخة الإنجليزية مع تنبيه بذلك. نرحب دائماً بالمساهمة في الترجمات أو إضافة لغات جديدة.
@@ -109,7 +109,7 @@ npm run dev        # http://localhost:5173
 - [اقتراح سؤال جديد](https://github.com/ahmedgourmat/Frontend-roadmap/issues/new?template=new-question.yml)
 - [قراءة دليل المساهمة](CONTRIBUTING.md) (باللغة الإنجليزية): كيفية إضافة سؤال أو عرض تفاعلي أو ترجمة
 
-يرجى الالتزام بـ [ميثاق قواعد السلوك](CODE_OF_CONDUCT.md).
+يرجى الالتزام بـ [ميثاق قواعد السلوك](CODE_OF_CONDUCT.md).‏
 
 يمكنك كتابة المشاكل (Issues) وطلبات السحب (Pull Requests) باللغة العربية.
 
@@ -117,9 +117,9 @@ npm run dev        # http://localhost:5173
 
 المجلد `site/dist` يمثل تطبيق صفحة واحدة ثابت (SPA). يقوم كل من `site/vercel.json` (لدى Vercel) و `site/public/_redirects` (لدى Netlify) بتوجيه جميع المسارات إلى `index.html`، بحيث تعمل روابط مثل `/mid#07-array-index-as-key` بنجاح عند تحديث الصفحة.
 
-عند النشر على Vercel أو Netlify، حدد المجلد الرئيسي كـ `site`، وأمر البناء كـ `npm run build`، ومجلد الإخراج كـ `dist`.
+عند النشر على Vercel أو Netlify، حدد المجلد الرئيسي كـ `site`، وأمر البناء كـ `npm run build`، ومجلد الإخراج كـ `dist`.‏
 
 ## الترخيص
 
-- الكود البرمجي للموقع (`site/`): رخصة [MIT](LICENSE).
+- الكود البرمجي للموقع (`site/`): رخصة [MIT](LICENSE).‏
 - الأسئلة والإجابات (`content/`): رخصة المشاع الإبداعي [CC BY 4.0](content/LICENSE). يمكنك إعادة استخدامها وتكييفها، بما في ذلك للأغراض التجارية، بشرط الإشارة إلى هذا المشروع ونسب الفضل إليه.

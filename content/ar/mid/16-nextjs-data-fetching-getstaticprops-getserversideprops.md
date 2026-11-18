@@ -8,11 +8,11 @@
 - **في نمط Pages Router (`pages/`)**: يتم جلب البيانات عبر دوال مخصصة تُصدّر من ملف الصفحة. تُنفذ هذه الدوال على الخادم فقط ولا تدخل أبداً في حزمة الجافاسكريبت المشحونة للعميل:
   - `getStaticProps`: تُنفذ في **وقت البناء (Build time)** وتنتج كود HTML ثابتاً وملف JSON يمكن لشبكات CDN تخزينهما مؤقتاً. وعند إضافة `revalidate: N` يتحول المسار إلى **ISR (Incremental Static Regeneration)**، والذي يعيد بناء الصفحة في الخلفية كل N ثانية كحد أقصى. وللمسارات الديناميكية تقترن بـ `getStaticPaths` مع `fallback: 'blocking'` لتوليد الصفحات التي لم تبنَ مسبقاً.
   - `getServerSideProps`: تُنفذ **مع كل طلب وارد** وتمتلك وصولاً مباشراً لكائنات `req` و `res` والكوكيز والـ query parameters. وتُستخدم للبيانات الخاصة بكل مستخدم أو البيانات الحية التي لا تقبل التأخير. وهي أبطأ وتستهلك معالج الخادم مع كل زيارة.
-  - كلتا الدالتين تُرجعان `{ props }`، أو `{ notFound: true }`، أو `{ redirect }`. ويجب أن تكون الـ props قابلة للتحويل إلى JSON (لا تقبل كائنات `Date` أو `undefined`).
+  - كلتا الدالتين تُرجعان `{ props }`، أو `{ notFound: true }`، أو `{ redirect }`. ويجب أن تكون الـ props قابلة للتحويل إلى JSON (لا تقبل كائنات `Date` أو `undefined`).‏
 - **في نمط App Router (`app/`)**: تم الاستغناء عن تلك الدوال الخاصة؛ فمكونات الخادم (Server Components) أصبحت غير متزامنة (`async`) وتستدعي `fetch` أو قاعدة البيانات مباشرة. ويتم ضبط التخزين المؤقت لكل طلب أو لكل مسار:
-  - `fetch(url, { cache: 'force-cache' })` يكافئ `getStaticProps`.
-  - `fetch(url, { next: { revalidate: 60 } })` أو `export const revalidate = 60` يكافئ `ISR`.
-  - `fetch(url, { cache: 'no-store' })` أو استخدام `cookies()` / `headers()` أو `export const dynamic = 'force-dynamic'` يكافئ `getServerSideProps`.
+  - `fetch(url, { cache: 'force-cache' })` يكافئ `getStaticProps`.‏
+  - `fetch(url, { next: { revalidate: 60 } })` أو `export const revalidate = 60` يكافئ `ISR`.‏
+  - `fetch(url, { cache: 'no-store' })` أو استخدام `cookies()` / `headers()` أو `export const dynamic = 'force-dynamic'` يكافئ `getServerSideProps`.‏
   - تحل دالة `generateStaticParams` محل `getStaticPaths`. وتتكفل `revalidateTag` و `revalidatePath` بإعادة الصلاحية الفورية عند الطلب.
 - تنبيه: بدءاً من Next.js 15، أصبحت طلبات `fetch` **غير مخزنة مؤقتاً افتراضياً (uncached by default)**، وعليك تفعيل التخزين المؤقت صراحة عند الحاجة.
 

@@ -702,17 +702,55 @@ a.icon-btn { text-decoration: none; }
   right: auto;
   left: 0;
 }
-[dir="rtl"] pre,
+
+/* Center desktop mindmap in RTL and isolate its coordinates */
+[dir="rtl"] .mm {
+  direction: ltr !important;
+  left: auto !important;
+  right: 50% !important;
+  margin-left: 0 !important;
+  margin-right: calc(var(--mm-w) / -2) !important;
+}
+
+/* Ensure mobile roadmap list is right-aligned */
+[dir="rtl"] .rm-topic,
+[dir="rtl"] .rm-concept a {
+  text-align: right;
+}
+[dir="rtl"] .rm-concepts-m .rm-concept::before {
+  left: auto;
+  right: -16px;
+}
+
+/* Code, pre, and interactive demo isolation */
 [dir="rtl"] code,
-[dir="rtl"] kbd,
+[dir="rtl"] kbd {
+  direction: ltr !important;
+  unicode-bidi: isolate;
+  display: inline-block;
+  vertical-align: baseline;
+}
+[dir="rtl"] pre,
 [dir="rtl"] .install-row,
 [dir="rtl"] .stage-body,
 [dir="rtl"] .stage-missing,
-[dir="rtl"] .console-output,
-[dir="rtl"] .mm-map {
+[dir="rtl"] .console-output {
   direction: ltr !important;
   text-align: left !important;
 }
+
+/* Clean text flow for explanations */
+[dir="rtl"] .md p,
+[dir="rtl"] .md li,
+[dir="rtl"] .md blockquote,
+[dir="rtl"] .stage-task p,
+[dir="rtl"] .scenario,
+[dir="rtl"] .think p,
+[dir="rtl"] .docs-intro p,
+[dir="rtl"] .hero p {
+  text-align: right;
+}
+
 @media (max-width: 960px) {
   [dir="rtl"] .sidebar {
     left: auto;

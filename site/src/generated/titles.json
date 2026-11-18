@@ -152,7 +152,7 @@
   "ar": {
     "junior/01-closures": "ما هو الـ Closure في JavaScript، وكيف تستخدمه؟",
     "junior/02-var-let-const-and-loop-settimeout": "ما الفرق بين var و let و const (ولماذا تكسر var حلقة for مع setTimeout)؟",
-    "junior/03-settimeout-vs-setinterval": "ما الفرق بين ()setTimeout و ()setInterval؟",
+    "junior/03-settimeout-vs-setinterval": "ما الفرق بين setTimeout و setInterval في JavaScript؟",
     "junior/04-promises-and-async-await": "ما هي الـ Promises وكيف تعمل مع async/await؟",
     "junior/05-array-methods": "ما الفرق بين map و filter و reduce و forEach في JavaScript؟",
     "junior/06-event-listeners-and-delegation": "ما هو تفويض الأحداث (Event Delegation) في JavaScript وكيف يعمل؟",

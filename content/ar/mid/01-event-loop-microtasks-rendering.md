@@ -2,17 +2,17 @@
 
 **Level:** Mid
 **Merged from (original phrasings):**
-- اشرح الـ Event Loop في JavaScript.
+- اشرح الـ Event Loop في JavaScript.‏
 - كيف يتعامل الـ Event Loop مع الـ Promises و async/await والتصيير (Rendering)؟
 
 ## The concept
-- تعمل لغة JavaScript على **مسار تنفيذ أحادي (Single Thread)** يمتلك **Call Stack** واحداً فقط. أي كود تزامني (Synchronous) يستغرق وقتاً طويلاً يحجب كل شيء: النقرات، والمؤقتات، وتحديثات الشاشة (Painting).
+- تعمل لغة JavaScript على **مسار تنفيذ أحادي (Single Thread)** يمتلك **Call Stack** واحداً فقط. أي كود تزامني (Synchronous) يستغرق وقتاً طويلاً يحجب كل شيء: النقرات، والمؤقتات، وتحديثات الشاشة (Painting).‏
 - يكرر الـ Event Loop في المتصفح هذه الدورة باستمرار:
   1. يسحب **مهمة واحدة (Task / Macrotask)** من قائمة المهام (Task Queue): مثل دوال رد النداء لـ `setTimeout`، أو معالجات أحداث النقر، أو أحداث `message`، أو ردود الشبكة. وينفذها حتى يفرغ الـ Call Stack بالكامل.
   2. **يفرغ كامل طابور الـ Microtasks (Microtask Queue)**: مثل توابع الـ Promise (`.then/.catch/.finally`)، والكود الذي يلي `await`، و `queueMicrotask`، و `MutationObserver`. حتى الـ Microtasks التي تتم جدولتها أثناء هذه الخطوة تُنفذ أيضاً قبل الانتقال للخطوة التالية.
-  3. **إمكانية التصيير (Maybe render)** (كل 16.6 مللي ثانية تقريباً عند تردد 60Hz): ينفذ دوال `requestAnimationFrame`، ثم يحسب الـ Style والـ Layout ويقوم بعملية الـ Paint.
+  3. **إمكانية التصيير (Maybe render)** (كل 16.6 مللي ثانية تقريباً عند تردد 60Hz): ينفذ دوال `requestAnimationFrame`، ثم يحسب الـ Style والـ Layout ويقوم بعملية الـ Paint.‏
 - الـ `async/await` مجرد غطاء نحوي (Syntactic sugar) للـ Promises. كل كود قبل أول `await` يُنفذ بشكل تزامني تماماً، وما بعد الـ `await` يُجدول كـ Microtask بمجرد اكتمال القيمة المنتظرة.
-- سبب أهمية هذا الفهم: الـ Microtasks قد تسبب **حجب التصيير (Starve rendering)**، لأن المتصفح عاجز عن الرسم قبل إفراغ طابور الـ Microtasks تماماً. وأي مهمة طويلة (Long Task تتجاوز 50ms) تُسبب بطئاً مرئياً ملحوظاً (Jank) وتضر مقياس INP.
+- سبب أهمية هذا الفهم: الـ Microtasks قد تسبب **حجب التصيير (Starve rendering)**، لأن المتصفح عاجز عن الرسم قبل إفراغ طابور الـ Microtasks تماماً. وأي مهمة طويلة (Long Task تتجاوز 50ms) تُسبب بطئاً مرئياً ملحوظاً (Jank) وتضر مقياس INP.‏
 
 ### أحجية ترتيب المخرجات
 ```js
@@ -97,6 +97,6 @@ async function importRows(rows, onProgress) {
 
 ## How to say it in the interview
 - "يُنفذ الـ Event Loop مهمة واحدة (Task)، ثم يفرغ **جميع** الـ Microtasks، وبعدها قد يقوم المتصفح بالتصيير (Render). وتُعتبر الـ Promises واستمرارية `await` من الـ Microtasks، لذا فهي تنفذ دائماً قبل أي `setTimeout` تالٍ وقبل عملية الـ Paint القادمة."
-- فخ شائع: الاعتقاد بأن "`await` تجعل الكود غير حاجب (Non-blocking)". هذا غير صحيح؛ فهي تؤجل الكود فقط إلى Microtask. ولكي تسمح للمتصفح بالرسم، يجب أن تتنازل عن المهمة عبر **Task حقيقية** (`setTimeout` أو `MessageChannel` أو `scheduler.yield()`) أو تنقل العمليات الثقيلة إلى Web Worker.
+- فخ شائع: الاعتقاد بأن "`await` تجعل الكود غير حاجب (Non-blocking)". هذا غير صحيح؛ فهي تؤجل الكود فقط إلى Microtask. ولكي تسمح للمتصفح بالرسم، يجب أن تتنازل عن المهمة عبر **Task حقيقية** (`setTimeout` أو `MessageChannel` أو `scheduler.yield()`) أو تنقل العمليات الثقيلة إلى Web Worker.‏
 - سؤال متابعة: "أين تُنفذ `requestAnimationFrame`؟": تُنفذ في خطوة التصيير مباشرة قبل حسابات style و layout و paint. وهي المكان المثالي للكتابة في الـ DOM للرسوم المتحركة، وتتوقف مؤقتاً في التبويبات الخلفية لتوفير الموارد.
 - الموازنة (Trade-off): تقسيم العمل إلى دفعات صغيرة يجعل واجهة المستخدم أكثر استجابة، لكن إجمالي وقت العملية قد يزيد قليلاً بسبب تكلفة الجدولة (Scheduling overhead). تخصيص ميزانية زمنية لكل دفعة (~50ms) يوفر أفضل توازن.
