@@ -57,6 +57,7 @@ function StatusLabel({ s }: { s: Status }) {
 function TopicSummary({ tp }: { tp: Topic }) {
   const { t } = useTranslation();
   const label = useLabels();
+  const lang = useLang();
   const { status } = useProgress();
   const s = tp.concepts.map((q) => status(questionId(q)));
   const done = s.filter((x) => x === 'completed').length;
@@ -65,7 +66,7 @@ function TopicSummary({ tp }: { tp: Topic }) {
       <span className="rm-topic-icon">
         <TopicIcon id={tp.id} />
       </span>
-      <span className="rm-topic-text">
+      <span className="rm-topic-text" dir={lang === 'ar' ? 'rtl' : undefined}>
         <strong>{label.category(tp.id)}</strong>
         <span className="rm-topic-meta rm-topic-meta-3">
           <StatusLabel s={rollup(s)} />
@@ -137,6 +138,7 @@ function arrange(topics: Topic[]): Record<Side, Topic[]> {
 function Chip({ q, index, onHot }: { q: QuestionMeta; index: number; onHot: (id: string | null) => void }) {
   const label = useLabels();
   const question = useQuestionText();
+  const lang = useLang();
   const { status, markOpened } = useProgress();
   const id = questionId(q);
   const s = status(id);
@@ -144,6 +146,7 @@ function Chip({ q, index, onHot }: { q: QuestionMeta; index: number; onHot: (id:
     <Link
       to={questionHref(q)}
       className="mm-chip"
+      dir={lang === 'ar' ? 'rtl' : undefined}
       data-chip-of={q.category}
       data-chip={q.slug}
       data-s={s}
@@ -261,6 +264,7 @@ function LevelMap({ level }: { level: Level }) {
         <button
           type="button"
           className="mm-topic"
+          dir={lang === 'ar' ? 'rtl' : undefined}
           data-topic={tp.id}
           data-side={side}
           data-s={topicState(tp, status)}
@@ -302,7 +306,7 @@ function LevelMap({ level }: { level: Level }) {
 
         <div className="mm-middle">
           {sides.top.map((tp) => group(tp, 'top'))}
-          <div className="mm-hub" data-hub>
+          <div className="mm-hub" data-hub dir={lang === 'ar' ? 'rtl' : undefined}>
             <h3>{label.level(level)}</h3>
             <p>{label.blurb(level)}</p>
             <span className="rm-topic-meta">

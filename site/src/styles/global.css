@@ -712,14 +712,36 @@ a.icon-btn { text-decoration: none; }
   margin-right: calc(var(--mm-w) / -2) !important;
 }
 
-/* Ensure mobile roadmap list is right-aligned */
+/* Ensure all mindmap nodes and labels restore proper RTL text flow */
+[dir="rtl"] .mm-node,
+[dir="rtl"] .mm-topic,
+[dir="rtl"] .mm-chip,
+[dir="rtl"] .mm-hub,
 [dir="rtl"] .rm-topic,
-[dir="rtl"] .rm-concept a {
+[dir="rtl"] .rm-concept a,
+[dir="rtl"] .rm-topic-text {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate;
+}
+
+[dir="rtl"] .mm-chip span,
+[dir="rtl"] .rm-topic-text strong,
+[dir="rtl"] .rm-topic-meta {
+  direction: rtl !important;
+  unicode-bidi: isolate;
   text-align: right;
 }
-[dir="rtl"] .rm-concepts-m .rm-concept::before {
-  left: auto;
-  right: -16px;
+
+[dir="rtl"] .mm-hub {
+  text-align: center !important;
+}
+
+[dir="rtl"] .mm-hub h3,
+[dir="rtl"] .mm-hub p {
+  direction: rtl !important;
+  unicode-bidi: isolate;
+  text-align: center !important;
 }
 
 /* Code, pre, and interactive demo isolation */
