@@ -8,6 +8,8 @@ import { parseQuestion as parse } from './parse';
 const RAW = import.meta.glob('../../content/*/*.md', { query: '?raw', import: 'default' }) as Record<string, () => Promise<string>>;
 // French translations mirror the same layout under content/fr/<level>/<slug>.md.
 const RAW_FR = import.meta.glob('../../content/fr/*/*.md', { query: '?raw', import: 'default' }) as Record<string, () => Promise<string>>;
+// Arabic translations mirror the same layout under content/ar/<level>/<slug>.md.
+const RAW_AR = import.meta.glob('../../content/ar/*/*.md', { query: '?raw', import: 'default' }) as Record<string, () => Promise<string>>;
 
 /** Lightweight metadata from the catalog — enough for the map and the sidebar. */
 export interface QuestionMeta {
@@ -62,8 +64,13 @@ export function loadLevel(level: Level, lang: Lang = 'en'): Promise<Question[]> 
   if (!p) {
     p = Promise.all(
       META[level].map(async (m) => {
-        const frLoader = lang === 'fr' ? RAW_FR[`../../content/fr/${level}/${m.slug}.md`] : undefined;
-        const loader = frLoader ?? RAW[`../../content/${level}/${m.slug}.md`];
+        const localizedLoader =
+          lang === 'fr'
+            ? RAW_FR[`../../content/fr/${level}/${m.slug}.md`]
+            : lang === 'ar'
+              ? RAW_AR[`../../content/ar/${level}/${m.slug}.md`]
+              : undefined;
+        const loader = localizedLoader ?? RAW[`../../content/${level}/${m.slug}.md`];
         const parsed = parse(loader ? await loader() : `# ${m.short}`);
         return {
           ...m,
@@ -73,7 +80,7 @@ export function loadLevel(level: Level, lang: Lang = 'en'): Promise<Question[]> 
           problem: parsed.problem ?? '',
           fix: parsed.fix ?? '',
           interview: parsed.interview ?? '',
-          translated: lang === 'en' || !!frLoader,
+          translated: lang === 'en' || !!localizedLoader,
         };
       }),
     );

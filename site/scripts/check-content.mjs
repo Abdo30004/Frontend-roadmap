@@ -74,6 +74,8 @@ for (let i = 1; i < blocks.length; i += 2) {
 
 const frShort = read(join(site, 'src', 'i18n', 'fr.ts'));
 const frDemos = read(join(site, 'src', 'demos', 'fr.ts'));
+const arShort = existsSync(join(site, 'src', 'i18n', 'ar.ts')) ? read(join(site, 'src', 'i18n', 'ar.ts')) : '';
+const arDemos = existsSync(join(site, 'src', 'demos', 'ar.ts')) ? read(join(site, 'src', 'demos', 'ar.ts')) : '';
 const index = existsSync(join(content, 'README.md')) ? read(join(content, 'README.md')) : '';
 let total = 0;
 
@@ -82,6 +84,7 @@ for (const level of LEVELS) {
   if (!catalog[level]) errors.push(`site/src/catalog.ts: no "${level}" list found in CATALOG`);
   const en = mdFiles(join(content, level));
   const fr = mdFiles(join(content, 'fr', level));
+  const ar = mdFiles(join(content, 'ar', level));
   const slugs = new Set();
 
   for (const e of entries) {
@@ -113,11 +116,23 @@ for (const level of LEVELS) {
     if (!fr.includes(f)) warnings.push(`content/${id}.md: no French version at content/fr/${id}.md`);
     if (!frShort.includes(`'${id}':`)) warnings.push(`${id}: no French short label in site/src/i18n/fr.ts`);
     if (!frDemos.includes(`'${id}':`)) warnings.push(`${id}: no French demo text in site/src/demos/fr.ts`);
+
+    if (!ar.includes(f)) warnings.push(`content/${id}.md: no Arabic version at content/ar/${id}.md`);
+    if (arShort && !arShort.includes(`'${id}':`)) warnings.push(`${id}: no Arabic short label in site/src/i18n/ar.ts`);
+    if (arDemos && !arDemos.includes(`'${id}':`) && !arDemos.includes(`"${id}":`))
+      warnings.push(`${id}: no Arabic demo text in site/src/demos/ar.ts`);
+
     if (!index.includes(`(${id}.md)`)) warnings.push(`${id}: not listed in content/README.md`);
   }
 
   for (const f of fr) {
     const file = join(content, 'fr', level, f);
+    if (!en.includes(f)) errors.push(`${rel(file)}: no English file content/${level}/${f}`);
+    checkQuestion(file);
+  }
+
+  for (const f of ar) {
+    const file = join(content, 'ar', level, f);
     if (!en.includes(f)) errors.push(`${rel(file)}: no English file content/${level}/${f}`);
     checkQuestion(file);
   }

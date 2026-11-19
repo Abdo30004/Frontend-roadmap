@@ -8,11 +8,13 @@ import { DemoBoundary } from './DemoBoundary';
 import { demoLoader, type DemoModule } from './demos';
 import { CheckIcon } from './Icons';
 
-// French scenario / task / fix-note text for the demos (the demo apps themselves stay in English).
+// French and Arabic scenario / task / fix-note text for the demos (the demo apps themselves stay in English).
 // Loaded through a glob so a missing file never breaks the build.
 type DemoText = { scenario: string; task?: string; solutionNote?: string };
 const FR_MODULE = import.meta.glob<{ DEMO_FR: Record<string, DemoText> }>('../demos/fr.ts', { eager: true });
 const DEMO_FR: Record<string, DemoText> = Object.values(FR_MODULE)[0]?.DEMO_FR ?? {};
+const AR_MODULE = import.meta.glob<{ DEMO_AR: Record<string, DemoText> }>('../demos/ar.ts', { eager: true });
+const DEMO_AR: Record<string, DemoText> = Object.values(AR_MODULE)[0]?.DEMO_AR ?? {};
 
 // The markdown renderer + syntax highlighter only load once someone reveals an answer.
 const Markdown = lazy(() => import('./Markdown'));
@@ -91,7 +93,8 @@ export function QuestionSection({ q }: { q: Question }) {
   const lang = useLang();
   const id = questionId(q);
   const done = isDone(id);
-  const text = lang === 'fr' && mod ? { ...mod, ...DEMO_FR[id] } : mod;
+  const localizedDemo = lang === 'ar' ? DEMO_AR[id] : lang === 'fr' ? DEMO_FR[id] : undefined;
+  const text = localizedDemo && mod ? { ...mod, ...localizedDemo } : mod;
 
   const loading = <p className="stage-missing">{t('question.loadingDemo')}</p>;
   const missing = <p className="stage-missing">{t('question.noDemo')}</p>;

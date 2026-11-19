@@ -7,7 +7,7 @@ import { Home } from './pages/Home';
 import { MenuIcon, MoonIcon, SunIcon } from './components/Icons';
 import { Logo } from './components/Logo';
 import { useTranslation } from 'react-i18next';
-import { setLang, useLang } from './i18n';
+import { setLang, useLang, LANGS, type Lang } from './i18n';
 import { useLabels } from './content';
 
 const LevelPage = lazy(() => import('./pages/LevelPage'));
@@ -131,20 +131,76 @@ function useTheme() {
   return [theme, () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))] as const;
 }
 
-/** EN / FR switch: shows the language you would switch to. */
-function LangSwitch() {
+const LANGUAGE_LABELS: Record<Lang, { short: string; label: string }> = {
+  en: { short: 'EN', label: 'English' },
+  fr: { short: 'FR', label: 'Français' },
+  ar: { short: 'عربي', label: 'العربية' },
+};
+
+/** Language switch dropdown menu: supports English, French, and Arabic. */
+function LangDropdown() {
   const { t } = useTranslation();
-  const lang = useLang();
+  const currentLang = useLang();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
   return (
-    <button
-      className="icon-btn lang-btn"
-      type="button"
-      onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}
-      aria-label={t('lang.switchLabel')}
-      title={t('lang.switchLabel')}
-    >
-      {t('lang.switchTo')}
-    </button>
+    <div className="nav-menu lang-menu" ref={ref} data-open={open || undefined}>
+      <button
+        type="button"
+        className="icon-btn lang-btn"
+        aria-expanded={open}
+        aria-label={t('lang.switchLabel')}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span>{LANGUAGE_LABELS[currentLang].short}</span>
+      </button>
+      <div className="nav-dropdown lang-dropdown" id="lang-menu">
+        {LANGS.map((lng) => (
+          <button
+            key={lng}
+            type="button"
+            className={`lang-option${lng === currentLang ? ' active' : ''}`}
+            onClick={() => {
+              setLang(lng);
+              setOpen(false);
+            }}
+          >
+            <span>{LANGUAGE_LABELS[lng].label}</span>
+            {lng === currentLang && (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="3 8 7 12 13 4" />
+              </svg>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -187,7 +243,7 @@ export function App() {
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
           </svg>
         </a>
-        <LangSwitch />
+        <LangDropdown />
         <button className="icon-btn" onClick={toggleTheme} aria-label={theme === 'dark' ? t('nav.toLight') : t('nav.toDark')}>
           {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>

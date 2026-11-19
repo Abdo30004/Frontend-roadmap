@@ -4,12 +4,13 @@ import { Trans, useTranslation } from 'react-i18next';
 import { REPO } from '../site';
 import * as en from '../mcp';
 import * as fr from '../mcp.fr';
+import * as ar from '../mcp.ar';
 import { useLang } from '../i18n';
 import { Install, SectionHead, TocAside, TocInline, rich, useActiveSection, useScrollToHash, type TocItem } from '../components/Article';
 
 type Priority = en.Priority;
 type Server = en.Server;
-const DATA = { en, fr };
+const DATA = { en, fr, ar };
 const PRIORITIES: Priority[] = ['essential', 'recommended', 'optional', 'situational'];
 
 function Badge({ p, children }: { p: Priority; children: string }) {

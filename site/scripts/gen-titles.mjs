@@ -28,6 +28,6 @@ function titles(dir) {
 }
 
 mkdirSync(dirname(out), { recursive: true });
-const data = { en: titles(content), fr: titles(join(content, 'fr')) };
+const data = { en: titles(content), fr: titles(join(content, 'fr')), ar: titles(join(content, 'ar')) };
 writeFileSync(out, JSON.stringify(data, null, 2) + '\n');
-console.log(`titles: ${Object.keys(data.en).length} en, ${Object.keys(data.fr).length} fr`);
+console.log(`titles: ${Object.keys(data.en).length} en, ${Object.keys(data.fr).length} fr, ${Object.keys(data.ar).length} ar`);

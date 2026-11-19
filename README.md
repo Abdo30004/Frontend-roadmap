@@ -9,12 +9,12 @@
 73 frontend interview questions, from junior to senior.
 Each one starts with a real bug running live in your browser. You break it, think about it, then reveal the fix.
 
-[**Open the site**](https://frontend-roadmap-website.vercel.app) · [Questions as markdown](content/README.md) · [Contribute](CONTRIBUTING.md) · [Version française](README.fr.md)
+[**Open the site**](https://frontend-roadmap-website.vercel.app) · [Questions as markdown](content/README.md) · [Contribute](CONTRIBUTING.md) · [Version française](README.fr.md) · [النسخة العربية](README.ar.md)
 
 [![CI](https://github.com/ahmedgourmat/Frontend-roadmap/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedgourmat/Frontend-roadmap/actions/workflows/ci.yml)
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-0F172A)](LICENSE)
 [![Content license: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-4F46E5)](content/LICENSE)
-[![Languages: English, French](https://img.shields.io/badge/languages-EN%20%7C%20FR-34D399)](#languages)
+[![Languages: English, French, Arabic](https://img.shields.io/badge/languages-EN%20%7C%20FR%20%7C%20AR-34D399)](#languages)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-172554)](CONTRIBUTING.md)
 
 </div>
